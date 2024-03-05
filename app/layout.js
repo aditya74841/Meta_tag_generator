@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-
+import MiniDrawer from "./components/Sidebar";
+import Footer from "./components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -11,7 +12,20 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className} style={{ backgroundColor: "black" }}>
+        <>
+          <div style={{ display: "flex", width: "100%" }}>
+            {" "}
+            <MiniDrawer />
+            <div style={{ display: "flex", width: "100%" }}>
+              <div className=" mt-20 ml-0 w-full">
+                {children}
+                <Footer />
+              </div>
+            </div>
+          </div>
+        </>
+      </body>
     </html>
   );
 }
