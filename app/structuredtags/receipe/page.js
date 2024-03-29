@@ -502,7 +502,7 @@ const Receipe = () => {
                 </button>
               </div>
 
-              <div>
+           `   <div>
                 <h1 className="text-white font-semibold mt-5">Steps </h1>
                 {steps.map((step, index) => (
                   <div key={index} className="mt-5">
@@ -587,7 +587,7 @@ const Receipe = () => {
                     Add Step
                   </button>
                 </div>
-              </div>
+              </div>`
 
               {isIncludeAuthor && (
                 <>
