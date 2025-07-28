@@ -556,8 +556,7 @@ export default function EnhancedWebcodeToolsLayout({ children }) {
               variant="caption"
               sx={{ color: "rgba(255,255,255,0.7)" }}
             >
-              WebCode Tools Pro
-            </Typography>
+Meta Forge            </Typography>
             <br />
             <Typography
               variant="caption"
