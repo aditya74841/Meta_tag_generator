@@ -83,10 +83,12 @@ const Person = () => {
     // URL validation
     const urlPattern = /^https?:\/\/.+/;
     if (websiteUrl && !urlPattern.test(websiteUrl)) {
-      newErrors.websiteUrl = "Please enter a valid URL starting with http:// or https://";
+      newErrors.websiteUrl =
+        "Please enter a valid URL starting with http:// or https://";
     }
     if (photoUrl && !urlPattern.test(photoUrl)) {
-      newErrors.photoUrl = "Please enter a valid URL starting with http:// or https://";
+      newErrors.photoUrl =
+        "Please enter a valid URL starting with http:// or https://";
     }
 
     // Social media URL validation
@@ -117,7 +119,18 @@ const Person = () => {
 
   useEffect(() => {
     validateForm();
-  }, [name, websiteUrl, photoUrl, showSocialProfile, facebook, instagram, twitter, linkedIn, pintrest, youtube]);
+  }, [
+    name,
+    websiteUrl,
+    photoUrl,
+    showSocialProfile,
+    facebook,
+    instagram,
+    twitter,
+    linkedIn,
+    pintrest,
+    youtube,
+  ]);
 
   const socialProfiles = [
     facebook,
@@ -139,20 +152,22 @@ const Person = () => {
       ...(company && {
         worksFor: {
           "@type": "Organization",
-          name: company
-        }
+          name: company,
+        },
       }),
-      ...(showAddress && (streetAddress || city || state || zip || country) && {
-        address: {
-          "@type": "PostalAddress",
-          ...(streetAddress && { streetAddress: streetAddress }),
-          ...(city && { addressLocality: city }),
-          ...(state && { addressRegion: state }),
-          ...(zip && { postalCode: zip }),
-          ...(country && { addressCountry: country })
-        }
-      }),
-      ...(showSocialProfile && socialProfiles.length > 0 && { sameAs: socialProfiles })
+      ...(showAddress &&
+        (streetAddress || city || state || zip || country) && {
+          address: {
+            "@type": "PostalAddress",
+            ...(streetAddress && { streetAddress: streetAddress }),
+            ...(city && { addressLocality: city }),
+            ...(state && { addressRegion: state }),
+            ...(zip && { postalCode: zip }),
+            ...(country && { addressCountry: country }),
+          },
+        }),
+      ...(showSocialProfile &&
+        socialProfiles.length > 0 && { sameAs: socialProfiles }),
     };
   };
 
@@ -166,16 +181,22 @@ const Person = () => {
   const isFormValid = Object.keys(errors).length === 0 && name.trim();
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: 3,
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        minHeight: "100vh",
+      }}
+    >
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          mb: 3,
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           color: "white",
-          borderRadius: 2
+          borderRadius: 2,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -185,7 +206,8 @@ const Person = () => {
               Person Structured Data Generator
             </Typography>
             <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for people with job information, contact details, and social profiles.
+              Create structured data for people with job information, contact
+              details, and social profiles.
             </Typography>
           </Box>
         </Box>
@@ -195,25 +217,43 @@ const Person = () => {
         {/* Configuration Panel */}
         <Grid item xs={12} lg={8}>
           <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                bgcolor: "primary.main",
+                color: "white",
+                p: 2,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               <CodeIcon />
               <Typography variant="h6" fontWeight="bold">
                 PERSON CONFIGURATION
               </Typography>
               {isFormValid && (
-                <Chip 
-                  icon={<CheckIcon />} 
-                  label="Valid" 
-                  sx={{ bgcolor: "rgba(76, 175, 80, 0.8)", color: "white", ml: "auto" }}
+                <Chip
+                  icon={<CheckIcon />}
+                  label="Valid"
+                  sx={{
+                    bgcolor: "rgba(76, 175, 80, 0.8)",
+                    color: "white",
+                    ml: "auto",
+                  }}
                 />
               )}
             </Box>
-            
+
             <Box sx={{ p: 3 }}>
               <Grid container spacing={3}>
                 {/* Person Details Section */}
                 <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    color="primary"
+                    fontWeight="bold"
+                  >
                     <PersonIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                     Person Details
                   </Typography>
@@ -230,7 +270,9 @@ const Person = () => {
                     error={!!errors.name}
                     helperText={errors.name || `${name.length} characters`}
                     InputProps={{
-                      startAdornment: <PersonIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <PersonIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -244,9 +286,14 @@ const Person = () => {
                     value={photoUrl}
                     onChange={(e) => setPhotoUrl(e.target.value)}
                     error={!!errors.photoUrl}
-                    helperText={errors.photoUrl || "Professional headshot or profile picture"}
+                    helperText={
+                      errors.photoUrl ||
+                      "Professional headshot or profile picture"
+                    }
                     InputProps={{
-                      startAdornment: <ImageIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <ImageIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -260,9 +307,13 @@ const Person = () => {
                     value={websiteUrl}
                     onChange={(e) => setWebsiteUrl(e.target.value)}
                     error={!!errors.websiteUrl}
-                    helperText={errors.websiteUrl || "Personal website or portfolio"}
+                    helperText={
+                      errors.websiteUrl || "Personal website or portfolio"
+                    }
                     InputProps={{
-                      startAdornment: <WebsiteIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <WebsiteIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -283,7 +334,9 @@ const Person = () => {
                     onChange={(e) => setJobTitle(e.target.value)}
                     helperText="Current position or role"
                     InputProps={{
-                      startAdornment: <JobIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <JobIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -297,7 +350,9 @@ const Person = () => {
                     onChange={(e) => setCompany(e.target.value)}
                     helperText="Current employer or organization"
                     InputProps={{
-                      startAdornment: <CompanyIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <CompanyIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -320,7 +375,9 @@ const Person = () => {
                         />
                       }
                       label={
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
                           <LocationIcon fontSize="small" />
                           Include Address
                         </Box>
@@ -330,12 +387,16 @@ const Person = () => {
                       control={
                         <Switch
                           checked={showSocialProfile}
-                          onChange={(e) => setShowSocialProfile(e.target.checked)}
+                          onChange={(e) =>
+                            setShowSocialProfile(e.target.checked)
+                          }
                           color="primary"
                         />
                       }
                       label={
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
                           <SocialIcon fontSize="small" />
                           Include Social Profiles
                         </Box>
@@ -348,12 +409,21 @@ const Person = () => {
                 <Collapse in={showAddress} className="px-4">
                   <Grid container spacing={3} sx={{ mt: 1 }}>
                     <Grid item xs={12}>
-                      <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                      <Typography
+                        variant="h6"
+                        color="primary"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
                         <LocationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                         Address Information
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Provide the person's address information
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                      >
+                        Provide the person&apos;s address information
                       </Typography>
                     </Grid>
 
@@ -365,7 +435,11 @@ const Person = () => {
                         value={streetAddress}
                         onChange={(e) => setStreetAddress(e.target.value)}
                         InputProps={{
-                          startAdornment: <AddressIcon sx={{ mr: 1, color: "action.active" }} />,
+                          startAdornment: (
+                            <AddressIcon
+                              sx={{ mr: 1, color: "action.active" }}
+                            />
+                          ),
                         }}
                       />
                     </Grid>
@@ -378,7 +452,11 @@ const Person = () => {
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         InputProps={{
-                          startAdornment: <LocationIcon sx={{ mr: 1, color: "action.active" }} />,
+                          startAdornment: (
+                            <LocationIcon
+                              sx={{ mr: 1, color: "action.active" }}
+                            />
+                          ),
                         }}
                       />
                     </Grid>
@@ -391,7 +469,11 @@ const Person = () => {
                         value={state}
                         onChange={(e) => setState(e.target.value)}
                         InputProps={{
-                          startAdornment: <LocationIcon sx={{ mr: 1, color: "action.active" }} />,
+                          startAdornment: (
+                            <LocationIcon
+                              sx={{ mr: 1, color: "action.active" }}
+                            />
+                          ),
                         }}
                       />
                     </Grid>
@@ -404,7 +486,11 @@ const Person = () => {
                         value={zip}
                         onChange={(e) => setZip(e.target.value)}
                         InputProps={{
-                          startAdornment: <AddressIcon sx={{ mr: 1, color: "action.active" }} />,
+                          startAdornment: (
+                            <AddressIcon
+                              sx={{ mr: 1, color: "action.active" }}
+                            />
+                          ),
                         }}
                       />
                     </Grid>
@@ -433,11 +519,20 @@ const Person = () => {
                 <Collapse in={showSocialProfile} className="px-4">
                   <Grid container spacing={3} sx={{ mt: 1 }}>
                     <Grid item xs={12}>
-                      <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                      <Typography
+                        variant="h6"
+                        color="primary"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
                         <SocialIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                         Social Media Profiles
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                      >
                         Add social media profiles (leave empty if not available)
                       </Typography>
                     </Grid>
@@ -452,7 +547,9 @@ const Person = () => {
                         error={!!errors.facebook}
                         helperText={errors.facebook}
                         InputProps={{
-                          startAdornment: <FacebookIcon sx={{ mr: 1, color: "#1877F2" }} />,
+                          startAdornment: (
+                            <FacebookIcon sx={{ mr: 1, color: "#1877F2" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -467,7 +564,9 @@ const Person = () => {
                         error={!!errors.instagram}
                         helperText={errors.instagram}
                         InputProps={{
-                          startAdornment: <InstagramIcon sx={{ mr: 1, color: "#E4405F" }} />,
+                          startAdornment: (
+                            <InstagramIcon sx={{ mr: 1, color: "#E4405F" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -482,7 +581,9 @@ const Person = () => {
                         error={!!errors.twitter}
                         helperText={errors.twitter}
                         InputProps={{
-                          startAdornment: <TwitterIcon sx={{ mr: 1, color: "#1DA1F2" }} />,
+                          startAdornment: (
+                            <TwitterIcon sx={{ mr: 1, color: "#1DA1F2" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -497,7 +598,9 @@ const Person = () => {
                         error={!!errors.linkedIn}
                         helperText={errors.linkedIn}
                         InputProps={{
-                          startAdornment: <LinkedInIcon sx={{ mr: 1, color: "#0A66C2" }} />,
+                          startAdornment: (
+                            <LinkedInIcon sx={{ mr: 1, color: "#0A66C2" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -512,7 +615,9 @@ const Person = () => {
                         error={!!errors.pintrest}
                         helperText={errors.pintrest}
                         InputProps={{
-                          startAdornment: <PinterestIcon sx={{ mr: 1, color: "#BD081C" }} />,
+                          startAdornment: (
+                            <PinterestIcon sx={{ mr: 1, color: "#BD081C" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -527,7 +632,9 @@ const Person = () => {
                         error={!!errors.youtube}
                         helperText={errors.youtube}
                         InputProps={{
-                          startAdornment: <YouTubeIcon sx={{ mr: 1, color: "#FF0000" }} />,
+                          startAdornment: (
+                            <YouTubeIcon sx={{ mr: 1, color: "#FF0000" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -538,12 +645,27 @@ const Person = () => {
           </Paper>
 
           {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Paper
+            elevation={3}
+            sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}
+          >
+            <Box
+              sx={{
+                bgcolor: "success.main",
+                color: "white",
+                p: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Typography variant="h6" fontWeight="bold">
                 GENERATED JSON-LD CODE
               </Typography>
-              <CopyToClipboard text={`<script type="application/ld+json">\n${jsonText}\n</script>`} onCopy={handleCopy}>
+              <CopyToClipboard
+                text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
+                onCopy={handleCopy}
+              >
                 <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
                   <IconButton sx={{ color: "white" }}>
                     {copied ? <CheckIcon /> : <CopyIcon />}
@@ -551,25 +673,36 @@ const Person = () => {
                 </Tooltip>
               </CopyToClipboard>
             </Box>
-            
+
             {!isFormValid && (
               <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
                 Please fix the errors above to generate valid structured data.
               </Alert>
             )}
-            
+
             <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML page.
+              Add this JSON-LD script to the &lt;head&gt; section of your HTML
+              page.
             </Alert>
 
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 500, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
+            <Box
+              sx={{
+                p: 3,
+                bgcolor: "#1e1e1e",
+                color: "#f8f8f2",
+                maxHeight: 500,
+                overflow: "auto",
+              }}
+            >
+              <pre
+                style={{
+                  fontFamily: "'Fira Code', monospace",
+                  fontSize: "0.875rem",
+                  lineHeight: "1.5",
+                  margin: 0,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
                 {`<script type="application/ld+json">
 ${jsonText}
 </script>`}
@@ -591,18 +724,27 @@ ${jsonText}
               </Box>
               <Card sx={{ borderRadius: 0 }}>
                 <CardContent>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 2,
+                    }}
+                  >
                     {photoUrl ? (
                       <Avatar
                         src={photoUrl}
                         alt={name}
                         sx={{ width: 64, height: 64 }}
                         onError={(e) => {
-                          e.target.style.display = 'none';
+                          e.target.style.display = "none";
                         }}
                       />
                     ) : (
-                      <Avatar sx={{ width: 64, height: 64, bgcolor: "primary.main" }}>
+                      <Avatar
+                        sx={{ width: 64, height: 64, bgcolor: "primary.main" }}
+                      >
                         <PersonIcon sx={{ fontSize: 40 }} />
                       </Avatar>
                     )}
@@ -624,34 +766,63 @@ ${jsonText}
                   </Box>
 
                   {websiteUrl && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
                       <WebsiteIcon fontSize="small" />
-                      <Typography variant="body2" component="a" href={websiteUrl} target="_blank" rel="noopener">
+                      <Typography
+                        variant="body2"
+                        component="a"
+                        href={websiteUrl}
+                        target="_blank"
+                        rel="noopener"
+                      >
                         {websiteUrl}
                       </Typography>
                     </Box>
                   )}
-                  
+
                   {showAddress && (city || state || country) && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
                       <LocationIcon fontSize="small" />
                       <Typography variant="body2">
-                        {[city, state, country].filter(Boolean).join(", ") || "Address not provided"}
+                        {[city, state, country].filter(Boolean).join(", ") ||
+                          "Address not provided"}
                       </Typography>
                     </Box>
                   )}
 
                   {socialProfiles.length > 0 && (
                     <Box sx={{ mt: 2 }}>
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
                         Social Media:
                       </Typography>
                       <Stack direction="row" spacing={1} flexWrap="wrap">
                         {facebook && <FacebookIcon sx={{ color: "#1877F2" }} />}
-                        {instagram && <InstagramIcon sx={{ color: "#E4405F" }} />}
+                        {instagram && (
+                          <InstagramIcon sx={{ color: "#E4405F" }} />
+                        )}
                         {twitter && <TwitterIcon sx={{ color: "#1DA1F2" }} />}
                         {linkedIn && <LinkedInIcon sx={{ color: "#0A66C2" }} />}
-                        {pintrest && <PinterestIcon sx={{ color: "#BD081C" }} />}
+                        {pintrest && (
+                          <PinterestIcon sx={{ color: "#BD081C" }} />
+                        )}
                         {youtube && <YouTubeIcon sx={{ color: "#FF0000" }} />}
                       </Stack>
                     </Box>
@@ -662,52 +833,98 @@ ${jsonText}
 
             {/* Validation Status */}
             <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: isFormValid ? "success.main" : "error.main", color: "white", p: 2 }}>
+              <Box
+                sx={{
+                  bgcolor: isFormValid ? "success.main" : "error.main",
+                  color: "white",
+                  p: 2,
+                }}
+              >
                 <Typography variant="h6" fontWeight="bold">
                   VALIDATION STATUS
                 </Typography>
               </Box>
               <Box sx={{ p: 2 }}>
                 <Stack spacing={1}>
-                  <Alert severity={name.trim() ? "success" : "error"} variant="outlined">
+                  <Alert
+                    severity={name.trim() ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
                       Name: {name.trim() ? "✓ Added" : "✗ Required"}
                     </Typography>
                   </Alert>
-                  
-                  <Alert severity={photoUrl ? "success" : "info"} variant="outlined">
+
+                  <Alert
+                    severity={photoUrl ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Photo: {photoUrl ? "✓ Added" : "ℹ Optional but recommended"}
+                      Photo:{" "}
+                      {photoUrl ? "✓ Added" : "ℹ Optional but recommended"}
                     </Typography>
                   </Alert>
-                  
-                  <Alert severity={websiteUrl ? "success" : "info"} variant="outlined">
+
+                  <Alert
+                    severity={websiteUrl ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
                       Website: {websiteUrl ? "✓ Added" : "ℹ Optional"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={jobTitle && company ? "success" : "info"} variant="outlined">
+                  <Alert
+                    severity={jobTitle && company ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Professional Info: {jobTitle && company ? "✓ Complete" : "ℹ Optional but recommended"}
+                      Professional Info:{" "}
+                      {jobTitle && company
+                        ? "✓ Complete"
+                        : "ℹ Optional but recommended"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={showAddress ? ((city || state || country) ? "success" : "warning") : "info"} variant="outlined">
+                  <Alert
+                    severity={
+                      showAddress
+                        ? city || state || country
+                          ? "success"
+                          : "warning"
+                        : "info"
+                    }
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Address: {showAddress ? 
-                        ((city || state || country) ? "✓ Added" : "⚠ Incomplete") : 
-                        "ℹ Not included"
-                      }
+                      Address:{" "}
+                      {showAddress
+                        ? city || state || country
+                          ? "✓ Added"
+                          : "⚠ Incomplete"
+                        : "ℹ Not included"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={showSocialProfile ? (socialProfiles.length > 0 ? "success" : "warning") : "info"} variant="outlined">
+                  <Alert
+                    severity={
+                      showSocialProfile
+                        ? socialProfiles.length > 0
+                          ? "success"
+                          : "warning"
+                        : "info"
+                    }
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Social Media: {showSocialProfile ? 
-                        (socialProfiles.length > 0 ? `✓ ${socialProfiles.length} profile${socialProfiles.length !== 1 ? 's' : ''}` : "⚠ No profiles added") : 
-                        "ℹ Not included"
-                      }
+                      Social Media:{" "}
+                      {showSocialProfile
+                        ? socialProfiles.length > 0
+                          ? `✓ ${socialProfiles.length} profile${
+                              socialProfiles.length !== 1 ? "s" : ""
+                            }`
+                          : "⚠ No profiles added"
+                        : "ℹ Not included"}
                     </Typography>
                   </Alert>
                 </Stack>
@@ -721,9 +938,6 @@ ${jsonText}
 };
 
 export default Person;
-
-
-
 
 // "use client";
 
@@ -755,7 +969,6 @@ export default Person;
 //   const [pintrest, setPintrest] = useState("");
 //   const [linkedIn, setLinkedIn] = useState("");
 //   const [youtube, setYouTube] = useState("");
-
 
 //   const jsonText = JSON.stringify(
 //     {
@@ -812,16 +1025,6 @@ export default Person;
 //                   onChange={(e) => setName(e.target.value)}
 //                 />
 //               </div>
-
-
-
-
-
-
-
-
-
-
 
 //               <div className="mt-5">
 //                 <input
@@ -1057,7 +1260,7 @@ export default Person;
 //                   </button>
 //                 </div>
 //               </CopyToClipboard>
-          
+
 //             <div className="space-y-2 mt-5 ml-4">
 //               <pre className="text-white">
 //                 <pre className="text-white">

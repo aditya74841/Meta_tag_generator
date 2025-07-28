@@ -83,7 +83,8 @@ const Player = () => {
     // URL validation for image
     const urlPattern = /^https?:\/\/.+/;
     if (imageUrl && !urlPattern.test(imageUrl)) {
-      newErrors.imageUrl = "Please enter a valid image URL starting with http:// or https://";
+      newErrors.imageUrl =
+        "Please enter a valid image URL starting with http:// or https://";
     }
 
     // Dimension validation
@@ -97,7 +98,8 @@ const Player = () => {
     // Image dimension validation (Twitter requirement)
     const totalPixels = height * width;
     if (height && width && totalPixels < 68600) {
-      newErrors.dimensions = "Total pixels must be at least 68,600 (e.g., 262x262 or 350x196)";
+      newErrors.dimensions =
+        "Total pixels must be at least 68,600 (e.g., 262x262 or 350x196)";
     }
 
     setErrors(newErrors);
@@ -106,22 +108,44 @@ const Player = () => {
 
   useEffect(() => {
     validateForm();
-  }, [title, site, description, playerUrl, height, width, imageUrl, imageAltText]);
+  }, [
+    title,
+    site,
+    description,
+    playerUrl,
+    height,
+    width,
+    imageUrl,
+    imageAltText,
+  ]);
 
   const generateMetaTags = () => {
     const metaTags = [];
-    
-    metaTags.push('<meta name="twitter:card" content="player" />');
-    if (title) metaTags.push(`<meta name="twitter:title" content="${title}" />`);
-    if (site) metaTags.push(`<meta name="twitter:site" content="${site}" />`);
-    if (description) metaTags.push(`<meta name="twitter:description" content="${description}" />`);
-    if (playerUrl) metaTags.push(`<meta name="twitter:player" content="${playerUrl}" />`);
-    if (height) metaTags.push(`<meta name="twitter:player:height" content="${height}" />`);
-    if (width) metaTags.push(`<meta name="twitter:player:width" content="${width}" />`);
-    if (imageUrl) metaTags.push(`<meta name="twitter:image" content="${imageUrl}" />`);
-    if (imageAltText) metaTags.push(`<meta name="twitter:image:alt" content="${imageAltText}" />`);
 
-    return metaTags.join('\n');
+    metaTags.push('<meta name="twitter:card" content="player" />');
+    if (title)
+      metaTags.push(`<meta name="twitter:title" content="${title}" />`);
+    if (site) metaTags.push(`<meta name="twitter:site" content="${site}" />`);
+    if (description)
+      metaTags.push(
+        `<meta name="twitter:description" content="${description}" />`
+      );
+    if (playerUrl)
+      metaTags.push(`<meta name="twitter:player" content="${playerUrl}" />`);
+    if (height)
+      metaTags.push(
+        `<meta name="twitter:player:height" content="${height}" />`
+      );
+    if (width)
+      metaTags.push(`<meta name="twitter:player:width" content="${width}" />`);
+    if (imageUrl)
+      metaTags.push(`<meta name="twitter:image" content="${imageUrl}" />`);
+    if (imageAltText)
+      metaTags.push(
+        `<meta name="twitter:image:alt" content="${imageAltText}" />`
+      );
+
+    return metaTags.join("\n");
   };
 
   const metaTagsText = generateMetaTags();
@@ -131,14 +155,21 @@ const Player = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid = Object.keys(errors).length === 0 && title.trim() && site.trim() && playerUrl.trim() && height && width && imageUrl.trim();
+  const isFormValid =
+    Object.keys(errors).length === 0 &&
+    title.trim() &&
+    site.trim() &&
+    playerUrl.trim() &&
+    height &&
+    width &&
+    imageUrl.trim();
 
   const getAspectRatio = () => {
     if (!height || !width) return "Not calculated";
     const ratio = (width / height).toFixed(2);
     if (Math.abs(ratio - 1.78) < 0.1) return "16:9 (Recommended)";
     if (Math.abs(ratio - 1.33) < 0.1) return "4:3";
-    if (Math.abs(ratio - 1.00) < 0.1) return "1:1 (Square)";
+    if (Math.abs(ratio - 1.0) < 0.1) return "1:1 (Square)";
     return `${ratio}:1 (Custom)`;
   };
 
@@ -148,16 +179,22 @@ const Player = () => {
   };
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: 3,
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        minHeight: "100vh",
+      }}
+    >
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          mb: 3,
           background: "linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%)",
           color: "white",
-          borderRadius: 2
+          borderRadius: 2,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -167,7 +204,8 @@ const Player = () => {
               Player Twitter Card Generator
             </Typography>
             <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create Twitter Card meta tags for audio and video media players with embedded functionality.
+              Create Twitter Card meta tags for audio and video media players
+              with embedded functionality.
             </Typography>
           </Box>
         </Box>
@@ -177,25 +215,43 @@ const Player = () => {
         {/* Configuration Panel */}
         <Grid item xs={12} lg={8}>
           <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                bgcolor: "primary.main",
+                color: "white",
+                p: 2,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               <CodeIcon />
               <Typography variant="h6" fontWeight="bold">
                 PLAYER TWITTER CARD CONFIGURATION
               </Typography>
               {isFormValid && (
-                <Chip 
-                  icon={<CheckIcon />} 
-                  label="Valid" 
-                  sx={{ bgcolor: "rgba(76, 175, 80, 0.8)", color: "white", ml: "auto" }}
+                <Chip
+                  icon={<CheckIcon />}
+                  label="Valid"
+                  sx={{
+                    bgcolor: "rgba(76, 175, 80, 0.8)",
+                    color: "white",
+                    ml: "auto",
+                  }}
                 />
               )}
             </Box>
-            
+
             <Box sx={{ p: 3 }}>
               <Grid container spacing={3}>
                 {/* Basic Information Section */}
                 <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    color="primary"
+                    fontWeight="bold"
+                  >
                     <MediaIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                     Basic Information
                   </Typography>
@@ -210,9 +266,14 @@ const Player = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     error={!!errors.title}
-                    helperText={errors.title || `${title.length} characters (recommended: 40-60 for social sharing)`}
+                    helperText={
+                      errors.title ||
+                      `${title.length} characters (recommended: 40-60 for social sharing)`
+                    }
                     InputProps={{
-                      startAdornment: <TitleIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <TitleIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -226,9 +287,14 @@ const Player = () => {
                     value={site}
                     onChange={(e) => setSite(e.target.value)}
                     error={!!errors.site}
-                    helperText={errors.site || "The Twitter @username the card should be attributed to"}
+                    helperText={
+                      errors.site ||
+                      "The Twitter @username the card should be attributed to"
+                    }
                     InputProps={{
-                      startAdornment: <TwitterIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <TwitterIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -244,9 +310,21 @@ const Player = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     error={!!errors.description}
-                    helperText={errors.description || `${description.length}/200 characters (optional but recommended)`}
+                    helperText={
+                      errors.description ||
+                      `${description.length}/200 characters (optional but recommended)`
+                    }
                     InputProps={{
-                      startAdornment: <DescriptionIcon sx={{ mr: 1, color: "action.active", alignSelf: "flex-start", mt: 1 }} />,
+                      startAdornment: (
+                        <DescriptionIcon
+                          sx={{
+                            mr: 1,
+                            color: "action.active",
+                            alignSelf: "flex-start",
+                            mt: 1,
+                          }}
+                        />
+                      ),
                     }}
                   />
                 </Grid>
@@ -259,11 +337,20 @@ const Player = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
                     <PlayIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                     Player Settings
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                  >
                     Configure your embedded media player settings
                   </Typography>
                 </Grid>
@@ -277,9 +364,14 @@ const Player = () => {
                     value={playerUrl}
                     onChange={(e) => setPlayerUrl(e.target.value)}
                     error={!!errors.playerUrl}
-                    helperText={errors.playerUrl || "Must be a secure HTTPS URL for the embedded player"}
+                    helperText={
+                      errors.playerUrl ||
+                      "Must be a secure HTTPS URL for the embedded player"
+                    }
                     InputProps={{
-                      startAdornment: <LinkIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <LinkIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -295,9 +387,13 @@ const Player = () => {
                     value={height}
                     onChange={(e) => setHeight(e.target.value)}
                     error={!!errors.height}
-                    helperText={errors.height || "Player height in pixels (100-1000)"}
+                    helperText={
+                      errors.height || "Player height in pixels (100-1000)"
+                    }
                     InputProps={{
-                      startAdornment: <HeightIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <HeightIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -312,9 +408,13 @@ const Player = () => {
                     value={width}
                     onChange={(e) => setWidth(e.target.value)}
                     error={!!errors.width}
-                    helperText={errors.width || "Player width in pixels (100-1200)"}
+                    helperText={
+                      errors.width || "Player width in pixels (100-1200)"
+                    }
                     InputProps={{
-                      startAdornment: <WidthIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <WidthIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -323,20 +423,24 @@ const Player = () => {
                 {height && width && (
                   <Grid item xs={12}>
                     <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1 }}>
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
                         Player Dimensions Preview:
                       </Typography>
                       <Stack direction="row" spacing={2} alignItems="center">
-                        <Chip 
+                        <Chip
                           icon={<DimensionIcon />}
-                          label={`${width}×${height}px`} 
-                          size="small" 
-                          color="primary" 
+                          label={`${width}×${height}px`}
+                          size="small"
+                          color="primary"
                         />
-                        <Chip 
-                          label={getAspectRatio()} 
-                          size="small" 
-                          color="secondary" 
+                        <Chip
+                          label={getAspectRatio()}
+                          size="small"
+                          color="secondary"
                           variant="outlined"
                         />
                         <Typography variant="body2" color="text.secondary">
@@ -360,12 +464,22 @@ const Player = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
                     <ImageIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                     Fallback Image Settings
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Image displayed on platforms that don't support embedded players
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                  >
+                    Image displayed on platforms that don&apos;t support
+                    embedded players
                   </Typography>
                 </Grid>
 
@@ -378,9 +492,14 @@ const Player = () => {
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     error={!!errors.imageUrl}
-                    helperText={errors.imageUrl || "Same dimensions as player. Min 68,600 pixels, Max 5MB (JPG, PNG, WEBP, GIF)"}
+                    helperText={
+                      errors.imageUrl ||
+                      "Same dimensions as player. Min 68,600 pixels, Max 5MB (JPG, PNG, WEBP, GIF)"
+                    }
                     InputProps={{
-                      startAdornment: <ImageIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <ImageIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -395,7 +514,11 @@ const Player = () => {
                     onChange={(e) => setImageAltText(e.target.value)}
                     helperText="Descriptive text for accessibility (recommended)"
                     InputProps={{
-                      startAdornment: <DescriptionIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <DescriptionIcon
+                          sx={{ mr: 1, color: "action.active" }}
+                        />
+                      ),
                     }}
                   />
                 </Grid>
@@ -408,7 +531,12 @@ const Player = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
                     Twitter Player Card Benefits
                   </Typography>
                   <Stack spacing={1}>
@@ -443,8 +571,20 @@ const Player = () => {
           </Paper>
 
           {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Paper
+            elevation={3}
+            sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}
+          >
+            <Box
+              sx={{
+                bgcolor: "success.main",
+                color: "white",
+                p: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Typography variant="h6" fontWeight="bold">
                 GENERATED TWITTER CARD META TAGS
               </Typography>
@@ -456,25 +596,35 @@ const Player = () => {
                 </Tooltip>
               </CopyToClipboard>
             </Box>
-            
+
             {!isFormValid && (
               <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
                 Please fix the errors above to generate valid meta tags.
               </Alert>
             )}
-            
+
             <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
               Add these meta tags to the &lt;head&gt; section of your HTML page.
             </Alert>
 
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 500, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
+            <Box
+              sx={{
+                p: 3,
+                bgcolor: "#1e1e1e",
+                color: "#f8f8f2",
+                maxHeight: 500,
+                overflow: "auto",
+              }}
+            >
+              <pre
+                style={{
+                  fontFamily: "'Fira Code', monospace",
+                  fontSize: "0.875rem",
+                  lineHeight: "1.5",
+                  margin: 0,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
                 {metaTagsText || "<!-- No meta tags generated yet -->"}
               </pre>
             </Box>
@@ -494,74 +644,92 @@ const Player = () => {
               </Box>
               <Card sx={{ borderRadius: 0, border: "1px solid #1DA1F2" }}>
                 <CardContent>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 2,
+                    }}
+                  >
                     <TwitterIcon color="primary" />
                     <Typography variant="body2" color="primary">
                       {site || "@yourusername"}
                     </Typography>
                   </Box>
-                  
+
                   <Typography variant="h6" gutterBottom>
                     {title || "Player Title"}
                   </Typography>
-                  
+
                   <Typography variant="body2" color="text.secondary" paragraph>
                     {description || "Player description will appear here..."}
                   </Typography>
 
                   {/* Player Preview */}
-                  <Box sx={{ position: "relative", bgcolor: "#000", borderRadius: 1, overflow: "hidden" }}>
+                  <Box
+                    sx={{
+                      position: "relative",
+                      bgcolor: "#000",
+                      borderRadius: 1,
+                      overflow: "hidden",
+                    }}
+                  >
                     {imageUrl ? (
                       <Box sx={{ position: "relative" }}>
-                        <img 
-                          src={imageUrl} 
+                        <img
+                          src={imageUrl}
                           alt={imageAltText || "Player preview"}
-                          style={{ 
-                            width: "100%", 
-                            height: "200px", 
+                          style={{
+                            width: "100%",
+                            height: "200px",
                             objectFit: "cover",
-                            display: "block"
+                            display: "block",
                           }}
                           onError={(e) => {
-                            e.target.style.display = 'none';
+                            e.target.style.display = "none";
                           }}
                         />
-                        <Box sx={{ 
-                          position: "absolute", 
-                          top: "50%", 
-                          left: "50%", 
-                          transform: "translate(-50%, -50%)",
-                          bgcolor: "rgba(0,0,0,0.7)",
-                          borderRadius: "50%",
-                          p: 2
-                        }}>
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            bgcolor: "rgba(0,0,0,0.7)",
+                            borderRadius: "50%",
+                            p: 2,
+                          }}
+                        >
                           <PlayIcon sx={{ color: "white", fontSize: 32 }} />
                         </Box>
-                        <Box sx={{
-                          position: "absolute",
-                          bottom: 8,
-                          right: 8,
-                          bgcolor: "rgba(0,0,0,0.8)",
-                          color: "white",
-                          px: 1,
-                          py: 0.5,
-                          borderRadius: 1,
-                          fontSize: "0.75rem"
-                        }}>
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            bottom: 8,
+                            right: 8,
+                            bgcolor: "rgba(0,0,0,0.8)",
+                            color: "white",
+                            px: 1,
+                            py: 0.5,
+                            borderRadius: 1,
+                            fontSize: "0.75rem",
+                          }}
+                        >
                           <FullscreenIcon sx={{ fontSize: 16, mr: 0.5 }} />
                           Player
                         </Box>
                       </Box>
                     ) : (
-                      <Box 
-                        sx={{ 
-                          height: 200, 
-                          bgcolor: "#333", 
-                          display: "flex", 
-                          alignItems: "center", 
+                      <Box
+                        sx={{
+                          height: 200,
+                          bgcolor: "#333",
+                          display: "flex",
+                          alignItems: "center",
                           justifyContent: "center",
                           flexDirection: "column",
-                          gap: 1
+                          gap: 1,
                         }}
                       >
                         <PlayerIcon sx={{ fontSize: 48, color: "white" }} />
@@ -574,7 +742,14 @@ const Player = () => {
 
                   {/* Player Info */}
                   {height && width && (
-                    <Box sx={{ mt: 2, display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box
+                      sx={{
+                        mt: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
                       <DimensionIcon fontSize="small" />
                       <Typography variant="body2">
                         {width}×{height}px • {getAspectRatio()}
@@ -583,13 +758,23 @@ const Player = () => {
                   )}
 
                   {playerUrl && (
-                    <Box sx={{ mt: 1, display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box
+                      sx={{
+                        mt: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
                       <LinkIcon fontSize="small" />
-                      <Typography variant="body2" sx={{ 
-                        overflow: "hidden", 
-                        textOverflow: "ellipsis", 
-                        whiteSpace: "nowrap" 
-                      }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
                         {playerUrl}
                       </Typography>
                     </Box>
@@ -600,58 +785,95 @@ const Player = () => {
 
             {/* Validation Status */}
             <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: isFormValid ? "success.main" : "error.main", color: "white", p: 2 }}>
+              <Box
+                sx={{
+                  bgcolor: isFormValid ? "success.main" : "error.main",
+                  color: "white",
+                  p: 2,
+                }}
+              >
                 <Typography variant="h6" fontWeight="bold">
                   VALIDATION STATUS
                 </Typography>
               </Box>
               <Box sx={{ p: 2 }}>
                 <Stack spacing={1}>
-                  <Alert severity={title.trim() ? "success" : "error"} variant="outlined">
+                  <Alert
+                    severity={title.trim() ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
                       Title: {title.trim() ? "✓ Added" : "✗ Required"}
                     </Typography>
                   </Alert>
-                  
-                  <Alert severity={site.trim() ? "success" : "error"} variant="outlined">
+
+                  <Alert
+                    severity={site.trim() ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
                       Twitter Site: {site.trim() ? "✓ Added" : "✗ Required"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={playerUrl.trim() ? "success" : "error"} variant="outlined">
+                  <Alert
+                    severity={playerUrl.trim() ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
                       Player URL: {playerUrl.trim() ? "✓ Added" : "✗ Required"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={height ? "success" : "error"} variant="outlined">
+                  <Alert
+                    severity={height ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
                       Height: {height ? `✓ ${height}px` : "✗ Required"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={width ? "success" : "error"} variant="outlined">
+                  <Alert
+                    severity={width ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
                       Width: {width ? `✓ ${width}px` : "✗ Required"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={imageUrl.trim() ? "success" : "error"} variant="outlined">
+                  <Alert
+                    severity={imageUrl.trim() ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Fallback Image: {imageUrl.trim() ? "✓ Added" : "✗ Required"}
+                      Fallback Image:{" "}
+                      {imageUrl.trim() ? "✓ Added" : "✗ Required"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={description.trim() ? "success" : "info"} variant="outlined">
+                  <Alert
+                    severity={description.trim() ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Description: {description.trim() ? "✓ Added" : "ℹ Optional but recommended"}
+                      Description:{" "}
+                      {description.trim()
+                        ? "✓ Added"
+                        : "ℹ Optional but recommended"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={imageAltText.trim() ? "success" : "info"} variant="outlined">
+                  <Alert
+                    severity={imageAltText.trim() ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Alt Text: {imageAltText.trim() ? "✓ Added" : "ℹ Optional but recommended"}
+                      Alt Text:{" "}
+                      {imageAltText.trim()
+                        ? "✓ Added"
+                        : "ℹ Optional but recommended"}
                     </Typography>
                   </Alert>
                 </Stack>
@@ -684,7 +906,7 @@ const Player = () => {
                       • Increases engagement with rich media content
                     </Typography>
                   </Box>
-                  
+
                   <Box>
                     <Typography variant="body2" fontWeight="bold" gutterBottom>
                       Requirements:
@@ -732,7 +954,6 @@ const Player = () => {
 
 export default Player;
 
-
 // "use client";
 
 // import React, { useState } from "react";
@@ -779,7 +1000,6 @@ export default Player;
 //           </h1>
 //           <div className="py-4 px-5 bg-gray-800">
 //             <form>
-             
 
 //               <div className="mt-5">
 //                 <label

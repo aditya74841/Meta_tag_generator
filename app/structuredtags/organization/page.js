@@ -651,7 +651,7 @@ const Organization = () => {
                     Address Information
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Provide the organization's physical address (all fields are optional)
+                    Provide the organization&apos;s physical address (all fields are optional)
                   </Typography>
                 </Grid>
 
@@ -759,7 +759,7 @@ const Organization = () => {
                         Social Media Profiles
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Add your organization's social media profiles (leave empty if not available)
+                        Add your organization&apos;s social media profiles (leave empty if not available)
                       </Typography>
                     </Grid>
 

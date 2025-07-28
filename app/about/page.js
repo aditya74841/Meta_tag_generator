@@ -150,7 +150,7 @@ const About = () => {
             Forging the Future of Social Media Optimization
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.8, maxWidth: 800, mx: "auto", mb: 4 }}>
-            We're passionate about empowering developers, marketers, and content creators with 
+            We&apos;re passionate about empowering developers, marketers, and content creators with 
             cutting-edge tools for generating SEO-optimized meta tags and social media cards 
             easily and professionally.
           </Typography>
@@ -222,7 +222,7 @@ const About = () => {
             Why Choose MetaForge?
           </Typography>
           <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 4 }}>
-            We've built MetaForge with the needs of modern web professionals in mind
+            We&apos;ve built MetaForge with the needs of modern web professionals in mind
           </Typography>
           
           <Grid container spacing={3}>
@@ -383,7 +383,7 @@ const About = () => {
                   User-Centric
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Our users' needs drive every decision we make and feature we develop.
+                  Our users&apos; needs drive every decision we make and feature we develop.
                 </Typography>
               </Box>
             </Grid>
@@ -416,7 +416,7 @@ const About = () => {
             Get in Touch
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.9, mb: 4, maxWidth: 600, mx: "auto" }}>
-            Have questions, suggestions, or just want to say hello? We'd love to hear from you!
+            Have questions, suggestions, or just want to say hello? We&apos;d love to hear from you!
           </Typography>
 
           <Stack 

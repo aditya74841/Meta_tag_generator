@@ -110,7 +110,7 @@ const BreadCrumb = () => {
               Breadcrumb Structured Data Generator
             </Typography>
             <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create breadcrumb navigation structured data to enhance your website's search appearance.
+              Create breadcrumb navigation structured data to enhance your website&apos;s search appearance.
             </Typography>
           </Box>
         </Box>
@@ -136,7 +136,7 @@ const BreadCrumb = () => {
             <Box sx={{ p: 3 }}>
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body2">
-                  Add breadcrumb items in order from the homepage to the current page. The first item is typically "Home".
+                  Add breadcrumb items in order from the homepage to the current page. The first item is typically &quot;Home&quot;.
                 </Typography>
               </Alert>
 
