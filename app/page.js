@@ -595,8 +595,7 @@ const Home = () => {
             
             <Alert severity="info" sx={{ mb: 3, maxWidth: 800, mx: "auto" }}>
               <Typography variant="body2">
-                💡 <strong>Pro Tip:</strong> Start with the Article or Product generators - they&apos;re our most popular tools 
-                and cover the majority of social sharing needs.
+                💡 <strong>Pro Tip:</strong>{" Start with the Article or Product generators - they're our most popular tools and cover the majority of social sharing needs."}
               </Typography>
             </Alert>
 

@@ -327,7 +327,6 @@
 
 // export default Organization;
 
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -415,16 +414,20 @@ const Organization = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!organizationName.trim()) newErrors.organizationName = "Organization name is required";
-    if (!organizationType) newErrors.organizationType = "Organization type is required";
+    if (!organizationName.trim())
+      newErrors.organizationName = "Organization name is required";
+    if (!organizationType)
+      newErrors.organizationType = "Organization type is required";
 
     // URL validation
     const urlPattern = /^https?:\/\/.+/;
     if (websiteUrl && !urlPattern.test(websiteUrl)) {
-      newErrors.websiteUrl = "Please enter a valid URL starting with http:// or https://";
+      newErrors.websiteUrl =
+        "Please enter a valid URL starting with http:// or https://";
     }
     if (logoUrl && !urlPattern.test(logoUrl)) {
-      newErrors.logoUrl = "Please enter a valid URL starting with http:// or https://";
+      newErrors.logoUrl =
+        "Please enter a valid URL starting with http:// or https://";
     }
 
     // Social media URL validation
@@ -455,7 +458,19 @@ const Organization = () => {
 
   useEffect(() => {
     validateForm();
-  }, [organizationName, organizationType, websiteUrl, logoUrl, showSocialProfile, facebook, instagram, twitter, linkedIn, pintrest, youtube]);
+  }, [
+    organizationName,
+    organizationType,
+    websiteUrl,
+    logoUrl,
+    showSocialProfile,
+    facebook,
+    instagram,
+    twitter,
+    linkedIn,
+    pintrest,
+    youtube,
+  ]);
 
   const socialProfiles = [
     facebook,
@@ -486,7 +501,8 @@ const Organization = () => {
       ...(logoUrl && { logo: logoUrl }),
       ...(websiteUrl && { url: websiteUrl }),
       ...(hasAddress && { address: addressFields }),
-      ...(showSocialProfile && socialProfiles.length > 0 && { sameAs: socialProfiles }),
+      ...(showSocialProfile &&
+        socialProfiles.length > 0 && { sameAs: socialProfiles }),
     };
   };
 
@@ -497,32 +513,47 @@ const Organization = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid = Object.keys(errors).length === 0 && 
-    organizationName.trim() && organizationType;
+  const isFormValid =
+    Object.keys(errors).length === 0 &&
+    organizationName.trim() &&
+    organizationType;
 
   const getSocialIcon = (platform) => {
     switch (platform.toLowerCase()) {
-      case 'facebook': return <FacebookIcon sx={{ color: "#1877F2" }} />;
-      case 'instagram': return <InstagramIcon sx={{ color: "#E4405F" }} />;
-      case 'twitter': return <TwitterIcon sx={{ color: "#1DA1F2" }} />;
-      case 'linkedin': return <LinkedInIcon sx={{ color: "#0A66C2" }} />;
-      case 'pinterest': return <PinterestIcon sx={{ color: "#BD081C" }} />;
-      case 'youtube': return <YouTubeIcon sx={{ color: "#FF0000" }} />;
-      default: return <SocialIcon />;
+      case "facebook":
+        return <FacebookIcon sx={{ color: "#1877F2" }} />;
+      case "instagram":
+        return <InstagramIcon sx={{ color: "#E4405F" }} />;
+      case "twitter":
+        return <TwitterIcon sx={{ color: "#1DA1F2" }} />;
+      case "linkedin":
+        return <LinkedInIcon sx={{ color: "#0A66C2" }} />;
+      case "pinterest":
+        return <PinterestIcon sx={{ color: "#BD081C" }} />;
+      case "youtube":
+        return <YouTubeIcon sx={{ color: "#FF0000" }} />;
+      default:
+        return <SocialIcon />;
     }
   };
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: 3,
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        minHeight: "100vh",
+      }}
+    >
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          mb: 3,
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           color: "white",
-          borderRadius: 2
+          borderRadius: 2,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -532,7 +563,8 @@ const Organization = () => {
               Organization Structured Data Generator
             </Typography>
             <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for organizations with logo, address, and social media profiles.
+              Create structured data for organizations with logo, address, and
+              social media profiles.
             </Typography>
           </Box>
         </Box>
@@ -542,25 +574,43 @@ const Organization = () => {
         {/* Configuration Panel */}
         <Grid item xs={12} lg={8}>
           <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                bgcolor: "primary.main",
+                color: "white",
+                p: 2,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               <CodeIcon />
               <Typography variant="h6" fontWeight="bold">
                 ORGANIZATION CONFIGURATION
               </Typography>
               {isFormValid && (
-                <Chip 
-                  icon={<CheckIcon />} 
-                  label="Valid" 
-                  sx={{ bgcolor: "rgba(76, 175, 80, 0.8)", color: "white", ml: "auto" }}
+                <Chip
+                  icon={<CheckIcon />}
+                  label="Valid"
+                  sx={{
+                    bgcolor: "rgba(76, 175, 80, 0.8)",
+                    color: "white",
+                    ml: "auto",
+                  }}
                 />
               )}
             </Box>
-            
+
             <Box sx={{ p: 3 }}>
               <Grid container spacing={3}>
                 {/* Organization Details Section */}
                 <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    color="primary"
+                    fontWeight="bold"
+                  >
                     <OrganizationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                     Organization Details
                   </Typography>
@@ -577,13 +627,20 @@ const Organization = () => {
                     >
                       <MenuItem value="">Select Organization Type</MenuItem>
                       {organizations.map((organization) => (
-                        <MenuItem key={organization.value} value={organization.value}>
+                        <MenuItem
+                          key={organization.value}
+                          value={organization.value}
+                        >
                           {organization.label}
                         </MenuItem>
                       ))}
                     </Select>
                     {errors.organizationType && (
-                      <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1 }}>
+                      <Typography
+                        variant="caption"
+                        color="error"
+                        sx={{ mt: 0.5, ml: 1 }}
+                      >
                         {errors.organizationType}
                       </Typography>
                     )}
@@ -599,9 +656,16 @@ const Organization = () => {
                     value={organizationName}
                     onChange={(e) => setOrganizationName(e.target.value)}
                     error={!!errors.organizationName}
-                    helperText={errors.organizationName || `${organizationName.length} characters`}
+                    helperText={
+                      errors.organizationName ||
+                      `${organizationName.length} characters`
+                    }
                     InputProps={{
-                      startAdornment: <OrganizationIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <OrganizationIcon
+                          sx={{ mr: 1, color: "action.active" }}
+                        />
+                      ),
                     }}
                   />
                 </Grid>
@@ -615,9 +679,14 @@ const Organization = () => {
                     value={logoUrl}
                     onChange={(e) => setLogoUrl(e.target.value)}
                     error={!!errors.logoUrl}
-                    helperText={errors.logoUrl || "High-quality logo image (recommended: square format)"}
+                    helperText={
+                      errors.logoUrl ||
+                      "High-quality logo image (recommended: square format)"
+                    }
                     InputProps={{
-                      startAdornment: <ImageIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <ImageIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -631,9 +700,14 @@ const Organization = () => {
                     value={websiteUrl}
                     onChange={(e) => setWebsiteUrl(e.target.value)}
                     error={!!errors.websiteUrl}
-                    helperText={errors.websiteUrl || "Official website of the organization"}
+                    helperText={
+                      errors.websiteUrl ||
+                      "Official website of the organization"
+                    }
                     InputProps={{
-                      startAdornment: <WebsiteIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <WebsiteIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -646,12 +720,23 @@ const Organization = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
                     <LocationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                     Address Information
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Provide the organization&apos;s physical address (all fields are optional)
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                  >
+                    {
+                      " Provide the organization's physical address (all fields are optional)"
+                    }
                   </Typography>
                 </Grid>
 
@@ -664,7 +749,9 @@ const Organization = () => {
                     onChange={(e) => setStreetAddress(e.target.value)}
                     helperText="Complete street address including suite/floor if applicable"
                     InputProps={{
-                      startAdornment: <AddressIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <AddressIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -677,7 +764,9 @@ const Organization = () => {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     InputProps={{
-                      startAdornment: <LocationIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <LocationIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -690,7 +779,9 @@ const Organization = () => {
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                     InputProps={{
-                      startAdornment: <LocationIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <LocationIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -703,7 +794,9 @@ const Organization = () => {
                     value={pincode}
                     onChange={(e) => setPincode(e.target.value)}
                     InputProps={{
-                      startAdornment: <AddressIcon sx={{ mr: 1, color: "action.active" }} />,
+                      startAdornment: (
+                        <AddressIcon sx={{ mr: 1, color: "action.active" }} />
+                      ),
                     }}
                   />
                 </Grid>
@@ -743,7 +836,9 @@ const Organization = () => {
                       />
                     }
                     label={
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
                         <SocialIcon fontSize="small" />
                         Include Social Media Profiles
                       </Box>
@@ -754,12 +849,23 @@ const Organization = () => {
                 <Collapse in={showSocialProfile} className="px-4">
                   <Grid container spacing={2} sx={{ mt: 1 }}>
                     <Grid item xs={12}>
-                      <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                      <Typography
+                        variant="h6"
+                        color="primary"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
                         <SocialIcon sx={{ mr: 1, verticalAlign: "middle" }} />
                         Social Media Profiles
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Add your organization&apos;s social media profiles (leave empty if not available)
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                      >
+                        {
+                          " Add your organization's social media profiles (leave empty if not available)"
+                        }
                       </Typography>
                     </Grid>
 
@@ -773,7 +879,9 @@ const Organization = () => {
                         error={!!errors.facebook}
                         helperText={errors.facebook}
                         InputProps={{
-                          startAdornment: <FacebookIcon sx={{ mr: 1, color: "#1877F2" }} />,
+                          startAdornment: (
+                            <FacebookIcon sx={{ mr: 1, color: "#1877F2" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -788,7 +896,9 @@ const Organization = () => {
                         error={!!errors.instagram}
                         helperText={errors.instagram}
                         InputProps={{
-                          startAdornment: <InstagramIcon sx={{ mr: 1, color: "#E4405F" }} />,
+                          startAdornment: (
+                            <InstagramIcon sx={{ mr: 1, color: "#E4405F" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -803,7 +913,9 @@ const Organization = () => {
                         error={!!errors.twitter}
                         helperText={errors.twitter}
                         InputProps={{
-                          startAdornment: <TwitterIcon sx={{ mr: 1, color: "#1DA1F2" }} />,
+                          startAdornment: (
+                            <TwitterIcon sx={{ mr: 1, color: "#1DA1F2" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -818,7 +930,9 @@ const Organization = () => {
                         error={!!errors.linkedIn}
                         helperText={errors.linkedIn}
                         InputProps={{
-                          startAdornment: <LinkedInIcon sx={{ mr: 1, color: "#0A66C2" }} />,
+                          startAdornment: (
+                            <LinkedInIcon sx={{ mr: 1, color: "#0A66C2" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -833,7 +947,9 @@ const Organization = () => {
                         error={!!errors.pintrest}
                         helperText={errors.pintrest}
                         InputProps={{
-                          startAdornment: <PinterestIcon sx={{ mr: 1, color: "#BD081C" }} />,
+                          startAdornment: (
+                            <PinterestIcon sx={{ mr: 1, color: "#BD081C" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -848,7 +964,9 @@ const Organization = () => {
                         error={!!errors.youtube}
                         helperText={errors.youtube}
                         InputProps={{
-                          startAdornment: <YouTubeIcon sx={{ mr: 1, color: "#FF0000" }} />,
+                          startAdornment: (
+                            <YouTubeIcon sx={{ mr: 1, color: "#FF0000" }} />
+                          ),
                         }}
                       />
                     </Grid>
@@ -859,12 +977,27 @@ const Organization = () => {
           </Paper>
 
           {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Paper
+            elevation={3}
+            sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}
+          >
+            <Box
+              sx={{
+                bgcolor: "success.main",
+                color: "white",
+                p: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Typography variant="h6" fontWeight="bold">
                 GENERATED JSON-LD CODE
               </Typography>
-              <CopyToClipboard text={`<script type="application/ld+json">\n${jsonText}\n</script>`} onCopy={handleCopy}>
+              <CopyToClipboard
+                text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
+                onCopy={handleCopy}
+              >
                 <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
                   <IconButton sx={{ color: "white" }}>
                     {copied ? <CheckIcon /> : <CopyIcon />}
@@ -872,25 +1005,36 @@ const Organization = () => {
                 </Tooltip>
               </CopyToClipboard>
             </Box>
-            
+
             {!isFormValid && (
               <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
                 Please fix the errors above to generate valid structured data.
               </Alert>
             )}
-            
+
             <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML page.
+              Add this JSON-LD script to the &lt;head&gt; section of your HTML
+              page.
             </Alert>
 
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 500, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
+            <Box
+              sx={{
+                p: 3,
+                bgcolor: "#1e1e1e",
+                color: "#f8f8f2",
+                maxHeight: 500,
+                overflow: "auto",
+              }}
+            >
+              <pre
+                style={{
+                  fontFamily: "'Fira Code', monospace",
+                  fontSize: "0.875rem",
+                  lineHeight: "1.5",
+                  margin: 0,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
                 {`<script type="application/ld+json">
 ${jsonText}
 </script>`}
@@ -918,22 +1062,24 @@ ${jsonText}
                     image={logoUrl}
                     alt="Organization logo"
                     onError={(e) => {
-                      e.target.style.display = 'none';
+                      e.target.style.display = "none";
                     }}
                   />
                 ) : (
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      bgcolor: "#f5f5f5", 
-                      display: "flex", 
-                      alignItems: "center", 
+                  <Box
+                    sx={{
+                      height: 200,
+                      bgcolor: "#f5f5f5",
+                      display: "flex",
+                      alignItems: "center",
                       justifyContent: "center",
                       flexDirection: "column",
-                      gap: 1
+                      gap: 1,
                     }}
                   >
-                    <OrganizationIcon sx={{ fontSize: 48, color: "text.secondary" }} />
+                    <OrganizationIcon
+                      sx={{ fontSize: 48, color: "text.secondary" }}
+                    />
                     <Typography color="text.secondary">
                       No logo selected
                     </Typography>
@@ -943,45 +1089,74 @@ ${jsonText}
                   <Typography variant="h6" gutterBottom>
                     {organizationName || "Organization Name"}
                   </Typography>
-                  
+
                   {organizationType && (
-                    <Chip 
-                      label={organizationType} 
-                      size="small" 
-                      color="primary" 
+                    <Chip
+                      label={organizationType}
+                      size="small"
+                      color="primary"
                       sx={{ mb: 2 }}
                     />
                   )}
 
                   {websiteUrl && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
                       <WebsiteIcon fontSize="small" />
-                      <Typography variant="body2" component="a" href={websiteUrl} target="_blank" rel="noopener">
+                      <Typography
+                        variant="body2"
+                        component="a"
+                        href={websiteUrl}
+                        target="_blank"
+                        rel="noopener"
+                      >
                         {websiteUrl}
                       </Typography>
                     </Box>
                   )}
-                  
+
                   {(city || state || country) && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
                       <LocationIcon fontSize="small" />
                       <Typography variant="body2">
-                        {[city, state, country].filter(Boolean).join(", ") || "Address not provided"}
+                        {[city, state, country].filter(Boolean).join(", ") ||
+                          "Address not provided"}
                       </Typography>
                     </Box>
                   )}
 
                   {socialProfiles.length > 0 && (
                     <Box sx={{ mt: 2 }}>
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
+                      <Typography
+                        variant="body2"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
                         Social Media:
                       </Typography>
                       <Stack direction="row" spacing={1} flexWrap="wrap">
                         {facebook && <FacebookIcon sx={{ color: "#1877F2" }} />}
-                        {instagram && <InstagramIcon sx={{ color: "#E4405F" }} />}
+                        {instagram && (
+                          <InstagramIcon sx={{ color: "#E4405F" }} />
+                        )}
                         {twitter && <TwitterIcon sx={{ color: "#1DA1F2" }} />}
                         {linkedIn && <LinkedInIcon sx={{ color: "#0A66C2" }} />}
-                        {pintrest && <PinterestIcon sx={{ color: "#BD081C" }} />}
+                        {pintrest && (
+                          <PinterestIcon sx={{ color: "#BD081C" }} />
+                        )}
                         {youtube && <YouTubeIcon sx={{ color: "#FF0000" }} />}
                       </Stack>
                     </Box>
@@ -992,46 +1167,79 @@ ${jsonText}
 
             {/* Validation Status */}
             <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: isFormValid ? "success.main" : "error.main", color: "white", p: 2 }}>
+              <Box
+                sx={{
+                  bgcolor: isFormValid ? "success.main" : "error.main",
+                  color: "white",
+                  p: 2,
+                }}
+              >
                 <Typography variant="h6" fontWeight="bold">
                   VALIDATION STATUS
                 </Typography>
               </Box>
               <Box sx={{ p: 2 }}>
                 <Stack spacing={1}>
-                  <Alert severity={organizationName.trim() ? "success" : "error"} variant="outlined">
+                  <Alert
+                    severity={organizationName.trim() ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Organization Name: {organizationName.trim() ? "✓ Added" : "✗ Required"}
+                      Organization Name:{" "}
+                      {organizationName.trim() ? "✓ Added" : "✗ Required"}
                     </Typography>
                   </Alert>
-                  
-                  <Alert severity={organizationType ? "success" : "error"} variant="outlined">
+
+                  <Alert
+                    severity={organizationType ? "success" : "error"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Organization Type: {organizationType ? "✓ Selected" : "✗ Required"}
+                      Organization Type:{" "}
+                      {organizationType ? "✓ Selected" : "✗ Required"}
                     </Typography>
                   </Alert>
-                  
-                  <Alert severity={logoUrl ? "success" : "info"} variant="outlined">
+
+                  <Alert
+                    severity={logoUrl ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
                       Logo: {logoUrl ? "✓ Added" : "ℹ Optional but recommended"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={websiteUrl ? "success" : "info"} variant="outlined">
+                  <Alert
+                    severity={websiteUrl ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Website: {websiteUrl ? "✓ Added" : "ℹ Optional but recommended"}
+                      Website:{" "}
+                      {websiteUrl ? "✓ Added" : "ℹ Optional but recommended"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={(city || state || country) ? "success" : "info"} variant="outlined">
+                  <Alert
+                    severity={city || state || country ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Address: {(city || state || country) ? "✓ Added" : "ℹ Optional"}
+                      Address:{" "}
+                      {city || state || country ? "✓ Added" : "ℹ Optional"}
                     </Typography>
                   </Alert>
 
-                  <Alert severity={socialProfiles.length > 0 ? "success" : "info"} variant="outlined">
+                  <Alert
+                    severity={socialProfiles.length > 0 ? "success" : "info"}
+                    variant="outlined"
+                  >
                     <Typography variant="caption">
-                      Social Media: {socialProfiles.length > 0 ? `✓ ${socialProfiles.length} profile${socialProfiles.length !== 1 ? 's' : ''}` : "ℹ Optional"}
+                      Social Media:{" "}
+                      {socialProfiles.length > 0
+                        ? `✓ ${socialProfiles.length} profile${
+                            socialProfiles.length !== 1 ? "s" : ""
+                          }`
+                        : "ℹ Optional"}
                     </Typography>
                   </Alert>
                 </Stack>

@@ -111,7 +111,8 @@ const MetaTags = () => {
               Meta Tags Generator
             </Typography>
             <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Generate your web page&apos;s most helpful meta tags to improve SEO and search engine experience.
+              {/* Generate your web page&apos;s most helpful meta tags to improve SEO and search engine experience. */}
+              { " Generate your web page's most helpful meta tags to improve SEO and search engine experience."}
             </Typography>
           </Box>
         </Box>

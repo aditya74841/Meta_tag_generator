@@ -423,7 +423,7 @@ const Person = () => {
                         color="text.secondary"
                         sx={{ mb: 2 }}
                       >
-                        Provide the person&apos;s address information
+                        {" Provide the person's address information"}
                       </Typography>
                     </Grid>
 

@@ -478,8 +478,9 @@ const Player = () => {
                     color="text.secondary"
                     sx={{ mb: 2 }}
                   >
-                    Image displayed on platforms that don&apos;t support
-                    embedded players
+                    {
+                      "Image displayed on platforms that don't support embedded players"
+                    }
                   </Typography>
                 </Grid>
 
