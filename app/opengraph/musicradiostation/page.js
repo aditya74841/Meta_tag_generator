@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -38,7 +37,7 @@ import {
   LibraryMusic as MusicIcon,
   Add as AddIcon,
   Delete as DeleteIcon,
-  Broadcast as BroadcastIcon,
+  Radio as BroadcastIcon, // ✅ FIXED: Changed from Broadcast to Radio
   GraphicEq as FrequencyIcon,
   Mic as MicIcon,
 } from "@mui/icons-material";
@@ -70,8 +69,8 @@ const MusicRadioStation = () => {
     }
   };
 
-  // Validation
-  const validateForm = () => {
+  // ✅ FIXED: Added useCallback to fix the useEffect dependency warning
+  const validateForm = React.useCallback(() => {
     const newErrors = {};
 
     if (!title.trim()) newErrors.title = "Radio station name is required";
@@ -91,11 +90,11 @@ const MusicRadioStation = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [title, url, imageUrl, audioUrl]);
 
   useEffect(() => {
     validateForm();
-  }, [title, url, imageUrl, audioUrl]);
+  }, [validateForm]); // ✅ FIXED: Now properly includes validateForm as dependency
 
   const generateMetaTags = () => {
     const metaTags = [];
