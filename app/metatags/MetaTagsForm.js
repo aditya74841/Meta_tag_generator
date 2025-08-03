@@ -115,7 +115,9 @@ export default function MetaTagsForm() {
               Meta Tags Generator
             </Typography>
             <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Generate your web page's most helpful meta tags to improve SEO and search engine experience.
+              {
+                "Generate your web page's most helpful meta tags to improve SEO and search engine experience."
+              }
             </Typography>
           </Box>
         </Box>
@@ -210,9 +212,15 @@ export default function MetaTagsForm() {
                       onChange={(e) => setRobots(e.target.value)}
                     >
                       <MenuItem value="index, follow">index, follow</MenuItem>
-                      <MenuItem value="index, nofollow">index, nofollow</MenuItem>
-                      <MenuItem value="noindex, follow">noindex, follow</MenuItem>
-                      <MenuItem value="noindex, nofollow">noindex, nofollow</MenuItem>
+                      <MenuItem value="index, nofollow">
+                        index, nofollow
+                      </MenuItem>
+                      <MenuItem value="noindex, follow">
+                        noindex, follow
+                      </MenuItem>
+                      <MenuItem value="noindex, nofollow">
+                        noindex, nofollow
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
