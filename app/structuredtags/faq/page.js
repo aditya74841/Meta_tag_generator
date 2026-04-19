@@ -1,205 +1,25 @@
-// "use client";
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-
-// const FAQ = () => {
-//   const formatDate = (date) => {
-//     const d = new Date(date);
-//     const year = d.getFullYear();
-//     let month = d.getMonth() + 1;
-//     if (month < 10) month = `0${month}`;
-//     let day = d.getDate();
-//     if (day < 10) day = `0${day}`;
-//     return `${year}-${month}-${day}`;
-//   };
-
-//   const [items, setItems] = useState([{ question: "", answer: "" }]);
-//   const [jsonText, setJsonText] = useState("");
-
-//   const handleInputChange = (index, event) => {
-//     const { name, value } = event.target;
-//     const list = [...items];
-//     list[index][name] = value;
-//     setItems(list);
-//     generateJson(list); // Update JSON whenever input changes
-//   };
-
-//   const handleAddItem = () => {
-//     setItems([...items, { question: "", answer: "" }]);
-//     generateJson([...items, { question: "", answer: "" }]);
-//   };
-
-//   const handleRemoveItem = (index) => {
-//     const list = [...items];
-//     list.splice(index, 1);
-//     setItems(list);
-//     generateJson(list); // Update JSON whenever an item is removed
-//   };
-
-//   const generateJson = (updatedItems) => {
-//     const jsonData = {
-//       "@context": "http://schema.org/",
-//       "@type": "FAQPage",
-//       mainEntity: updatedItems.map((item, index) => ({
-//         "@type": "Question",
-//         name: item.name,
-//         acceptedAnswer: {
-//           "@type": "Answer",
-//           text: item.url,
-//         },
-//       })),
-//     };
-//     setJsonText(JSON.stringify(jsonData, null, 2));
-//   };
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         FAQ Structured Data Generator
-//       </h1>
-
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               {items.map((item, index) => (
-//                 <div key={index} className="mt-5">
-//                   <label
-//                     htmlFor={`name${index}`}
-//                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                   >
-//                     FAQ Question
-//                   </label>
-//                   <input
-//                     type="text"
-//                     id={`name${index}`}
-//                     name="name"
-//                     value={item.name}
-//                     onChange={(e) => handleInputChange(index, e)}
-//                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                     placeholder="Enter Faq Question"
-//                   />
-
-//                   <label
-//                     htmlFor={`url${index}`}
-//                     className="block mt-3 mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                   >
-//                     FAQ Answer
-//                   </label>
-//                   <input
-//                     type="text"
-//                     id={`url${index}`}
-//                     name="url"
-//                     value={item.url}
-//                     onChange={(e) => handleInputChange(index, e)}
-//                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                     placeholder="Enter FAQ Answer"
-//                   />
-//                   {index !== 0 && (
-//                     <button
-//                       type="button"
-//                       className="mt-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//                       onClick={() => handleRemoveItem(index)}
-//                     >
-//                       Remove
-//                     </button>
-//                   )}
-//                 </div>
-//               ))}
-//               <div className="mt-5">
-//                 <button
-//                   type="button"
-//                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//                   onClick={handleAddItem}
-//                 >
-//                   Add Item
-//                 </button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//             <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//               CODE
-//             </h1>
-//             <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//               <p className="bg">
-//                 Copy this to the &lt;head&gt; section of your page.
-//               </p>
-//               <CopyToClipboard
-//                 text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//               >
-//                 <div className="ml-auto w-1/6">
-//                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                     Copy
-//                   </button>
-//                 </div>
-//               </CopyToClipboard>
-//             </div>
-//             <div className="space-y-2 mt-5 ml-4">
-//               <pre className="text-white">
-//                 {`<script type="application/ld+json">\n`}
-//                 {jsonText}
-//                 {`\n</script>`}
-//               </pre>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FAQ;
-
-
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-  Stack,
-  Divider,
-  Fade,
-  Collapse,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Quiz as FaqIcon,
-  CheckCircle as CheckIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Preview as PreviewIcon,
-  Code as CodeIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  ExpandMore as ExpandMoreIcon,
-  QuestionAnswer as QuestionIcon,
-  LiveHelp as HelpIcon,
-  Visibility as VisibilityIcon,
-} from "@mui/icons-material";
+import { 
+  HelpCircle, 
+  Plus, 
+  Trash2, 
+  ChevronDown, 
+  Code, 
+  Eye, 
+  CheckCircle2, 
+  Copy,
+  Layout,
+  MessageSquare,
+  AlertCircle
+} from "lucide-react";
 
-const FAQ = () => {
+export default function FAQGenerator() {
   const [items, setItems] = useState([{ question: "", answer: "" }]);
   const [copied, setCopied] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [activeAccordion, setActiveAccordion] = useState(0);
 
   const handleInputChange = (index, field, value) => {
     const list = [...items];
@@ -209,6 +29,7 @@ const FAQ = () => {
 
   const handleAddItem = () => {
     setItems([...items, { question: "", answer: "" }]);
+    setActiveAccordion(items.length);
   };
 
   const handleRemoveItem = (index) => {
@@ -216,33 +37,18 @@ const FAQ = () => {
       const list = [...items];
       list.splice(index, 1);
       setItems(list);
+      if (activeAccordion >= list.length) {
+        setActiveAccordion(list.length - 1);
+      }
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    items.forEach((item, index) => {
-      if (!item.question.trim()) {
-        newErrors[`question_${index}`] = "Question is required";
-      }
-      if (!item.answer.trim()) {
-        newErrors[`answer_${index}`] = "Answer is required";
-      }
-    });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  useEffect(() => {
-    validateForm();
-  }, [items]);
-
-  const generateJson = () => {
+  const generateJSON = () => {
     const validItems = items.filter(item => item.question.trim() && item.answer.trim());
-    const jsonData = {
+    return {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: validItems.map((item, index) => ({
+      mainEntity: validItems.map((item) => ({
         "@type": "Question",
         name: item.question,
         acceptedAnswer: {
@@ -251,10 +57,10 @@ const FAQ = () => {
         },
       })),
     };
-    return JSON.stringify(jsonData, null, 2);
   };
 
-  const jsonText = generateJson();
+  const jsonText = JSON.stringify(generateJSON(), null, 2);
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
@@ -262,360 +68,210 @@ const FAQ = () => {
   };
 
   const validItemsCount = items.filter(item => item.question.trim() && item.answer.trim()).length;
-  const isFormValid = validItemsCount > 0 && Object.keys(errors).length === 0;
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <FaqIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              FAQ Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for your FAQ pages to enhance search engine visibility and user experience.
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <HelpCircle className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">FAQ Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl">
+              Maximize your SERP real estate by adding interactive FAQ rich snippets to your search results.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <CodeIcon />
-                <Typography variant="h6" fontWeight="bold">
-                  FAQ CONFIGURATION
-                </Typography>
-              </Box>
-              <Chip 
-                label={`${validItemsCount} valid FAQ${validItemsCount !== 1 ? 's' : ''}`} 
-                sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "white" }}
-              />
-            </Box>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Layout className="h-5 w-5" />
+                <h2 className="font-semibold text-lg tracking-wide uppercase">Questions & Answers</h2>
+              </div>
+              <span className="bg-amber-500 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">
+                {validItemsCount} Active FAQ
+              </span>
+            </div>
             
-            <Box sx={{ p: 3 }}>
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body2">
-                  Add frequently asked questions and their answers. Each FAQ item will help search engines better understand your content.
-                </Typography>
-              </Alert>
+            <div className="p-6">
+              <div className="bg-indigo-50 border-l-4 border-indigo-400 p-4 mb-6 flex gap-3">
+                <AlertCircle className="h-5 w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-indigo-800 leading-relaxed">
+                  Provide concise questions and comprehensive answers. Google recommends at least 3 FAQ items for the best chance of appearing in search results.
+                </p>
+              </div>
 
-              <Stack spacing={2}>
+              <div className="space-y-4">
                 {items.map((item, index) => (
-                  <Fade in={true} key={index} timeout={300}>
-                    <Card 
-                      variant="outlined" 
-                      sx={{ 
-                        position: "relative",
-                        border: item.question.trim() && item.answer.trim() ? "2px solid #4CAF50" : "1px solid #e0e0e0",
-                        transition: "all 0.3s ease",
-                        "&:hover": {
-                          boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
-                        }
-                      }}
-                    >
-                      <CardContent sx={{ pb: 2 }}>
-                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                            <QuestionIcon sx={{ color: "primary.main" }} />
-                            <Typography variant="subtitle1" fontWeight="bold" color="primary">
-                              FAQ #{index + 1}
-                            </Typography>
-                            {item.question.trim() && item.answer.trim() ? (
-                              <Chip 
-                                icon={<CheckIcon />} 
-                                label="Complete" 
-                                color="success" 
-                                size="small" 
-                              />
-                            ) : (
-                              <Chip 
-                                icon={<WarningIcon />} 
-                                label="Incomplete" 
-                                color="warning" 
-                                size="small" 
-                              />
-                            )}
-                          </Box>
-                          
-                          {items.length > 1 && (
-                            <IconButton
-                              onClick={() => handleRemoveItem(index)}
-                              color="error"
-                              size="small"
-                              sx={{ 
-                                opacity: items.length === 1 ? 0.3 : 1,
-                                pointerEvents: items.length === 1 ? "none" : "auto"
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          )}
-                        </Box>
-
-                        <Grid container spacing={2}>
-                          <Grid item xs={12}>
-                            <TextField
-                              fullWidth
-                              label="Question *"
-                              placeholder="What is your question?"
-                              value={item.question}
-                              onChange={(e) => handleInputChange(index, "question", e.target.value)}
-                              error={!!errors[`question_${index}`]}
-                              helperText={errors[`question_${index}`] || `${item.question.length} characters`}
-                              multiline
-                              rows={2}
-                              InputProps={{
-                                startAdornment: <HelpIcon sx={{ mr: 1, color: "action.active", alignSelf: "flex-start", mt: 1 }} />,
-                              }}
-                            />
-                          </Grid>
-                          <Grid item xs={12}>
-                            <TextField
-                              fullWidth
-                              label="Answer *"
-                              placeholder="Provide a detailed answer..."
-                              value={item.answer}
-                              onChange={(e) => handleInputChange(index, "answer", e.target.value)}
-                              error={!!errors[`answer_${index}`]}
-                              helperText={errors[`answer_${index}`] || `${item.answer.length} characters (recommended: 40+ for SEO)`}
-                              multiline
-                              rows={3}
-                              InputProps={{
-                                startAdornment: <QuestionIcon sx={{ mr: 1, color: "action.active", alignSelf: "flex-start", mt: 1 }} />,
-                              }}
-                            />
-                          </Grid>
-                        </Grid>
-
-                        {/* Quick Preview */}
-                        {item.question.trim() && item.answer.trim() && (
-                          <Box sx={{ mt: 2, p: 2, bgcolor: "#f9f9f9", borderRadius: 1, border: "1px solid #e0e0e0" }}>
-                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                              Preview:
-                            </Typography>
-                            <Typography variant="body2" fontWeight="bold" color="primary" gutterBottom>
-                              Q: {item.question}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              A: {item.answer}
-                            </Typography>
-                          </Box>
+                  <div 
+                    key={index}
+                    className={`rounded-xl border-2 transition-all ${
+                      item.question.trim() && item.answer.trim() 
+                      ? "border-emerald-100 bg-emerald-50/20" 
+                      : "border-slate-100 bg-white"
+                    }`}
+                  >
+                    <div className="p-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-slate-800 text-white flex items-center justify-center text-[10px] font-bold">
+                            {index + 1}
+                          </div>
+                          <h3 className="font-bold text-slate-700 text-sm italic uppercase tracking-tighter">FAQ Item</h3>
+                        </div>
+                        {items.length > 1 && (
+                          <button
+                            onClick={() => handleRemoveItem(index)}
+                            className="p-1 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded transition-all"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         )}
-                      </CardContent>
-                    </Card>
-                  </Fade>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="space-y-1.5">
+                          <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Question</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. What is your return policy?"
+                            value={item.question}
+                            onChange={(e) => handleInputChange(index, "question", e.target.value)}
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-semibold text-slate-800"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest pl-1">Answer</label>
+                          <textarea
+                            placeholder="Provide a detailed and helpful answer..."
+                            value={item.answer}
+                            onChange={(e) => handleInputChange(index, "answer", e.target.value)}
+                            rows={3}
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all leading-relaxed"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
 
-                {/* Add Item Button */}
-                <Button
+                <button
                   onClick={handleAddItem}
-                  variant="outlined"
-                  startIcon={<AddIcon />}
-                  sx={{ 
-                    mt: 2, 
-                    py: 1.5,
-                    borderStyle: "dashed",
-                    "&:hover": {
-                      borderStyle: "solid"
-                    }
-                  }}
-                  fullWidth
+                  className="w-full py-4 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center gap-2 text-slate-400 font-bold hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
                 >
-                  Add FAQ Item
-                </Button>
-              </Stack>
-            </Box>
-          </Paper>
+                  <Plus className="h-5 w-5" />
+                  Add Another Question
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard text={`<script type="application/ld+json">\n${jsonText}\n</script>`} onCopy={handleCopy}>
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
-              </CopyToClipboard>
-            </Box>
+        {/* Preview and Code Panel */}
+        <div className="space-y-8 text-white">
+          {/* Live Preview */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase tracking-wide px-1">Live Accordion Preview</h2>
+            </div>
             
-            {!isFormValid && (
-              <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
-                Please add at least one complete FAQ item to generate valid structured data.
-              </Alert>
-            )}
-            
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML page.
-            </Alert>
+            <div className="p-8">
+               <div className="space-y-4 max-w-lg mx-auto">
+                 {items.filter(item => item.question.trim() || item.answer.trim()).map((item, idx) => (
+                   <div key={idx} className="border border-slate-100 rounded-xl overflow-hidden shadow-sm bg-white">
+                     <button 
+                       onClick={() => setActiveAccordion(activeAccordion === idx ? -1 : idx)}
+                       className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-slate-50 transition-colors"
+                     >
+                       <span className={`font-bold text-sm ${activeAccordion === idx ? "text-indigo-600" : "text-slate-800"}`}>
+                         {item.question || `Question ${idx + 1}`}
+                       </span>
+                       <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${activeAccordion === idx ? "rotate-180" : ""}`} />
+                     </button>
+                     <div className={`px-5 transition-all duration-300 ${activeAccordion === idx ? "max-h-96 pb-4 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
+                       <p className="text-sm text-slate-600 leading-relaxed py-2 border-t border-slate-50">
+                         {item.answer || "Answer will appear here..."}
+                       </p>
+                     </div>
+                   </div>
+                 ))}
+                 
+                 {items.filter(item => item.question.trim() || item.answer.trim()).length === 0 && (
+                   <div className="py-12 border-2 border-dashed border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-4 grayscale opacity-20">
+                     <MessageSquare className="h-16 w-16 text-slate-200" />
+                     <p className="font-black text-slate-400 uppercase tracking-widest text-xs px-1">Add items to see preview</p>
+                   </div>
+                 )}
+               </div>
 
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 400, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* FAQ Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  FAQ PREVIEW
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  How your FAQ will appear:
-                </Typography>
-                
-                {items.filter(item => item.question.trim() && item.answer.trim()).length > 0 ? (
-                  <Stack spacing={1}>
-                    {items.filter(item => item.question.trim() && item.answer.trim()).slice(0, 3).map((item, index) => (
-                      <Accordion key={index} variant="outlined">
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                          <Typography variant="body2" fontWeight="bold">
-                            {item.question}
-                          </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <Typography variant="body2" color="text.secondary">
-                            {item.answer}
-                          </Typography>
-                        </AccordionDetails>
-                      </Accordion>
-                    ))}
-                    {items.filter(item => item.question.trim() && item.answer.trim()).length > 3 && (
-                      <Typography variant="caption" color="text.secondary" sx={{ textAlign: "center", fontStyle: "italic" }}>
-                        +{items.filter(item => item.question.trim() && item.answer.trim()).length - 3} more FAQ items...
-                      </Typography>
-                    )}
-                  </Stack>
-                ) : (
-                  <Box sx={{ textAlign: "center", py: 4 }}>
-                    <FaqIcon sx={{ fontSize: 48, color: "text.secondary", mb: 2 }} />
-                    <Typography color="text.secondary">
-                      Add FAQ items to see preview
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            </Paper>
-
-            {/* Search Engine Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "info.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <VisibilityIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  SEARCH RESULT PREVIEW
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Enhanced search appearance:
-                </Typography>
-                
-                <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 1, p: 2, bgcolor: "#fafafa" }}>
-                  <Typography variant="h6" sx={{ color: "#1a0dab", cursor: "pointer", fontSize: "1.1rem" }}>
-                    Your FAQ Page Title
-                  </Typography>
-                  <Typography variant="caption" color="success.main" gutterBottom>
-                    https://yourwebsite.com/faq
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    Your page description with comprehensive FAQ content.
-                  </Typography>
-                  
-                  {validItemsCount > 0 && (
-                    <Box sx={{ mt: 1 }}>
-                      <Typography variant="caption" fontWeight="bold" color="text.primary">
-                        FAQ Results:
-                      </Typography>
-                      {items.filter(item => item.question.trim()).slice(0, 2).map((item, index) => (
-                        <Typography key={index} variant="caption" display="block" sx={{ ml: 1, color: "text.secondary" }}>
-                          • {item.question.substring(0, 60)}{item.question.length > 60 ? "..." : ""}
-                        </Typography>
+               {/* Search Result Preview */}
+               <div className="mt-12 pt-8 border-t border-slate-100">
+                  <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <Layout className="h-3 w-3" />
+                    Google Search Result Appearance
+                  </h3>
+                  <div className="max-w-lg mx-auto bg-white p-5 rounded-2xl border border-slate-100 shadow-md">
+                    <h4 className="text-[18px] text-[#1a0dab] hover:underline cursor-pointer mb-1 leading-tight font-medium">FAQ Page: Frequently Asked Questions</h4>
+                    <p className="text-[14px] text-[#4d5156] line-clamp-2 mb-4">Discover answers to common questions about our services, pricing, and support. Get all the help you need in one place...</p>
+                    
+                    <div className="space-y-3 pt-3 border-t border-slate-50">
+                      {items.filter(item => item.question.trim()).slice(0, 2).map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-[13px] text-[#202124]">
+                          <ChevronDown className="h-3 w-3 text-slate-400" />
+                          <span className="font-medium truncate">{item.question}</span>
+                        </div>
                       ))}
-                    </Box>
-                  )}
-                </Box>
+                    </div>
+                  </div>
+               </div>
+            </div>
+          </div>
 
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-                  FAQs may appear as rich results in search engines, improving click-through rates.
-                </Typography>
-              </Box>
-            </Paper>
+          {/* Code Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-emerald-600 text-white px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                <h2 className="font-semibold text-lg uppercase tracking-wide">Generated JSON-LD</h2>
+              </div>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  type="button"
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5 text-white" />}
+                </button>
+              </CopyToClipboard>
+            </div>
+            
+            <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 text-indigo-700 text-xs font-bold italic py-2">
+               INFO: Add this to the individual FAQ page's &lt;head&gt; section.
+            </div>
 
-            {/* Validation Status */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: isFormValid ? "success.main" : "error.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  VALIDATION STATUS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert severity={validItemsCount >= 1 ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      FAQ Items: {validItemsCount >= 1 ? `✓ ${validItemsCount} valid item${validItemsCount !== 1 ? 's' : ''}` : "✗ At least 1 FAQ required"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={items.every(item => !item.question.trim() || item.question.length >= 5) ? "success" : "warning"} variant="outlined">
-                    <Typography variant="caption">
-                      Questions: {items.every(item => !item.question.trim() || item.question.length >= 5) ? "✓ Good length" : "⚠ Keep questions clear and specific"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={items.every(item => !item.answer.trim() || item.answer.length >= 20) ? "success" : "warning"} variant="outlined">
-                    <Typography variant="caption">
-                      Answers: {items.every(item => !item.answer.trim() || item.answer.length >= 20) ? "✓ Detailed answers" : "⚠ Provide more detailed answers"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert severity={validItemsCount >= 3 ? "success" : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      SEO Impact: {validItemsCount >= 3 ? "✓ Excellent for SEO" : "ℹ 3+ FAQs recommended for better SEO"}
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+            <div className="bg-[#1e1e1e] p-6 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 border-b border-l border-white/5 bg-white/5 uppercase text-[10px] font-bold tracking-widest text-[#f8f8f2]/30">
+                faq-schema.json
+              </div>
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30 pt-4 px-1">
+                <span className="text-indigo-400/60 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
+                  {jsonText}
+                </div>
+                <span className="text-indigo-400/60 font-bold">&lt;/script&gt;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default FAQ;
+}

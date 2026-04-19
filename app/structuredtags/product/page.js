@@ -1,1734 +1,405 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useRef } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { currencies } from "@/app/constant";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-  Stack,
-  FormControlLabel,
-  Switch,
-  Collapse,
-  Divider,
-  Rating,
-  Avatar,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  ShoppingCart as ProductIcon,
-  CheckCircle as CheckIcon,
-  Preview as PreviewIcon,
-  Code as CodeIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
+import { 
+  ShoppingBag, 
+  Tag, 
+  Star, 
+  ShieldCheck, 
+  DollarSign, 
+  Globe, 
+  Layout, 
+  Eye, 
+  Code, 
+  CheckCircle2, 
+  Copy,
+  Plus,
+  Trash2,
   Image as ImageIcon,
-  AttachMoney as PriceIcon,
-  Star as RatingIcon,
-  Reviews as ReviewIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Store as BrandIcon,
-  Description as DescriptionIcon,
-  Inventory as InventoryIcon,
-  LocalOffer as OfferIcon,
-  Assessment as AggregateIcon,
-  Person as PersonIcon,
-  DateRange as DateIcon,
-  Link as LinkIcon,
-  Badge as BadgeIcon,
-} from "@mui/icons-material";
+  Upload,
+  Link2,
+  AlertCircle,
+  Package,
+  ArrowRight,
+  Sparkles,
+  MessageCircle,
+  Info
+} from "lucide-react";
 
-const Product = () => {
-  const [productName, setProductName] = useState("");
-  const [productBrand, setProductBrand] = useState("");
-  const [productImageUrl, setProductImageUrl] = useState("");
-  const [productDescription, setProductDescription] = useState("");
-  const [identificationProperties, setIdentificationProperties] = useState("");
-  const [isIncludeOfferOrAggregateOffer, setIsIncludeOfferOrAggregateOffer] = useState(true);
-  const [isIncludeRating, setIsIncludeRating] = useState(false);
-  const [isIncludeReviews, setIsIncludeReviews] = useState(false);
-  const [isAggregateOffer, setIsAggregateOffer] = useState(false);
+export default function ProductGenerator() {
+  const [name, setName] = useState("");
+  const [brand, setBrand] = useState("");
+  const [description, setDescription] = useState("");
+  const [sku, setSku] = useState("");
+  const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("USD");
-  const [lowPrice, setLowPrice] = useState("");
-  const [highPrice, setHighPrice] = useState("");
-  const [numberOfOffers, setNumberOfOffers] = useState("");
-  const [url, setUrl] = useState("");
-  const [offerPrice, setOfferPrice] = useState("");
-  const [priceValidUntil, setPriceValidUntil] = useState("");
   const [availability, setAvailability] = useState("InStock");
-  const [condition, setCondition] = useState("New");
-  const [numberOfRatings, setNumberOfRatings] = useState("");
-  const [numberOfReviews, setNumberOfReviews] = useState("");
-  const [ratingValue, setRatingValue] = useState("");
-  const [worstValue, setWorstValue] = useState("1");
-  const [bestValue, setBestValue] = useState("5");
+  const [condition, setCondition] = useState("NewCondition");
+  const [rating, setRating] = useState("4.5");
+  const [reviewCount, setReviewCount] = useState("128");
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploadedImage, setUploadedImage] = useState(null); // Base64 for preview
+  const [imageMode, setImageMode] = useState("url"); // "url" or "upload"
   const [copied, setCopied] = useState(false);
-  const [errors, setErrors] = useState({});
+  const fileInputRef = useRef(null);
 
-  const [reviews, setReviews] = useState([
-    {
-      title: "",
-      author: "",
-      date: "",
-      ratingValue: "",
-      text: "",
-      worstRatingValue: "1",
-      bestRatingValue: "5",
-    },
-  ]);
-
-  // Validation
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!productName.trim()) newErrors.productName = "Product name is required";
-
-    // URL validation
-    const urlPattern = /^https?:\/\/.+/;
-    if (productImageUrl && !urlPattern.test(productImageUrl)) {
-      newErrors.productImageUrl = "Please enter a valid URL starting with http:// or https://";
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
-    if (url && !urlPattern.test(url)) {
-      newErrors.url = "Please enter a valid URL starting with http:// or https://";
-    }
-
-    // Offer validation
-    if (isIncludeOfferOrAggregateOffer) {
-      if (!currency) newErrors.currency = "Currency is required";
-      
-      if (isAggregateOffer) {
-        if (!lowPrice || lowPrice <= 0) newErrors.lowPrice = "Valid low price is required";
-        if (!highPrice || highPrice <= 0) newErrors.highPrice = "Valid high price is required";
-        if (lowPrice && highPrice && parseFloat(lowPrice) >= parseFloat(highPrice)) {
-          newErrors.highPrice = "High price must be greater than low price";
-        }
-        if (!numberOfOffers || numberOfOffers <= 0) newErrors.numberOfOffers = "Number of offers is required";
-      } else {
-        if (!offerPrice || offerPrice <= 0) newErrors.offerPrice = "Valid price is required";
-      }
-    }
-
-    // Rating validation
-    if (isIncludeRating) {
-      if (!ratingValue || ratingValue < 0) newErrors.ratingValue = "Valid rating value is required";
-      if (!numberOfRatings || numberOfRatings <= 0) newErrors.numberOfRatings = "Number of ratings is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  useEffect(() => {
-    validateForm();
-  }, [productName, productImageUrl, url, currency, isIncludeOfferOrAggregateOffer, isAggregateOffer, lowPrice, highPrice, numberOfOffers, offerPrice, isIncludeRating, ratingValue, numberOfRatings]);
-
-  const handleAddReview = () => {
-    setReviews([
-      ...reviews,
-      {
-        title: "",
-        author: "",
-        date: "",
-        ratingValue: "",
-        text: "",
-        worstRatingValue: "1",
-        bestRatingValue: "5",
-      },
-    ]);
-  };
-
-  const handleDeleteReview = (index) => {
-    if (reviews.length > 1) {
-      const updatedReviews = [...reviews];
-      updatedReviews.splice(index, 1);
-      setReviews(updatedReviews);
-    }
-  };
-
-  const handleReviewChange = (index, field, value) => {
-    const updatedReviews = [...reviews];
-    updatedReviews[index][field] = value;
-    setReviews(updatedReviews);
   };
 
   const generateJSON = () => {
-    const validReviews = reviews.filter(review => 
-      review.title.trim() || review.author.trim() || review.text.trim()
-    );
-
     return {
-      "@context": "https://schema.org",
+      "@context": "https://schema.org/",
       "@type": "Product",
-      name: productName,
-      ...(productImageUrl && { image: productImageUrl }),
-      ...(productDescription && { description: productDescription }),
-      ...(productBrand && { 
-        brand: { 
-          "@type": "Brand", 
-          name: productBrand 
-        } 
-      }),
-      ...(identificationProperties && productName && {
-        [identificationProperties.toLowerCase()]: productName
-      }),
-      ...(isIncludeOfferOrAggregateOffer && {
-        offers: isAggregateOffer ? {
-          "@type": "AggregateOffer",
-          priceCurrency: currency,
-          lowPrice: lowPrice,
-          highPrice: highPrice,
-          ...(url && { url: url }),
-          availability: `https://schema.org/${availability}`,
-          offerCount: numberOfOffers,
-        } : {
-          "@type": "Offer",
-          priceCurrency: currency,
-          price: offerPrice,
-          ...(priceValidUntil && { priceValidUntil: priceValidUntil }),
-          availability: `https://schema.org/${availability}`,
-          itemCondition: `https://schema.org/${condition}`,
-        }
-      }),
-      ...(isIncludeRating && ratingValue && {
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: ratingValue,
-          ratingCount: numberOfRatings,
-          ...(numberOfReviews && { reviewCount: numberOfReviews }),
-          worstRating: worstValue,
-          bestRating: bestValue,
-        }
-      }),
-      ...(isIncludeReviews && validReviews.length > 0 && {
-        review: validReviews.map((review) => ({
-          "@type": "Review",
-          ...(review.title && { name: review.title }),
-          ...(review.author && { 
-            author: { 
-              "@type": "Person", 
-              name: review.author 
-            } 
-          }),
-          ...(review.date && { datePublished: review.date }),
-          ...(review.text && { reviewBody: review.text }),
-          ...(review.ratingValue && {
-            reviewRating: {
-              "@type": "Rating",
-              ratingValue: review.ratingValue,
-              worstRating: review.worstRatingValue || "1",
-              bestRating: review.bestRatingValue || "5",
-            }
-          }),
-        }))
-      }),
+      name: name,
+      image: imageMode === "upload" ? "https://example.com/photos/1x1/photo.jpg" : (imageUrl || undefined),
+      description: description,
+      sku: sku,
+      brand: {
+        "@type": "Brand",
+        name: brand
+      },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: rating,
+        reviewCount: reviewCount
+      },
+      offers: {
+        "@type": "Offer",
+        url: "#",
+        priceCurrency: currency,
+        price: price,
+        itemCondition: `https://schema.org/${condition}`,
+        availability: `https://schema.org/${availability}`
+      }
     };
   };
 
   const jsonText = JSON.stringify(generateJSON(), null, 2);
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid = Object.keys(errors).length === 0 && productName.trim();
-  const validReviewsCount = reviews.filter(review => 
-    review.title.trim() || review.author.trim() || review.text.trim()
-  ).length;
-
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 text-slate-800">
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <ProductIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Product Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for products with offers, ratings, and reviews to enhance search visibility.
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <ShoppingBag className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Product Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl font-medium">
+              Maximize sales with rich snippets. Show price, availability, and review ratings directly in search results.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", gap: 1 }}>
-              <CodeIcon />
-              <Typography variant="h6" fontWeight="bold">
-                PRODUCT CONFIGURATION
-              </Typography>
-              {isFormValid && (
-                <Chip 
-                  icon={<CheckIcon />} 
-                  label="Valid" 
-                  sx={{ bgcolor: "rgba(76, 175, 80, 0.8)", color: "white", ml: "auto" }}
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex items-center gap-2">
+              <Layout className="h-5 w-5" />
+              <h2 className="font-semibold text-lg tracking-wide uppercase">Product Meta</h2>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Identity */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Product Name *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Aura Pro Headphones"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Brand Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Sonic Labs"
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-1.5 pt-4 border-t border-slate-100">
+                <label className="block text-sm font-bold text-slate-700">Short Description</label>
+                <textarea
+                  placeholder="Key features and selling points..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={2}
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
                 />
-              )}
-            </Box>
-            
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                {/* Product Details Section */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
-                    <ProductIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Product Details
-                  </Typography>
-                </Grid>
+              </div>
 
-                {/* Product Name */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Product Name *"
-                    placeholder="iPhone 15 Pro"
-                    value={productName}
-                    onChange={(e) => setProductName(e.target.value)}
-                    error={!!errors.productName}
-                    helperText={errors.productName || `${productName.length} characters`}
-                    InputProps={{
-                      startAdornment: <ProductIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
+              {/* Offer Info */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
+                 <div className="col-span-1 space-y-1.5">
+                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest pl-1">Currency</label>
+                    <input type="text" value={currency} onChange={(e) => setCurrency(e.target.value)} className="w-full bg-white border border-slate-300 rounded-lg px-2 py-2 text-xs focus:ring-2 focus:ring-indigo-500 font-bold text-center" />
+                 </div>
+                 <div className="col-span-1 space-y-1.5">
+                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest pl-1">Price</label>
+                    <div className="relative">
+                       <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
+                       <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} className="w-full bg-white border border-slate-300 rounded-lg pl-6 pr-2 py-2 text-xs focus:ring-2 focus:ring-indigo-500 font-bold" />
+                    </div>
+                 </div>
+                 <div className="col-span-2 space-y-1.5">
+                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest pl-1">SKU / Identifier</label>
+                    <input type="text" value={sku} onChange={(e) => setSku(e.target.value)} className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-500 font-mono" placeholder="ABC-123-XYZ" />
+                 </div>
+              </div>
 
-                {/* Brand */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Brand"
-                    placeholder="Apple"
-                    value={productBrand}
-                    onChange={(e) => setProductBrand(e.target.value)}
-                    InputProps={{
-                      startAdornment: <BrandIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                {/* Image URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Product Image URL"
-                    placeholder="https://example.com/product-image.jpg"
-                    value={productImageUrl}
-                    onChange={(e) => setProductImageUrl(e.target.value)}
-                    error={!!errors.productImageUrl}
-                    helperText={errors.productImageUrl || "High-quality product image"}
-                    InputProps={{
-                      startAdornment: <ImageIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                {/* Description */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Product Description"
-                    placeholder="Detailed product description..."
-                    multiline
-                    rows={3}
-                    value={productDescription}
-                    onChange={(e) => setProductDescription(e.target.value)}
-                    helperText={`${productDescription.length} characters (recommended: 50+ for SEO)`}
-                    InputProps={{
-                      startAdornment: <DescriptionIcon sx={{ mr: 1, color: "action.active", alignSelf: "flex-start", mt: 1 }} />,
-                    }}
-                  />
-                </Grid>
-
-                {/* Identification Properties */}
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Identification Properties</InputLabel>
-                    <Select
-                      value={identificationProperties}
-                      label="Identification Properties"
-                      onChange={(e) => setIdentificationProperties(e.target.value)}
-                    >
-                      <MenuItem value="">Select Property</MenuItem>
-                      <MenuItem value="gtin8">GTIN-8</MenuItem>
-                      <MenuItem value="gtin13">GTIN-13</MenuItem>
-                      <MenuItem value="gtin14">GTIN-14</MenuItem>
-                      <MenuItem value="isbn">ISBN</MenuItem>
-                      <MenuItem value="mpn">MPN</MenuItem>
-                      <MenuItem value="sku">SKU</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                {/* Optional Sections */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Optional Information" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    You must include at least one of the following:
-                  </Typography>
-                  <Stack direction="column" spacing={1}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={isIncludeOfferOrAggregateOffer}
-                          onChange={(e) => setIsIncludeOfferOrAggregateOffer(e.target.checked)}
-                          color="primary"
-                        />
-                      }
-                      label={
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <OfferIcon fontSize="small" />
-                          Include Offer or Aggregate Offer
-                        </Box>
-                      }
-                    />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={isIncludeRating}
-                          onChange={(e) => setIsIncludeRating(e.target.checked)}
-                          color="primary"
-                        />
-                      }
-                      label={
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <RatingIcon fontSize="small" />
-                          Include Rating
-                        </Box>
-                      }
-                    />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={isIncludeReviews}
-                          onChange={(e) => setIsIncludeReviews(e.target.checked)}
-                          color="primary"
-                        />
-                      }
-                      label={
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <ReviewIcon fontSize="small" />
-                          Include Reviews
-                        </Box>
-                      }
-                    />
-                  </Stack>
-                </Grid>
-
-                {/* Offer Section */}
-                <Collapse in={isIncludeOfferOrAggregateOffer} className="px-4">
-                  <Grid container spacing={3} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                        <OfferIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Offer Information
-                      </Typography>
-                      
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={isAggregateOffer}
-                            onChange={(e) => setIsAggregateOffer(e.target.checked)}
-                            color="primary"
-                          />
-                        }
-                        label={
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                            <AggregateIcon fontSize="small" />
-                            Aggregate Offer
-                          </Box>
-                        }
-                      />
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Use when a single product has multiple offers from different merchants
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth error={!!errors.currency}>
-                        <InputLabel>Currency *</InputLabel>
-                        <Select
-                          value={currency}
-                          label="Currency *"
-                          onChange={(e) => setCurrency(e.target.value)}
-                        >
-                          {currencies.map((curr) => (
-                            <MenuItem key={curr.value} value={curr.value}>
-                              {curr.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {errors.currency && (
-                          <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1 }}>
-                            {errors.currency}
-                          </Typography>
-                        )}
-                      </FormControl>
-                    </Grid>
-
-                    {isAggregateOffer ? (
-                      <>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            fullWidth
-                            label="Low Price *"
-                            type="number"
-                            placeholder="99.99"
-                            value={lowPrice}
-                            onChange={(e) => setLowPrice(e.target.value)}
-                            error={!!errors.lowPrice}
-                            helperText={errors.lowPrice}
-                            InputProps={{
-                              startAdornment: <PriceIcon sx={{ mr: 1, color: "action.active" }} />,
-                            }}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            fullWidth
-                            label="High Price *"
-                            type="number"
-                            placeholder="199.99"
-                            value={highPrice}
-                            onChange={(e) => setHighPrice(e.target.value)}
-                            error={!!errors.highPrice}
-                            helperText={errors.highPrice}
-                            InputProps={{
-                              startAdornment: <PriceIcon sx={{ mr: 1, color: "action.active" }} />,
-                            }}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            fullWidth
-                            label="Number of Offers *"
-                            type="number"
-                            placeholder="5"
-                            value={numberOfOffers}
-                            onChange={(e) => setNumberOfOffers(e.target.value)}
-                            error={!!errors.numberOfOffers}
-                            helperText={errors.numberOfOffers}
-                          />
-                        </Grid>
-                      </>
-                    ) : (
-                      <>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Price *"
-                            type="number"
-                            placeholder="149.99"
-                            value={offerPrice}
-                            onChange={(e) => setOfferPrice(e.target.value)}
-                            error={!!errors.offerPrice}
-                            helperText={errors.offerPrice}
-                            InputProps={{
-                              startAdornment: <PriceIcon sx={{ mr: 1, color: "action.active" }} />,
-                            }}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Price Valid Until"
-                            type="date"
-                            value={priceValidUntil}
-                            onChange={(e) => setPriceValidUntil(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                            InputProps={{
-                              startAdornment: <DateIcon sx={{ mr: 1, color: "action.active" }} />,
-                            }}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <FormControl fullWidth>
-                            <InputLabel>Condition</InputLabel>
-                            <Select
-                              value={condition}
-                              label="Condition"
-                              onChange={(e) => setCondition(e.target.value)}
-                            >
-                              <MenuItem value="NewCondition">New</MenuItem>
-                              <MenuItem value="UsedCondition">Used</MenuItem>
-                              <MenuItem value="RefurbishedCondition">Refurbished</MenuItem>
-                              <MenuItem value="DamagedCondition">Damaged</MenuItem>
-                            </Select>
-                          </FormControl>
-                        </Grid>
-                      </>
-                    )}
-
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <InputLabel>Availability</InputLabel>
-                        <Select
-                          value={availability}
-                          label="Availability"
-                          onChange={(e) => setAvailability(e.target.value)}
-                        >
-                          <MenuItem value="InStock">In Stock</MenuItem>
-                          <MenuItem value="OutOfStock">Out of Stock</MenuItem>
-                          <MenuItem value="PreOrder">Pre-order</MenuItem>
-                          <MenuItem value="PreSale">Pre-sale</MenuItem>
-                          <MenuItem value="SoldOut">Sold Out</MenuItem>
-                          <MenuItem value="Discontinued">Discontinued</MenuItem>
-                          <MenuItem value="InStoreOnly">In Store Only</MenuItem>
-                          <MenuItem value="OnlineOnly">Online Only</MenuItem>
-                          <MenuItem value="LimitedAvailability">Limited Availability</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Offer URL"
-                        placeholder="https://store.example.com/product"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        error={!!errors.url}
-                        helperText={errors.url || "URL where the product can be purchased"}
-                        InputProps={{
-                          startAdornment: <LinkIcon sx={{ mr: 1, color: "action.active" }} />,
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Collapse>
-
-                {/* Rating Section */}
-                <Collapse in={isIncludeRating} className="px-4">
-                  <Grid container spacing={3} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                        <RatingIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Aggregate Rating
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        label="Rating Value *"
-                        type="number"
-                        placeholder="4.5"
-                        inputProps={{ min: 0, max: 5, step: 0.1 }}
-                        value={ratingValue}
-                        onChange={(e) => setRatingValue(e.target.value)}
-                        error={!!errors.ratingValue}
-                        helperText={errors.ratingValue || "Average rating (0-5 scale)"}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        label="Number of Ratings *"
-                        type="number"
-                        placeholder="150"
-                        value={numberOfRatings}
-                        onChange={(e) => setNumberOfRatings(e.target.value)}
-                        error={!!errors.numberOfRatings}
-                        helperText={errors.numberOfRatings || "Total number of ratings"}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        label="Number of Reviews"
-                        type="number"
-                        placeholder="45"
-                        value={numberOfReviews}
-                        onChange={(e) => setNumberOfReviews(e.target.value)}
-                        helperText="Total number of written reviews"
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Worst Rating"
-                        type="number"
-                        placeholder="1"
-                        value={worstValue}
-                        onChange={(e) => setWorstValue(e.target.value)}
-                        helperText="Lowest possible rating (default: 1)"
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Best Rating"
-                        type="number"
-                        placeholder="5"
-                        value={bestValue}
-                        onChange={(e) => setBestValue(e.target.value)}
-                        helperText="Highest possible rating (default: 5)"
-                      />
-                    </Grid>
-                  </Grid>
-                </Collapse>
-
-                {/* Reviews Section */}
-                <Collapse in={isIncludeReviews} className="px-4">
-                  <Grid container spacing={3} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                        <ReviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Product Reviews ({validReviewsCount} valid)
-                      </Typography>
-                    </Grid>
-
-                    {reviews.map((review, index) => (
-                      <Grid item xs={12} key={index}>
-                        <Card variant="outlined" sx={{ p: 2 }}>
-                          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                            <Typography variant="subtitle1" fontWeight="bold">
-                              Review #{index + 1}
-                            </Typography>
-                            {reviews.length > 1 && (
-                              <IconButton
-                                onClick={() => handleDeleteReview(index)}
-                                color="error"
-                                size="small"
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            )}
-                          </Box>
-
-                          <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                              <TextField
-                                fullWidth
-                                label="Review Title"
-                                placeholder="Great product!"
-                                size="small"
-                                value={review.title}
-                                onChange={(e) => handleReviewChange(index, "title", e.target.value)}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                              <TextField
-                                fullWidth
-                                label="Author Name"
-                                placeholder="John Doe"
-                                size="small"
-                                value={review.author}
-                                onChange={(e) => handleReviewChange(index, "author", e.target.value)}
-                                InputProps={{
-                                  startAdornment: <PersonIcon sx={{ mr: 1, color: "action.active" }} />,
-                                }}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                              <TextField
-                                fullWidth
-                                label="Review Date"
-                                type="date"
-                                size="small"
-                                value={review.date}
-                                onChange={(e) => handleReviewChange(index, "date", e.target.value)}
-                                InputLabelProps={{ shrink: true }}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                              <TextField
-                                fullWidth
-                                label="Rating"
-                                type="number"
-                                placeholder="5"
-                                size="small"
-                                inputProps={{ min: 1, max: 5 }}
-                                value={review.ratingValue}
-                                onChange={(e) => handleReviewChange(index, "ratingValue", e.target.value)}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
-                                <Rating 
-                                  value={parseFloat(review.ratingValue) || 0} 
-                                  readOnly 
-                                  size="small"
-                                />
-                                <Typography variant="caption">
-                                  ({review.ratingValue || 0})
-                                </Typography>
-                              </Box>
-                            </Grid>
-                            <Grid item xs={12}>
-                              <TextField
-                                fullWidth
-                                label="Review Text"
-                                placeholder="Write your review here..."
-                                multiline
-                                rows={3}
-                                size="small"
-                                value={review.text}
-                                onChange={(e) => handleReviewChange(index, "text", e.target.value)}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                              <TextField
-                                fullWidth
-                                label="Worst Rating"
-                                type="number"
-                                placeholder="1"
-                                size="small"
-                                value={review.worstRatingValue}
-                                onChange={(e) => handleReviewChange(index, "worstRatingValue", e.target.value)}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                              <TextField
-                                fullWidth
-                                label="Best Rating"
-                                type="number"
-                                placeholder="5"
-                                size="small"
-                                value={review.bestRatingValue}
-                                onChange={(e) => handleReviewChange(index, "bestRatingValue", e.target.value)}
-                              />
-                            </Grid>
-                          </Grid>
-                        </Card>
-                      </Grid>
-                    ))}
-
-                    <Grid item xs={12}>
-                      <Button
-                        onClick={handleAddReview}
-                        variant="outlined"
-                        startIcon={<AddIcon />}
-                        fullWidth
-                        sx={{ borderStyle: "dashed", py: 1.5 }}
-                      >
-                        Add Review
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Collapse>
-              </Grid>
-            </Box>
-          </Paper>
-
-          {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard text={`<script type="application/ld+json">\n${jsonText}\n</script>`} onCopy={handleCopy}>
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
-              </CopyToClipboard>
-            </Box>
-            
-            {!isFormValid && (
-              <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
-                Please fix the errors above to generate valid structured data.
-              </Alert>
-            )}
-            
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML page.
-            </Alert>
-
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 500, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* Product Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  PRODUCT PREVIEW
-                </Typography>
-              </Box>
-              <Card sx={{ borderRadius: 0 }}>
-                {productImageUrl ? (
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={productImageUrl}
-                    alt="Product image"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      bgcolor: "#f5f5f5", 
-                      display: "flex", 
-                      alignItems: "center", 
-                      justifyContent: "center",
-                      flexDirection: "column",
-                      gap: 1
-                    }}
+              {/* Status */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-100 text-white">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Availability</label>
+                  <select
+                    value={availability}
+                    onChange={(e) => setAvailability(e.target.value)}
+                    className="w-full bg-white border border-slate-200 text-slate-700 rounded-lg px-3 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
-                    <ProductIcon sx={{ fontSize: 48, color: "text.secondary" }} />
-                    <Typography color="text.secondary">
-                      No image selected
-                    </Typography>
-                  </Box>
-                )}
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {productName || "Product Name"}
-                  </Typography>
-                  
-                  {productBrand && (
-                    <Chip 
-                      label={productBrand} 
-                      size="small" 
-                      color="primary" 
-                      sx={{ mb: 2 }}
+                    <option value="InStock">In Stock</option>
+                    <option value="OutOfStock">Out of Stock</option>
+                    <option value="PreOrder">Pre-order</option>
+                    <option value="SoldOut">Sold Out</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Item Condition</label>
+                  <select
+                    value={condition}
+                    onChange={(e) => setCondition(e.target.value)}
+                    className="w-full bg-white border border-slate-200 text-slate-700 rounded-lg px-3 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="NewCondition">New</option>
+                    <option value="UsedCondition">Used</option>
+                    <option value="RefurbishedCondition">Refurbished</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Rating */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                <div className="space-y-1.5">
+                   <label className="block text-sm font-bold text-slate-700 flex items-center gap-2">
+                     Rating Value
+                     <span className="text-[10px] font-black bg-amber-100 text-amber-700 px-1.5 rounded uppercase tracking-tighter">0-5</span>
+                   </label>
+                   <div className="relative">
+                      <Star className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-amber-400 fill-current" />
+                      <input type="number" step="0.1" max="5" value={rating} onChange={(e) => setRating(e.target.value)} className="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-indigo-500" />
+                   </div>
+                </div>
+                <div className="space-y-1.5">
+                   <label className="block text-sm font-bold text-slate-700">Total Reviews</label>
+                   <div className="relative">
+                      <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <input type="number" value={reviewCount} onChange={(e) => setReviewCount(e.target.value)} className="w-full border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-indigo-500" />
+                   </div>
+                </div>
+              </div>
+
+              {/* Image upload */}
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-bold text-slate-700">Product Image</label>
+                  <div className="flex bg-slate-100 rounded-lg p-1 text-[10px] font-black uppercase shadow-inner">
+                    <button
+                      onClick={() => setImageMode("url")}
+                      className={`px-3 py-1 rounded-md transition-all ${imageMode === "url" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      URL
+                    </button>
+                    <button
+                      onClick={() => setImageMode("upload")}
+                      className={`px-3 py-1 rounded-md transition-all ${imageMode === "upload" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      Upload
+                    </button>
+                  </div>
+                </div>
+                
+                {imageMode === "url" ? (
+                  <div className="relative">
+                    <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://example.com/product.jpg"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
-                  )}
-                  
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    {productDescription ? 
-                      `${productDescription.substring(0, 150)}${productDescription.length > 150 ? "..." : ""}` : 
-                      "Product description will appear here..."
-                    }
-                  </Typography>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => fileInputRef.current.click()}
+                    className="group border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all rounded-xl p-8 text-center cursor-pointer"
+                  >
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload} 
+                      className="hidden" 
+                      accept="image/*"
+                    />
+                    <div className="flex flex-col items-center">
+                      <div className="bg-slate-50 p-2.5 rounded-full mb-1 group-hover:bg-indigo-100 transition-colors shadow-sm">
+                        <Upload className="h-5 w-5 text-slate-300 group-hover:text-indigo-600" />
+                      </div>
+                      <span className="text-[11px] font-black text-slate-400 group-hover:text-indigo-700 uppercase tracking-widest">
+                        {uploadedImage ? "Change Image" : "Upload Image"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
 
-                  {isIncludeOfferOrAggregateOffer && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                      <PriceIcon fontSize="small" />
-                      <Typography variant="body2" fontWeight="bold">
-                        {isAggregateOffer ? 
-                          `${currency} ${lowPrice} - ${highPrice}` : 
-                          `${currency} ${offerPrice}`
-                        }
-                      </Typography>
-                      <Chip 
-                        label={availability.replace(/([A-Z])/g, ' $1').trim()} 
-                        size="small" 
-                        color={availability === 'InStock' ? 'success' : 'warning'}
-                      />
-                    </Box>
-                  )}
+        {/* Right Side - Previews */}
+        <div className="space-y-8">
+          {/* Shopping Result Preview */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase tracking-wide px-1">Search Appearance</h2>
+            </div>
+            
+            <div className="p-8 pb-12">
+               <div className="max-w-sm mx-auto bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden group">
+                  <div className="relative h-64 bg-slate-50 border-b border-slate-100 overflow-hidden">
+                    {imageMode === "url" ? (
+                      imageUrl ? (
+                        <img src={imageUrl} alt="Product" className="h-full w-full object-contain p-8 group-hover:scale-110 transition-transform duration-700" />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
+                           <Package className="h-24 w-24" />
+                        </div>
+                      )
+                    ) : (
+                      uploadedImage ? (
+                        <img src={uploadedImage} alt="Product" className="h-full w-full object-contain p-8 group-hover:scale-110 transition-transform duration-700" />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
+                           <Upload className="h-24 w-24" />
+                        </div>
+                      )
+                    )}
+                    <div className="absolute top-4 right-4">
+                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg ${availability === "InStock" ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"}`}>
+                          {availability === "InStock" ? "Available" : "Stock Alert"}
+                       </span>
+                    </div>
+                  </div>
 
-                  {isIncludeRating && ratingValue && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                      <Rating value={parseFloat(ratingValue)} readOnly size="small" />
-                      <Typography variant="body2">
-                        {ratingValue} ({numberOfRatings} ratings)
-                      </Typography>
-                    </Box>
-                  )}
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                       <span className="text-[11px] font-black text-indigo-600 uppercase tracking-widest">{brand || "Sonic Labs"}</span>
+                       <div className="flex items-center gap-1">
+                          <Star className="h-3 w-3 text-amber-500 fill-current" />
+                          <span className="text-xs font-black text-slate-900">{rating}</span>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase">({reviewCount})</span>
+                       </div>
+                    </div>
 
-                  {isIncludeReviews && validReviewsCount > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
-                        Reviews ({validReviewsCount}):
-                      </Typography>
-                      {reviews.filter(review => review.title.trim() || review.text.trim()).slice(0, 2).map((review, index) => (
-                        <Box key={index} sx={{ mb: 1, p: 1, bgcolor: "#f9f9f9", borderRadius: 1 }}>
-                          {review.title && (
-                            <Typography variant="caption" fontWeight="bold" display="block">
-                              {review.title}
-                            </Typography>
-                          )}
-                          {review.text && (
-                            <Typography variant="caption" color="text.secondary">
-                              {review.text.substring(0, 100)}{review.text.length > 100 ? "..." : ""}
-                            </Typography>
-                          )}
-                        </Box>
-                      ))}
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Paper>
+                    <h3 className="text-xl font-black text-slate-900 leading-tight mb-2 line-clamp-2">{name || "Aura Pro High-Fidelity Headphones"}</h3>
+                    <p className="text-[13px] text-slate-500 mb-6 leading-relaxed italic">{description || "Professional grade noise cancelling wireless headset for studio and travel..."}</p>
 
-            {/* Validation Status */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: isFormValid ? "success.main" : "error.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  VALIDATION STATUS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert severity={productName.trim() ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Product Name: {productName.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={isIncludeOfferOrAggregateOffer || isIncludeRating || isIncludeReviews ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Required Sections: {isIncludeOfferOrAggregateOffer || isIncludeRating || isIncludeReviews ? "✓ At least one included" : "✗ Include offer, rating, or reviews"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={productImageUrl ? "success" : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      Product Image: {productImageUrl ? "✓ Added" : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
+                    <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+                       <div className="flex flex-col">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Current Price</span>
+                          <span className="text-2xl font-black text-slate-900 tracking-tighter">
+                            {currency} {price || "0.00"}
+                          </span>
+                       </div>
+                       <button className="bg-slate-900 text-white p-3 rounded-2xl hover:bg-indigo-600 transition-all shadow-xl shadow-slate-100 group-hover:shadow-indigo-100">
+                          <ArrowRight className="h-5 w-5" />
+                       </button>
+                    </div>
+                  </div>
+               </div>
 
-                  <Alert severity={productBrand ? "success" : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      Brand: {productBrand ? "✓ Added" : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
+               <div className="mt-8 flex items-start gap-3 bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                  <Sparkles className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
+                  <p className="text-[11px] text-indigo-800 font-medium leading-relaxed italic">
+                    Rich snippets like price and stars can increase click-through rates by up to <strong>30%</strong>. Google prioritizes pages with merchant-correct schema.
+                  </p>
+               </div>
+            </div>
+          </div>
 
-                  <Alert severity={isIncludeReviews ? (validReviewsCount > 0 ? "success" : "warning") : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      Reviews: {isIncludeReviews ? 
-                        (validReviewsCount > 0 ? `✓ ${validReviewsCount} review${validReviewsCount !== 1 ? 's' : ''}` : "⚠ No valid reviews") : 
-                        "ℹ Not included"
-                      }
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+          {/* Code Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden text-white">
+            <div className="bg-emerald-600 px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                <h2 className="font-semibold text-lg uppercase tracking-wide">Generated JSON-LD</h2>
+              </div>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  type="button"
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5 text-white" />}
+                </button>
+              </CopyToClipboard>
+            </div>
+            
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-[11px] font-black uppercase tracking-tight italic">
+               <p>Place this code block inside your site's &lt;head&gt; tag.</p>
+               {imageMode === "upload" && (
+                 <p className="mt-1 text-blue-600">
+                    ⚠️ Note: Replace the placeholder image URL in the code with your actual public product image link.
+                 </p>
+               )}
+            </div>
+            
+            <div className="bg-[#1e1e1e] p-6 relative group overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 border-b border-l border-white/5 bg-white/5 uppercase text-[10px] font-black tracking-widest text-emerald-500/40">
+                  product-schema.json
+               </div>
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/40 pt-4">
+                <span className="text-indigo-400 font-bold tracking-tight">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1 font-medium">
+                  {jsonText}
+                </div>
+                <span className="text-indigo-400 font-bold tracking-tight">&lt;/script&gt;</span>
+              </div>
+            </div>
+            
+            <div className="bg-amber-500 px-6 py-2.5 flex items-center gap-2 text-[10px] font-black uppercase text-amber-950">
+               <Info className="h-3.5 w-3.5" />
+               Recommendation: Use GTIN or SKU for better product recognition.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default Product;
-
-
-// "use client";
-
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-// import { currencies, timezones } from "@/app/constant";
-// const Receipe = () => {
-//   const [productName, setProductName] = useState("");
-//   const [prodctBrand, setProdctBrand] = useState("");
-//   const [productImageUrl, setProductImageUrl] = useState("");
-//   const [productDescription, setProductDescription] = useState("");
-//   const [identificationProperties, setIdentificationProperties] = useState("");
-//   const [isIncludeOfferOrAggregateOffer, setIsIncludeOfferOrAggregateOffer] =
-//     useState(true);
-//   const [isIncludeRating, setIsIncludeRating] = useState(false);
-//   const [isIncludeReviews, setIsIncludeReviews] = useState(false);
-//   const [isAggregateOffer, setIsAggregateOffer] = useState(false);
-
-//   const [currency, setCurrency] = useState("");
-//   const [lowPrice, setLowPrice] = useState("");
-//   const [highPrice, setHighPrice] = useState("");
-//   const [numberOfOffers, setNumberOfOffers] = useState("");
-//   const [url, setUrl] = useState("");
-//   const [offerPrice, setOfferPrice] = useState("");
-//   const [priceValidUntil, setPriceValidUntil] = useState("");
-//   const [availability, setAvailability] = useState("");
-//   const [condition, setCondition] = useState("");
-
-//   const [description, setDescription] = useState("");
-
-//   const [numberOfRatings, setNumberOfRatings] = useState("");
-//   const [numberofReviews, setNumberOfReviews] = useState("");
-//   const [ratingValue, setRatingValue] = useState("");
-//   const [wrostValue, setWrostValue] = useState("");
-//   const [bestValue, setBestValue] = useState("");
-
-//   const [reviews, setReviews] = useState([
-//     {
-//       title: "",
-//       author: "",
-//       date: "",
-//       ratingvalue: "",
-//       text: "",
-//       worstRatingValue: "",
-//       bestRatingValue: "",
-//     },
-//   ]);
-
-//   const handleAddReview = () => {
-//     setReviews([
-//       ...reviews,
-//       {
-//         title: "",
-//         author: "",
-//         date: "",
-//         ratingvalue: "",
-//         text: "",
-//         worstRatingValue: "",
-//         bestRatingValue: "",
-//       },
-//     ]);
-//   };
-
-//   const handleDeleteReview = (index) => {
-//     const updatedReviews = [...reviews];
-//     updatedReviews.splice(index, 1);
-//     setReviews(updatedReviews);
-//   };
-
-//   const json = {
-//     "@context": "http://schema.org/",
-//     "@type": "Product",
-//     name: productName,
-//     image: productImageUrl,
-//     description: productDescription,
-//     brand: prodctBrand ? { "@type": "Brand", name: prodctBrand } : undefined,
-//     offers: isIncludeOfferOrAggregateOffer
-//       ? isAggregateOffer
-//         ? {
-//             "@type": "AggregateOffer",
-//             priceCurrency: currency,
-//             lowPrice: lowPrice,
-//             highPrice: highPrice,
-//             url: url,
-//             availability: availability,
-//             offerCount: numberOfOffers,
-//           }
-//         : {
-//             "@type": "Offer",
-//             priceCurrency: currency,
-//             price: offerPrice,
-//             priceValidUntil: priceValidUntil,
-//             availability: availability,
-//             condition: condition,
-//           }
-//       : undefined,
-//     aggregateRating: isIncludeRating
-//       ? {
-//           "@type": "AggregateRating",
-//           ratingValue: ratingValue,
-//           ratingCount: numberOfRatings,
-//           reviewCount: numberofReviews,
-//           worstRating: wrostValue,
-//           bestRating: bestValue,
-//         }
-//       : undefined,
-//     review: isIncludeReviews
-//       ? reviews.map((review) => ({
-//           "@type": "Review",
-//           name: review.title,
-//           author: review.author ? { "@type": "Person", name: review.author } : undefined,
-//           datePublished: review.date,
-//           reviewBody: review.text,
-//           reviewRating: {
-//             "@type": "Rating",
-//             ratingValue: review.ratingvalue,
-//             worstRating: review.worstRatingValue,
-//             bestRating: review.bestRatingValue,
-//           },
-//         }))
-//       : undefined,
-//   };
-  
-//   const jsonText = JSON.stringify(json, null, 2);
-
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         Product Structured Data Generator
-//       </h1>
-//       <p className="text-white text-sm mt-2">
-//         AggregateOffer, AggregateRating, Offer and Reviews
-//       </p>
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               <h1 className="text-white font-semibold mt-5">Receipe </h1>
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter  Name"
-//                   value={productName}
-//                   onChange={(e) => setProductName(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Brand"
-//                   value={prodctBrand}
-//                   onChange={(e) => setProdctBrand(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Image Url"
-//                   value={productImageUrl}
-//                   onChange={(e) => setProductImageUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <textarea
-//                   id="message"
-//                   rows="2"
-//                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Description"
-//                   value={description}
-//                   onChange={(e) => setDescription(e.target.value)}
-//                 ></textarea>
-//               </div>
-
-//               <div className="mt-5">
-//                 <select
-//                   id="type"
-//                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={identificationProperties}
-//                   onChange={(e) => setIdentificationProperties(e.target.value)}
-//                 >
-//                   <option>Select Identification properties</option>
-//                   <option value="GTIN-8">GTIN-8</option>
-//                   <option value="GTIN-13">GTIN-13</option>
-//                   <option value="GTIN-14">GTIN-14</option>
-//                   <option value="ISBN">ISBN</option>
-//                   <option value="MPN">MPN</option>
-//                   <option value="SKU">SKU</option>
-//                 </select>
-//                 <span className="text-white text-xs">
-//                   Note: ISBN is only a valid property on books.
-//                 </span>
-//               </div>
-//               <p className="text-white text-xs mt-5">
-//                 You must include at least one of the following.
-//               </p>
-//               <div class="flex items-center mb-4 mt-2">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   defaultChecked
-//                   onChange={() => {
-//                     setIsIncludeOfferOrAggregateOffer(
-//                       !isIncludeOfferOrAggregateOffer
-//                     );
-//                   }}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   Include offer or aggregate offer
-//                 </label>
-//               </div>
-
-//               <div class="flex items-center mb-4">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   onChange={() => {
-//                     setIsIncludeRating(!isIncludeRating);
-//                   }}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   Include rating
-//                 </label>
-//               </div>
-//               <div class="flex items-center mb-4">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   onChange={() => {
-//                     setIsIncludeReviews(!isIncludeReviews);
-//                   }}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   Include reviews
-//                 </label>
-//               </div>
-
-//               {isIncludeOfferOrAggregateOffer && (
-//                 <>
-//                   <h1 className="text-white font-semibold mt-5">Offer </h1>
-
-//                   <div class="flex items-center mb-4 mt-2">
-//                     <input
-//                       id="default-checkbox"
-//                       type="checkbox"
-//                       value=""
-//                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                       onChange={() => {
-//                         setIsAggregateOffer(!isAggregateOffer);
-//                       }}
-//                     />
-//                     <label
-//                       for="default-checkbox"
-//                       class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                     >
-//                       Aggregate Offer
-//                     </label>
-//                   </div>
-//                   <span className="text-white text-xs">
-//                     When a single product is associated with multiple offers
-//                     (for example, the same pair of shoes is offered by different
-//                     merchants), then AggregateOffer can be used.
-//                   </span>
-
-//                   <div className="mt-5">
-//                     <select
-//                       id="type"
-//                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       value={currency}
-//                       onChange={(e) => setCurrency(e.target.value)}
-//                     >
-//                       <option>Select Currency</option>
-//                       {currencies.map((currency) => (
-//                         <option key={currency.value} value={currency.value}>
-//                           {currency.label}
-//                         </option>
-//                       ))}
-//                     </select>
-//                   </div>
-
-//                   {!isAggregateOffer ? (
-//                     <div>
-//                       <div className="mt-5">
-//                         <input
-//                           type="text"
-//                           id="first_name"
-//                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                           placeholder="Enter Price"
-//                           value={offerPrice}
-//                           onChange={(e) => setOfferPrice(e.target.value)}
-//                         />
-//                       </div>
-//                       <div className="mt-5">
-//                         <input
-//                           type="date"
-//                           id="first_name"
-//                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                           placeholder="Select Date"
-//                           value={priceValidUntil}
-//                           onChange={(e) => setPriceValidUntil(e.target.value)}
-//                         />
-//                       </div>
-
-//                       <div className="mt-5">
-//                         <select
-//                           id="type"
-//                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                           value={availability}
-//                           onChange={(e) => setAvailability(e.target.value)}
-//                         >
-//                           <option>Select Availability</option>
-//                           <option value="Discontinued">Discontinued</option>
-//                           <option value="In stock">In stock</option>
-//                           <option value="In store only">In store only</option>
-//                           <option value="Limited availability">
-//                             Limited availability
-//                           </option>
-//                           <option value="Online only">Online only</option>
-//                           <option value="Out of stock">Out of stock</option>
-//                           <option value="Pre-order">Pre-order</option>
-//                           <option value="Pre-sale">Pre-sale</option>
-//                           <option value="Sold out">Sold out</option>
-//                         </select>
-//                       </div>
-
-//                       <div className="mt-5">
-//                         <select
-//                           id="type"
-//                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                           value={condition}
-//                           onChange={(e) => setCondition(e.target.value)}
-//                         >
-//                           <option>Select Condition</option>
-//                           <option value="Damaged">Discontinued</option>
-//                           <option value="New">New</option>
-//                           <option value="Refurbished">Refurbished</option>
-//                           <option value="Used">Limited availability</option>
-//                         </select>
-//                       </div>
-//                     </div>
-//                   ) : (
-//                     <div>
-//                       <div className="mt-5">
-//                         <input
-//                           type="text"
-//                           id="first_name"
-//                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                           placeholder="Enter Low price"
-//                           value={lowPrice}
-//                           onChange={(e) => setLowPrice(e.target.value)}
-//                         />
-//                       </div>
-
-//                       <div className="mt-5">
-//                         <input
-//                           type="text"
-//                           id="first_name"
-//                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                           placeholder="Enter High price"
-//                           value={highPrice}
-//                           onChange={(e) => setHighPrice(e.target.value)}
-//                         />
-//                       </div>
-
-//                       <div className="mt-5">
-//                         <input
-//                           type="text"
-//                           id="first_name"
-//                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                           placeholder="Enter Number of offers"
-//                           value={numberOfOffers}
-//                           onChange={(e) => setNumberOfOffers(e.target.value)}
-//                         />
-//                       </div>
-//                     </div>
-//                   )}
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter Url"
-//                       value={url}
-//                       onChange={(e) => setUrl(e.target.value)}
-//                     />
-//                   </div>
-//                 </>
-//               )}
-
-//               {isIncludeRating && (
-//                 <>
-//                   <h1 className="text-white font-semibold mt-5">
-//                     Aggregate rating
-//                   </h1>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="number"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter Number of ratings"
-//                       value={numberOfRatings}
-//                       onChange={(e) => setNumberOfRatings(e.target.value)}
-//                     />
-//                     <span className="text-white text-xs">
-//                       The total number of ratings for the item on your site.
-//                     </span>
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="number"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter Number of reviews"
-//                       value={numberofReviews}
-//                       onChange={(e) => setNumberOfReviews(e.target.value)}
-//                     />
-//                     <span className="text-white text-xs">
-//                       Specifies the number of people who provided a review with
-//                       or without an accompanying rating.
-//                     </span>
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="number"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter Rating value"
-//                       value={ratingValue}
-//                       onChange={(e) => setRatingValue(e.target.value)}
-//                     />
-//                     <span className="text-white text-xs">
-//                       A numerical quality rating for the item. The default scale
-//                       for numbers is a 5-point scale, where 1 is the lowest
-//                       value and 5 is the highest value. If another scale is
-//                       intended, use worstRating and bestRating below.
-//                     </span>
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="number"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter Wrost value"
-//                       value={wrostValue}
-//                       onChange={(e) => setWrostValue(e.target.value)}
-//                     />
-//                     <span className="text-white text-xs">
-//                       The lowest value allowed in this rating system. If
-//                       omitted, 1 is assumed.
-//                     </span>
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="number"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter Best value"
-//                       value={bestValue}
-//                       onChange={(e) => setBestValue(e.target.value)}
-//                     />
-//                     <span className="text-white text-xs">
-//                       The highest value allowed in this rating system. If
-//                       omitted, 5 is assumed.
-//                     </span>
-//                   </div>
-//                 </>
-//               )}
-
-//               {isIncludeReviews && (
-//                 <>
-//                   <div>
-//                     <h1 className="text-white font-semibold mt-5">Reviews </h1>
-//                     {reviews.map((review, index) => (
-//                       <div key={index} className="mt-5">
-//                         <h2 className="text-white text-sm font-semibold mt-2">
-//                           Review #{index + 1}
-//                         </h2>
-//                         <div className="mt-5">
-//                           <input
-//                             type="text"
-//                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                             placeholder="Enter Title"
-//                             value={review.title}
-//                             onChange={(e) => {
-//                               const updatedReviews = [...reviews];
-//                               updatedReviews[index].title = e.target.value;
-//                               setReviews(updatedReviews);
-//                             }}
-//                           />
-//                         </div>
-//                         <div className="mt-5">
-//                           <input
-//                             type="text"
-//                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                             placeholder="Enter Author"
-//                             value={review.author}
-//                             onChange={(e) => {
-//                               const updatedReviews = [...reviews];
-//                               updatedReviews[index].author = e.target.value;
-//                               setReviews(updatedReviews);
-//                             }}
-//                           />
-//                         </div>
-
-//                         <div className="mt-5">
-//                           <input
-//                             type="date"
-//                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                             value={review.date}
-//                             onChange={(e) => {
-//                               const updatedReviews = [...reviews];
-//                               updatedReviews[index].date = e.target.value;
-//                               setReviews(updatedReviews);
-//                             }}
-//                           />
-//                         </div>
-
-//                         <div className="mt-5">
-//                           <input
-//                             type="number"
-//                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                             value={review.ratingvalue}
-//                             placeholder="Enter Rating Value"
-//                             onChange={(e) => {
-//                               const updatedReviews = [...reviews];
-//                               updatedReviews[index].ratingvalue =
-//                                 e.target.value;
-//                               setReviews(updatedReviews);
-//                             }}
-//                           />
-//                         </div>
-
-//                         <div className="mt-5">
-//                           <textarea
-//                             rows="2"
-//                             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                             placeholder="Enter Instructions"
-//                             value={review.text}
-//                             onChange={(e) => {
-//                               const updatedReviews = [...reviews];
-//                               updatedReviews[index].text = e.target.value;
-//                               setReviews(updatedReviews);
-//                             }}
-//                           ></textarea>
-//                         </div>
-
-//                         <div className="mt-5">
-//                           <input
-//                             type="number"
-//                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                             value={review.worstRatingValue}
-//                             placeholder="Enter Wrost Rating Value"
-//                             onChange={(e) => {
-//                               const updatedReviews = [...reviews];
-//                               updatedReviews[index].worstRatingValue =
-//                                 e.target.value;
-//                               setReviews(updatedReviews);
-//                             }}
-//                           />
-//                           <span className="text-white text-xs">
-//                             The lowest value allowed in this rating system. If
-//                             omitted, 1 is assumed.
-//                           </span>
-//                         </div>
-
-//                         <div className="mt-5">
-//                           <input
-//                             type="number"
-//                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                             value={review.bestRatingValue}
-//                             placeholder="Enter Best Rating Value"
-//                             onChange={(e) => {
-//                               const updatedReviews = [...reviews];
-//                               updatedReviews[index].bestRatingValue =
-//                                 e.target.value;
-//                               setReviews(updatedReviews);
-//                             }}
-//                           />
-//                           <span className="text-white text-xs">
-//                             The highest value allowed in this rating system. If
-//                             omitted, 5 is assumed.
-//                           </span>
-//                         </div>
-
-//                         {reviews.length > 1 && (
-//                           <div className="mt-2">
-//                             <button
-//                               type="button"
-//                               className=" text-sm p-4 bg-red-600 text-white rounded "
-//                               onClick={() => handleDeleteReview(index)}
-//                             >
-//                               Delete Review
-//                             </button>
-//                           </div>
-//                         )}
-//                       </div>
-//                     ))}
-//                     <div className="mt-5">
-//                       <button
-//                         type="button"
-//                         className="bg-blue-500 w-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//                         onClick={handleAddReview}
-//                       >
-//                         Add Review
-//                       </button>
-//                     </div>
-//                   </div>
-//                 </>
-//               )}
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//               <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//                 CODE
-//               </h1>
-//               <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//                 <p className="bg">
-//                   Copy this to the &lt;head&gt; section of your page.
-//                 </p>
-//                 <CopyToClipboard
-//                   text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//                 >
-//                   <div className="ml-auto w-1/6">
-//                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                       Copy
-//                     </button>
-//                   </div>
-//                 </CopyToClipboard>
-//               </div>
-//               <div className="space-y-2 mt-5 ml-4">
-//                 <pre className="text-white">
-//                   <pre className="text-white">
-//                     {`<script type="application/ld+json">\n`}
-//                     {jsonText}
-//                     {`\n</script>`}
-//                   </pre>
-//                 </pre>
-//               </div>
-//             </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Receipe;
+}

@@ -1,61 +1,17 @@
-// app/meta-tags-generator/MetaTagsForm.js
 "use client";
 
 import React, { useState } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Checkbox,
-  FormControlLabel,
-  Grid,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Code as CodeIcon,
-  Visibility as PreviewIcon,
-  CheckCircle as CheckIcon,
-} from "@mui/icons-material";
-
-const charsets = [
-  { value: "big5", label: "Big5" },
-  { value: "euc-kr", label: "EUC-KR" },
-  { value: "iso-8859-1", label: "ISO-8859-1" },
-  { value: "iso-8859-2", label: "ISO-8859-2" },
-  { value: "iso-8859-3", label: "ISO-8859-3" },
-  { value: "iso-8859-4", label: "ISO-8859-4" },
-  { value: "iso-8859-5", label: "ISO-8859-5" },
-  { value: "iso-8859-6", label: "ISO-8859-6" },
-  { value: "iso-8859-7", label: "ISO-8859-7" },
-  { value: "iso-8859-8", label: "ISO-8859-8" },
-  { value: "koi8-r", label: "KOI8-R" },
-  { value: "shift-jis", label: "Shift-JIS" },
-  { value: "x-euc", label: "X-EUC" },
-  { value: "utf-8", label: "UTF-8" },
-  { value: "windows-1250", label: "Windows-1250" },
-  { value: "windows-1251", label: "Windows-1251" },
-  { value: "windows-1252", label: "Windows-1252" },
-  { value: "windows-1253", label: "Windows-1253" },
-  { value: "windows-1254", label: "Windows-1254" },
-  { value: "windows-1255", label: "Windows-1255" },
-  { value: "windows-1256", label: "Windows-1256" },
-  { value: "windows-1257", label: "Windows-1257" },
-  { value: "windows-1258", label: "Windows-1258" },
-  { value: "windows-874", label: "Windows-874" },
-];
-
+import { Code } from "lucide-react";
 import GeneratedCodePanel from "./GeneratedCodePanel";
 import MetaTagsPreview from "./MetaTagsPreview";
+
+const charsets = [
+  { value: "utf-8", label: "UTF-8" },
+  { value: "iso-8859-1", label: "ISO-8859-1" },
+  { value: "windows-1252", label: "Windows-1252" },
+  { value: "shift-jis", label: "Shift-JIS" },
+  { value: "big5", label: "Big5" },
+];
 
 export default function MetaTagsForm() {
   const [charsetValue, setCharsetValue] = useState("utf-8");
@@ -90,176 +46,151 @@ export default function MetaTagsForm() {
   };
 
   return (
-    <Box
-      sx={{
-        p: 3,
-        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          mb: 3,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <CodeIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Meta Tags Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              {
-                "Generate your web page's most helpful meta tags to improve SEO and search engine experience."
-              }
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-blue-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <Code className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">Meta Tags Generator</h1>
+            <p className="text-blue-100 mt-1 max-w-2xl">
+              Generate your web page's most helpful meta tags to improve SEO and search engine experience.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Options Panel */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2 }}>
-              <Typography variant="h6" fontWeight="bold">
-                OPTIONS
-              </Typography>
-            </Box>
-            <Box sx={{ p: 3, bgcolor: "background.paper" }}>
-              <Grid container spacing={2}>
-                {/* Charset */}
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel>Charset</InputLabel>
-                    <Select
-                      value={charsetValue}
-                      label="Charset"
-                      onChange={(e) => setCharsetValue(e.target.value)}
-                    >
-                      {charsets.map((charset) => (
-                        <MenuItem key={charset.value} value={charset.value}>
-                          {charset.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+          <div className="bg-slate-800 text-white px-6 py-4">
+            <h2 className="font-semibold text-lg tracking-wide">OPTIONS</h2>
+          </div>
+          
+          <div className="p-6 space-y-6">
+            <div className="space-y-4">
+              {/* Charset */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-700">Charset</label>
+                <select
+                  value={charsetValue}
+                  onChange={(e) => setCharsetValue(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                >
+                  {charsets.map((charset) => (
+                    <option key={charset.value} value={charset.value}>
+                      {charset.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                {/* Title */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Title"
-                    placeholder="Enter your page title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    helperText={`${title.length}/60 characters (recommended)`}
-                    inputProps={{ maxLength: 120 }}
-                  />
-                </Grid>
+              {/* Title */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-700">Title</label>
+                <input
+                  type="text"
+                  placeholder="Enter your page title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  maxLength={120}
+                  className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow placeholder:text-slate-400"
+                />
+                <p className="text-xs text-slate-500">{title.length}/60 characters (recommended)</p>
+              </div>
 
-                {/* Description */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Description"
-                    placeholder="Enter your page description"
-                    multiline
-                    rows={3}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    helperText={`${description.length}/160 characters (recommended)`}
-                    inputProps={{ maxLength: 300 }}
-                  />
-                </Grid>
+              {/* Description */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-700">Description</label>
+                <textarea
+                  placeholder="Enter your page description"
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  maxLength={300}
+                  className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow placeholder:text-slate-400 resize-none"
+                />
+                <p className="text-xs text-slate-500">{description.length}/160 characters (recommended)</p>
+              </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Author */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Author"
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Author</label>
+                  <input
+                    type="text"
                     placeholder="Enter author name"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow placeholder:text-slate-400"
                   />
-                </Grid>
+                </div>
 
                 {/* Copyright */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Copyright"
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Copyright</label>
+                  <input
+                    type="text"
                     placeholder="Enter copyright info"
                     value={copyright}
                     onChange={(e) => setCopyright(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow placeholder:text-slate-400"
                   />
-                </Grid>
+                </div>
+              </div>
 
-                {/* Robots */}
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel>Robots</InputLabel>
-                    <Select
-                      value={robots}
-                      label="Robots"
-                      onChange={(e) => setRobots(e.target.value)}
-                    >
-                      <MenuItem value="index, follow">index, follow</MenuItem>
-                      <MenuItem value="index, nofollow">
-                        index, nofollow
-                      </MenuItem>
-                      <MenuItem value="noindex, follow">
-                        noindex, follow
-                      </MenuItem>
-                      <MenuItem value="noindex, nofollow">
-                        noindex, nofollow
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
+              {/* Robots */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-700">Robots</label>
+                <select
+                  value={robots}
+                  onChange={(e) => setRobots(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+                >
+                  <option value="index, follow">index, follow</option>
+                  <option value="index, nofollow">index, nofollow</option>
+                  <option value="noindex, follow">noindex, follow</option>
+                  <option value="noindex, nofollow">noindex, nofollow</option>
+                </select>
+              </div>
 
-                {/* Viewport Checkbox */}
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={enableViewport}
-                        onChange={(e) => setEnableViewport(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label={
-                      <Box>
-                        <Typography variant="body1">Enable viewport</Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Enable if your site is responsive
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </Paper>
-        </Grid>
+              {/* Viewport Checkbox */}
+              <div className="pt-2">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="relative flex items-center pt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={enableViewport}
+                      onChange={(e) => setEnableViewport(e.target.checked)}
+                      className="peer h-4 w-4 shrink-0 rounded-sm border border-slate-300 text-blue-600 focus:ring-blue-500 transition-all"
+                    />
+                  </div>
+                  <div className="select-none flex flex-col">
+                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
+                      Enable viewport
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      Enable if your site is responsive
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        {/* Code Panel */}
-        <Grid item xs={12} md={6}>
+        {/* Code & Preview Panel */}
+        <div className="space-y-6">
           <GeneratedCodePanel
             generatedCode={generatedCode}
             onCopy={handleCopy}
             copied={copied}
           />
           <MetaTagsPreview title={title} description={description} />
-        </Grid>
-      </Grid>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

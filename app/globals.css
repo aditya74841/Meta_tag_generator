@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg-primary: #f8fafc; /* Very clean slate background */
+  --bg-secondary: #ffffff; /* pure white for cards */
+  --text-primary: #0f172a; /* Slate 900 for high contrast text */
+  --text-secondary: #64748b; /* Slate 500 for secondary text */
+  --theme-color: #2563eb; /* A single professional primary blue */
+  --theme-color-light: rgba(37, 99, 235, 0.1); /* Light version for subtle backgrounds */
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}

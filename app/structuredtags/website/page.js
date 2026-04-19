@@ -1,186 +1,27 @@
-// "use client";
-
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-
-// const Video = () => {
-//   const [websiteUrl, setWebsiteUrl] = useState("");
-//   const [description, setDescription] = useState("");
-
-//   const jsonData = {
-//     "@context": "http://schema.org/",
-//     "@type": "WebSite",
-//     url: websiteUrl,
-//     potentialAction: {
-//       "@type": "SearchAction",
-//       target: `${description}?q={search_term_string}`,
-//       "query-input": "required name=search_term_string",
-//     },
-//   };
-
-//   const jsonText = JSON.stringify(jsonData, null, 2);
-
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         Website (Sitelinks) Structured Data Generator
-//       </h1>
-//       <p className="text-white text-sm mt-2">
-//         Job information and social profiles
-//       </p>
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               <h1 className="text-white font-semibold mt-5">
-//                 Website Details{" "}
-//               </h1>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Website Url"
-//                   value={websiteUrl}
-//                   onChange={(e) => setWebsiteUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="message"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Description
-//                 </label>
-//                 <textarea
-//                   id="message"
-//                   rows="2"
-//                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter SiteSearch Url"
-//                   value={description}
-//                   onChange={(e) => setDescription(e.target.value)}
-//                 ></textarea>
-//               </div>
-
-//               {/* Other form fields go here */}
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//             <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//               CODE
-//             </h1>
-//             <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//               <p className="bg">
-//                 Copy this to the &lt;head&gt; section of your page.
-//               </p>
-//             </div>
-//             <CopyToClipboard
-//               text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//             >
-//               <div className="ml-auto w-1/6">
-//                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                   Copy
-//                 </button>
-//               </div>
-//             </CopyToClipboard>
-
-//             <div className="space-y-2 mt-5 ml-4">
-//               <pre className="text-white">
-//                 <pre className="text-white">
-//                   {`<script type="application/ld+json">\n`}
-//                   {jsonText}
-//                   {`\n</script>`}
-//                 </pre>
-//               </pre>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Video;
-
-
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-  Stack,
-  Divider,
-  Avatar,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Language as WebsiteIcon,
-  CheckCircle as CheckIcon,
-  Preview as PreviewIcon,
-  Code as CodeIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  Search as SearchIcon,
-  Link as LinkIcon,
-  Description as DescriptionIcon,
-  Public as GlobalIcon,
-  FindInPage as SitelinksIcon,
-} from "@mui/icons-material";
+import { 
+  Globe, 
+  Search, 
+  Link as LinkIcon, 
+  FileText, 
+  Layout, 
+  Eye, 
+  Code, 
+  CheckCircle2, 
+  Copy,
+  Info,
+  ExternalLink
+} from "lucide-react";
 
-const Website = () => {
+export default function WebsiteGenerator() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [searchUrl, setSearchUrl] = useState("");
   const [websiteName, setWebsiteName] = useState("");
   const [websiteDescription, setWebsiteDescription] = useState("");
   const [copied, setCopied] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  // Validation
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!websiteUrl.trim()) newErrors.websiteUrl = "Website URL is required";
-
-    // URL validation
-    const urlPattern = /^https?:\/\/.+/;
-    if (websiteUrl && !urlPattern.test(websiteUrl)) {
-      newErrors.websiteUrl = "Please enter a valid URL starting with http:// or https://";
-    }
-    if (searchUrl && !urlPattern.test(searchUrl)) {
-      newErrors.searchUrl = "Please enter a valid search URL starting with http:// or https://";
-    }
-
-    // Search URL should contain search parameter placeholder
-    if (searchUrl && !searchUrl.includes("{search_term_string}")) {
-      newErrors.searchUrl = "Search URL should contain {search_term_string} placeholder";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  useEffect(() => {
-    validateForm();
-  }, [websiteUrl, searchUrl]);
 
   const generateJSON = () => {
     return {
@@ -203,434 +44,228 @@ const Website = () => {
   };
 
   const jsonText = JSON.stringify(generateJSON(), null, 2);
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid = Object.keys(errors).length === 0 && websiteUrl.trim();
-
-  const getSearchExample = () => {
-    if (!searchUrl) return "No search URL configured";
-    return searchUrl.replace("{search_term_string}", "your search term");
-  };
+  const isFormValid = websiteUrl.trim() !== "";
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <SitelinksIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Website (Sitelinks) Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for your website to enable sitelinks and search functionality in search results.
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <Globe className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Website (Sitelinks) Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl">
+              Enable sitelinks and a search box for your website in Google search results.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", gap: 1 }}>
-              <CodeIcon />
-              <Typography variant="h6" fontWeight="bold">
-                WEBSITE CONFIGURATION
-              </Typography>
-              {isFormValid && (
-                <Chip 
-                  icon={<CheckIcon />} 
-                  label="Valid" 
-                  sx={{ bgcolor: "rgba(76, 175, 80, 0.8)", color: "white", ml: "auto" }}
-                />
-              )}
-            </Box>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex items-center gap-2">
+              <Layout className="h-5 w-5" />
+              <h2 className="font-semibold text-lg tracking-wide uppercase text-white">Configuration</h2>
+            </div>
             
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                {/* Website Details Section */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
-                    <WebsiteIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Website Details
-                  </Typography>
-                </Grid>
+            <div className="p-6 space-y-6">
+              {/* Website Details */}
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <FileText className="h-3 w-3" />
+                  Website Details
+                </h3>
+                
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Website URL *</label>
+                  <div className="relative">
+                    <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://example.com"
+                      value={websiteUrl}
+                      onChange={(e) => setWebsiteUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                    />
+                  </div>
+                </div>
 
-                {/* Website URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Website URL *"
-                    placeholder="https://example.com"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    error={!!errors.websiteUrl}
-                    helperText={errors.websiteUrl || "The main URL of your website"}
-                    InputProps={{
-                      startAdornment: <WebsiteIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                {/* Website Name */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Website Name"
-                    placeholder="My Awesome Website"
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Website Name</label>
+                  <input
+                    type="text"
+                    placeholder="My Awesome Project"
                     value={websiteName}
                     onChange={(e) => setWebsiteName(e.target.value)}
-                    helperText="The name of your website or organization"
-                    InputProps={{
-                      startAdornment: <GlobalIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
                   />
-                </Grid>
+                </div>
 
-                {/* Website Description */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Website Description"
-                    placeholder="A comprehensive platform for learning web development..."
-                    multiline
-                    rows={3}
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Website Description</label>
+                  <textarea
+                    placeholder="Briefly describe your website..."
                     value={websiteDescription}
                     onChange={(e) => setWebsiteDescription(e.target.value)}
-                    helperText={`${websiteDescription.length} characters (recommended: 50-160 for SEO)`}
-                    InputProps={{
-                      startAdornment: <DescriptionIcon sx={{ mr: 1, color: "action.active", alignSelf: "flex-start", mt: 1 }} />,
-                    }}
+                    rows={3}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
-                </Grid>
+                </div>
+              </div>
 
-                {/* Search Functionality Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Search Functionality" />
-                  </Divider>
-                </Grid>
+              <hr className="border-slate-100" />
 
-                <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                    <SearchIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Site Search Configuration
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Configure the search functionality to enable the search box in Google results
-                  </Typography>
-                </Grid>
+              {/* Search Configuration */}
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <Search className="h-3 w-3" />
+                  Sitelinks Search Box
+                </h3>
+                
+                <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg">
+                  <div className="flex gap-3">
+                    <Info className="h-5 w-5 text-indigo-600 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-indigo-800">
+                      <p className="font-semibold mb-1">How it works:</p>
+                      <p>Use your site's search URL with <span className="font-mono bg-indigo-100 px-1 rounded">{"{search_term_string}"}</span> as the placeholder.</p>
+                    </div>
+                  </div>
+                </div>
 
-                {/* Search URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Search URL Template"
-                    placeholder="https://example.com/search?q={search_term_string}"
-                    value={searchUrl}
-                    onChange={(e) => setSearchUrl(e.target.value)}
-                    error={!!errors.searchUrl}
-                    helperText={errors.searchUrl || "URL template for search functionality. Use {search_term_string} as placeholder"}
-                    InputProps={{
-                      startAdornment: <SearchIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Search URL Template</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="https://example.com/search?q={search_term_string}"
+                      value={searchUrl}
+                      onChange={(e) => setSearchUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                    />
+                  </div>
+                  <div className="mt-2 space-y-1 text-xs text-slate-500 pl-1">
+                    <p>• WordPress: {"https://mysite.com/?s={search_term_string}"}</p>
+                    <p>• Custom: {"https://mysite.com/search?query={search_term_string}"}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                {/* Search URL Examples */}
-                <Grid item xs={12}>
-                  <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1 }}>
-                    <Typography variant="body2" fontWeight="bold" gutterBottom>
-                      Search URL Examples:
-                    </Typography>
-                    <Stack spacing={1}>
-                      <Typography variant="caption" color="text.secondary">
-                        • WordPress: https://yoursite.com/?s={`{search_term_string}`}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        • Custom: https://yoursite.com/search?query={`{search_term_string}`}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        • E-commerce: https://yourstore.com/products?search={`{search_term_string}`}
-                      </Typography>
-                    </Stack>
-                    {searchUrl && (
-                      <Box sx={{ mt: 2, p: 1, bgcolor: "#e3f2fd", borderRadius: 1 }}>
-                        <Typography variant="caption" fontWeight="bold">
-                          Preview: {getSearchExample()}
-                        </Typography>
-                      </Box>
-                    )}
-                  </Box>
-                </Grid>
+        {/* Preview and Code Panel */}
+        <div className="space-y-8">
+          {/* Live Preview */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase text-white tracking-wide">Search Result Preview</h2>
+            </div>
+            
+            <div className="p-8 space-y-8">
+              {/* Google Result Preview */}
+              <div className="max-w-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center">
+                    <Globe className="h-3 w-3 text-slate-400" />
+                  </div>
+                  <div className="text-[14px] text-[#202124] leading-none truncate">
+                    {websiteUrl || "https://example.com"}
+                  </div>
+                </div>
+                
+                <h3 className="text-xl text-[#1a0dab] hover:underline cursor-pointer font-medium mb-1 truncate">
+                  {websiteName || "Your Website Title"}
+                </h3>
+                
+                <p className="text-[14px] text-[#4d5156] line-clamp-2 leading-relaxed mb-4">
+                  {websiteDescription || "The descriptive meta snippet that appears below your title in Google search results. This is crucial for CTR."}
+                </p>
 
-                {/* Benefits Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Benefits" />
-                  </Divider>
-                </Grid>
+                {/* Sitelinks Search Box Mock */}
+                {searchUrl && (
+                  <div className="mt-4 p-4 border border-slate-100 rounded-xl bg-slate-50/50 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <Search className="h-4 w-4 text-slate-400" />
+                      <div className="flex-1 h-8 bg-white border border-slate-200 rounded px-2 text-[13px] text-slate-400 flex items-center">
+                        Search within {websiteName || "this site"}...
+                      </div>
+                      <button className="h-8 px-4 bg-indigo-600 text-white rounded text-[12px] font-bold">
+                        Search
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-                <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                    Benefits of Website Structured Data
-                  </Typography>
-                  <Stack spacing={1}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <CheckIcon color="success" fontSize="small" />
-                      <Typography variant="body2">
-                        Enable sitelinks in Google search results
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <CheckIcon color="success" fontSize="small" />
-                      <Typography variant="body2">
-                        Add search box functionality to search results
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <CheckIcon color="success" fontSize="small" />
-                      <Typography variant="body2">
-                        Improve website visibility and click-through rates
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <CheckIcon color="success" fontSize="small" />
-                      <Typography variant="body2">
-                        Better user experience with direct search access
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Grid>
-              </Grid>
-            </Box>
-          </Paper>
+                {/* Sitelinks Mock */}
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-6 pt-6 border-t border-slate-100">
+                  <div className="space-y-1">
+                    <div className="text-[#1a0dab] text-sm hover:underline cursor-pointer">About Us</div>
+                    <div className="text-xs text-[#4d5156]">Learn more about our mission</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-[#1a0dab] text-sm hover:underline cursor-pointer">Contact</div>
+                    <div className="text-xs text-[#4d5156]">Get in touch with our team</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-[#1a0dab] text-sm hover:underline cursor-pointer">Services</div>
+                    <div className="text-xs text-[#4d5156]">Discover what we offer</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-[#1a0dab] text-sm hover:underline cursor-pointer">Blog</div>
+                    <div className="text-xs text-[#4d5156]">Read our latest updates</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard text={`<script type="application/ld+json">\n${jsonText}\n</script>`} onCopy={handleCopy}>
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
+          {/* Code Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-emerald-600 text-white px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5 text-white" />
+                <h2 className="font-semibold text-lg uppercase text-white tracking-wide">Generated JSON-LD</h2>
+              </div>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  type="button"
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5" />}
+                </button>
               </CopyToClipboard>
-            </Box>
+            </div>
             
-            {!isFormValid && (
-              <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
-                Please fix the errors above to generate valid structured data.
-              </Alert>
-            )}
-            
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML page.
-            </Alert>
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-xs font-bold flex items-center gap-2 italic uppercase tracking-wider">
+               Instruction: Place inside your &lt;head&gt; tag on the homepage.
+            </div>
 
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 500, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* Website Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  SEARCH RESULT PREVIEW
-                </Typography>
-              </Box>
-              <Card sx={{ borderRadius: 0 }}>
-                <CardContent>
-                  {/* Main Website Result */}
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" sx={{ color: "#1a0dab", mb: 1 }}>
-                      {websiteName || "Website Name"}
-                    </Typography>
-                    <Typography variant="body2" color="success.main" sx={{ mb: 1 }}>
-                      {websiteUrl || "https://example.com"}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {websiteDescription || "Website description will appear here in search results..."}
-                    </Typography>
-                  </Box>
-
-                  {/* Search Box Preview */}
-                  {searchUrl && (
-                    <Box sx={{ p: 2, bgcolor: "#f8f9fa", borderRadius: 1, mb: 2 }}>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <SearchIcon fontSize="small" color="action" />
-                        <TextField
-                          size="small"
-                          placeholder="Search this site..."
-                          disabled
-                          sx={{ flexGrow: 1 }}
-                        />
-                        <Button size="small" variant="outlined" disabled>
-                          Search
-                        </Button>
-                      </Stack>
-                      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-                        This search box may appear in Google results
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {/* Sitelinks Preview */}
-                  <Box>
-                    <Typography variant="body2" fontWeight="bold" gutterBottom>
-                      Potential Sitelinks:
-                    </Typography>
-                    <Grid container spacing={1}>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" sx={{ color: "#1a0dab", display: "block" }}>
-                          About Us
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Learn more about our company
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" sx={{ color: "#1a0dab", display: "block" }}>
-                          Contact
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Get in touch with us
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" sx={{ color: "#1a0dab", display: "block" }}>
-                          Services
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Explore our services
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" sx={{ color: "#1a0dab", display: "block" }}>
-                          Blog
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Read our latest articles
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: "block", fontStyle: "italic" }}>
-                      * Sitelinks are automatically generated by Google based on your site structure
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Paper>
-
-            {/* Validation Status */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: isFormValid ? "success.main" : "error.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  VALIDATION STATUS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert severity={websiteUrl.trim() ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Website URL: {websiteUrl.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={websiteName.trim() ? "success" : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      Website Name: {websiteName.trim() ? "✓ Added" : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={websiteDescription.trim() ? "success" : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      Description: {websiteDescription.trim() ? "✓ Added" : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert severity={searchUrl.trim() ? "success" : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      Search URL: {searchUrl.trim() ? "✓ Configured" : "ℹ Optional - enables search box"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert severity="info" variant="outlined">
-                    <Typography variant="caption">
-                      Schema Type: WebSite with SearchAction
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-
-            {/* Implementation Tips */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "info.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  IMPLEMENTATION TIPS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={2}>
-                  <Box>
-                    <Typography variant="body2" fontWeight="bold" gutterBottom>
-                      For best results:
-                    </Typography>
-                    <Typography variant="caption" display="block" gutterBottom>
-                      • Place this code on your homepage
-                    </Typography>
-                    <Typography variant="caption" display="block" gutterBottom>
-                      • Ensure your search functionality works properly
-                    </Typography>
-                    <Typography variant="caption" display="block" gutterBottom>
-                      • Use descriptive website name and description
-                    </Typography>
-                    <Typography variant="caption" display="block">
-                      • Test your search URL template before publishing
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+            <div className="bg-[#1e1e1e] p-6 relative">
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30">
+                <span className="text-slate-500">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
+                  {jsonText}
+                </div>
+                <span className="text-slate-500">&lt;/script&gt;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default Website;
+}

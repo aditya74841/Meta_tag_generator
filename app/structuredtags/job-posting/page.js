@@ -1,1515 +1,511 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useRef } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { countries, currencies } from "@/app/constant";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-  Stack,
-  FormControlLabel,
-  Switch,
-  Collapse,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Fade,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Work as JobIcon,
-  CheckCircle as CheckIcon,
-  Preview as PreviewIcon,
-  Code as CodeIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  Business as BusinessIcon,
-  LocationOn as LocationIcon,
-  AttachMoney as MoneyIcon,
-  CalendarToday as CalendarIcon,
-  Public as RemoteIcon,
-  Place as OnsiteIcon,
-  Person as PersonIcon,
-  Schedule as ScheduleIcon,
-  Description as DescriptionIcon,
-  Link as LinkIcon,
-  Home as AddressIcon,
-  Public as PublicIcon,
-} from "@mui/icons-material";
+import { 
+  Briefcase, 
+  Building2, 
+  MapPin, 
+  Calendar, 
+  DollarSign, 
+  Globe, 
+  ShieldCheck, 
+  Layout, 
+  Eye, 
+  Code, 
+  CheckCircle2, 
+  Copy,
+  Plus,
+  Trash2,
+  Image as ImageIcon,
+  Upload,
+  Link2,
+  AlertCircle,
+  Clock,
+  ExternalLink
+} from "lucide-react";
 
-const JobPosting = () => {
-  const formatDate = (date) => {
-    if (!date) return "";
-    const d = new Date(date);
-    const year = d.getFullYear();
-    let month = d.getMonth() + 1;
-    if (month < 10) month = `0${month}`;
-    let day = d.getDate();
-    if (day < 10) day = `0${day}`;
-    return `${year}-${month}-${day}`;
-  };
-
-  const [jobTitle, setJobTitle] = useState("");
+export default function JobPostingGenerator() {
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [postedDate, setPostedDate] = useState(formatDate(new Date()));
-  const [expiryDate, setExpiryDate] = useState("");
-  const [companyName, setCompanyName] = useState("");
+  const [company, setCompany] = useState("");
   const [companyUrl, setCompanyUrl] = useState("");
-  const [employmentType, setEmploymentType] = useState("FULL_TIME");
-  const [includeSalary, setIncludeSalary] = useState(false);
-  const [isRemote, setIsRemote] = useState(false);
-  const [minSalary, setMinSalary] = useState("");
-  const [maxSalary, setMaxSalary] = useState("");
-  const [currency, setCurrency] = useState("USD");
-  const [perTime, setPerTime] = useState("YEAR");
-  const [streetAddress, setStreetAddress] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [uploadedLogo, setUploadedLogo] = useState(null); // Base64 for preview
+  const [logoMode, setLogoMode] = useState("url"); // "url" or "upload"
+  const [locationType, setLocationType] = useState("Onsite"); // "Onsite", "Remote", "Hybrid"
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zipCode, setZipCode] = useState("");
+  const [region, setRegion] = useState("");
   const [country, setCountry] = useState("");
+  const [employmentType, setEmploymentType] = useState("FULL_TIME");
+  const [salaryMin, setSalaryMin] = useState("");
+  const [salaryMax, setSalaryMax] = useState("");
+  const [currency, setCurrency] = useState("USD");
+  const [unit, setUnit] = useState("YEAR");
+  const [datePosted, setDatePosted] = useState("");
+  const [validThrough, setValidThrough] = useState("");
   const [copied, setCopied] = useState(false);
-  const [errors, setErrors] = useState({});
+  const fileInputRef = useRef(null);
 
-  // Validation
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!jobTitle.trim()) newErrors.jobTitle = "Job title is required";
-    if (!description.trim())
-      newErrors.description = "Job description is required";
-    if (!companyName.trim()) newErrors.companyName = "Company name is required";
-    if (!postedDate) newErrors.postedDate = "Posted date is required";
-    if (!expiryDate) newErrors.expiryDate = "Expiry date is required";
-
-    // Date validation
-    if (
-      postedDate &&
-      expiryDate &&
-      new Date(postedDate) >= new Date(expiryDate)
-    ) {
-      newErrors.expiryDate = "Expiry date must be after posted date";
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedLogo(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
-
-    // URL validation
-    const urlPattern = /^https?:\/\/.+/;
-    if (companyUrl && !urlPattern.test(companyUrl)) {
-      newErrors.companyUrl =
-        "Please enter a valid URL starting with http:// or https://";
-    }
-
-    // Country validation
-    if (!country) newErrors.country = "Country is required";
-
-    // Salary validation
-    if (includeSalary) {
-      if (!minSalary || minSalary <= 0)
-        newErrors.minSalary = "Valid minimum salary is required";
-      if (!maxSalary || maxSalary <= 0)
-        newErrors.maxSalary = "Valid maximum salary is required";
-      if (
-        minSalary &&
-        maxSalary &&
-        parseFloat(minSalary) >= parseFloat(maxSalary)
-      ) {
-        newErrors.maxSalary =
-          "Maximum salary must be higher than minimum salary";
-      }
-      if (!currency) newErrors.currency = "Currency is required";
-      if (!perTime) newErrors.perTime = "Pay period is required";
-    }
-
-    // Location validation for non-remote jobs
-    if (!isRemote) {
-      if (!city.trim())
-        newErrors.city = "City is required for office-based jobs";
-      if (!state.trim())
-        newErrors.state = "State/Province is required for office-based jobs";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
-  useEffect(() => {
-    validateForm();
-  }, [
-    jobTitle,
-    description,
-    companyName,
-    postedDate,
-    expiryDate,
-    companyUrl,
-    country,
-    includeSalary,
-    minSalary,
-    maxSalary,
-    currency,
-    perTime,
-    isRemote,
-    city,
-    state,
-  ]);
-
-  const jsonData = {
-    "@context": "https://schema.org",
-    "@type": "JobPosting",
-    title: jobTitle,
-    description: description,
-    datePosted: postedDate,
-    validThrough: expiryDate,
-    hiringOrganization: {
-      "@type": "Organization",
-      name: companyName,
-      ...(companyUrl && { sameAs: companyUrl }),
-    },
-    employmentType: [employmentType],
-    ...(includeSalary &&
-      minSalary &&
-      maxSalary && {
+  const generateJSON = () => {
+    return {
+      "@context": "https://schema.org/",
+      "@type": "JobPosting",
+      title: title,
+      description: description,
+      datePosted: datePosted,
+      validThrough: validThrough,
+      employmentType: employmentType,
+      hiringOrganization: {
+        "@type": "Organization",
+        name: company,
+        sameAs: companyUrl,
+        logo: logoMode === "upload" ? "https://example.com/images/logo.png" : (logoUrl || undefined)
+      },
+      jobLocation: locationType === "Remote" ? {
+        "@type": "VirtualLocation"
+      } : {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: city,
+          addressRegion: region,
+          addressCountry: country
+        }
+      },
+      ...(salaryMin && {
         baseSalary: {
           "@type": "MonetaryAmount",
           currency: currency,
           value: {
             "@type": "QuantitativeValue",
-            minValue: parseFloat(minSalary),
-            maxValue: parseFloat(maxSalary),
-            unitText: perTime,
-          },
-        },
-      }),
-    ...(isRemote
-      ? {
-          jobLocationType: "TELECOMMUTE",
-          ...(country && {
-            applicantLocationRequirements: {
-              "@type": "Country",
-              name: country,
-            },
-          }),
+            minValue: salaryMin,
+            maxValue: salaryMax || salaryMin,
+            unitText: unit
+          }
         }
-      : {
-          jobLocation: {
-            "@type": "Place",
-            address: {
-              "@type": "PostalAddress",
-              ...(streetAddress && { streetAddress: streetAddress }),
-              ...(city && { addressLocality: city }),
-              ...(state && { addressRegion: state }),
-              ...(zipCode && { postalCode: zipCode }),
-              ...(country && { addressCountry: country }),
-            },
-          },
-        }),
+      })
+    };
   };
 
-  const jsonText = JSON.stringify(jsonData, null, 2);
+  const jsonText = JSON.stringify(generateJSON(), null, 2);
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid =
-    Object.keys(errors).length === 0 &&
-    jobTitle.trim() &&
-    description.trim() &&
-    companyName.trim() &&
-    postedDate &&
-    expiryDate &&
-    country;
-
-  const getEmploymentTypeLabel = (type) => {
-    const types = {
-      FULL_TIME: "Full Time",
-      PART_TIME: "Part Time",
-      CONTRACTOR: "Contractor",
-      TEMPORARY: "Temporary",
-      INTERN: "Intern",
-      VOLUNTEER: "Volunteer",
-      PER_DIEM: "Per Diem",
-      OTHER: "Other",
-    };
-    return types[type] || type;
-  };
-
   return (
-    <Box
-      sx={{
-        p: 3,
-        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 text-slate-800">
       {/* Header Section */}
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          mb: 3,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <JobIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Job Posting Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for job postings to enhance visibility in
-              search results and job boards.
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <Briefcase className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Job Posting Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl">
+              Help top talent find your positions. This schema enables your jobs to appear in the Google Jobs search experience.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box
-              sx={{
-                bgcolor: "primary.main",
-                color: "white",
-                p: 2,
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <CodeIcon />
-              <Typography variant="h6" fontWeight="bold">
-                JOB POSTING CONFIGURATION
-              </Typography>
-              {isFormValid && (
-                <Chip
-                  icon={<CheckIcon />}
-                  label="Valid"
-                  sx={{
-                    bgcolor: "rgba(76, 175, 80, 0.8)",
-                    color: "white",
-                    ml: "auto",
-                  }}
-                />
-              )}
-            </Box>
-
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                {/* Basic Information */}
-                <Grid item xs={12}>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    color="primary"
-                    fontWeight="bold"
-                  >
-                    Job Information
-                  </Typography>
-                </Grid>
-
-                {/* Job Title */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Job Title *"
-                    placeholder="e.g., Senior Software Engineer"
-                    value={jobTitle}
-                    onChange={(e) => setJobTitle(e.target.value)}
-                    error={!!errors.jobTitle}
-                    helperText={
-                      errors.jobTitle || `${jobTitle.length} characters`
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <JobIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
+        <div className="space-y-6 text-slate-800">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex items-center gap-2">
+              <Layout className="h-5 w-5" />
+              <h2 className="font-semibold text-lg tracking-wide uppercase">Opportunity Details</h2>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Job Basics */}
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Job Title *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Senior Frontend Engineer"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
                   />
-                </Grid>
-
-                {/* Description */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Job Description *"
-                    placeholder="Detailed job description, responsibilities, and requirements..."
-                    multiline
-                    rows={4}
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Job Description *</label>
+                  <textarea
+                    placeholder="Describe the role, requirements, and benefits..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    error={!!errors.description}
-                    helperText={
-                      errors.description ||
-                      `${description.length} characters (recommended: 200+ for better SEO)`
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <DescriptionIcon
-                          sx={{
-                            mr: 1,
-                            color: "action.active",
-                            alignSelf: "flex-start",
-                            mt: 1,
-                          }}
-                        />
-                      ),
-                    }}
+                    rows={4}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
                   />
-                </Grid>
+                </div>
+              </div>
 
-                {/* Employment Type */}
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Employment Type</InputLabel>
-                    <Select
-                      value={employmentType}
-                      label="Employment Type"
-                      onChange={(e) => setEmploymentType(e.target.value)}
-                    >
-                      <MenuItem value="FULL_TIME">Full Time</MenuItem>
-                      <MenuItem value="PART_TIME">Part Time</MenuItem>
-                      <MenuItem value="CONTRACTOR">Contractor</MenuItem>
-                      <MenuItem value="TEMPORARY">Temporary</MenuItem>
-                      <MenuItem value="INTERN">Intern</MenuItem>
-                      <MenuItem value="VOLUNTEER">Volunteer</MenuItem>
-                      <MenuItem value="PER_DIEM">Per Diem</MenuItem>
-                      <MenuItem value="OTHER">Other</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                {/* Work Location Type */}
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Work Location</InputLabel>
-                    <Select
-                      value={isRemote ? "remote" : "onsite"}
-                      label="Work Location"
-                      onChange={(e) => setIsRemote(e.target.value === "remote")}
-                    >
-                      <MenuItem value="onsite">
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <OnsiteIcon fontSize="small" />
-                          On-site
-                        </Box>
-                      </MenuItem>
-                      <MenuItem value="remote">
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <RemoteIcon fontSize="small" />
-                          100% Remote
-                        </Box>
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                {/* Dates */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Posted Date *"
-                    type="date"
-                    value={postedDate}
-                    onChange={(e) => setPostedDate(e.target.value)}
-                    error={!!errors.postedDate}
-                    helperText={errors.postedDate}
-                    InputProps={{
-                      startAdornment: (
-                        <CalendarIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Expiry Date *"
-                    type="date"
-                    value={expiryDate}
-                    onChange={(e) => setExpiryDate(e.target.value)}
-                    error={!!errors.expiryDate}
-                    helperText={errors.expiryDate}
-                    InputProps={{
-                      startAdornment: (
-                        <CalendarIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
-
-                {/* Company Information */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Company Information" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Company Name *"
-                    placeholder="Your Company Name"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    error={!!errors.companyName}
-                    helperText={errors.companyName}
-                    InputProps={{
-                      startAdornment: (
-                        <BusinessIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Company Website"
-                    placeholder="https://company.com"
-                    value={companyUrl}
-                    onChange={(e) => setCompanyUrl(e.target.value)}
-                    error={!!errors.companyUrl}
-                    helperText={errors.companyUrl || "Optional but recommended"}
-                    InputProps={{
-                      startAdornment: (
-                        <LinkIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                {/* Optional Sections */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Additional Information" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={includeSalary}
-                        onChange={(e) => setIncludeSalary(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label={
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <MoneyIcon fontSize="small" />
-                        Include Salary Information
-                      </Box>
-                    }
-                  />
-                </Grid>
-
-                {/* Salary Section */}
-                <Collapse in={includeSalary} className="p-6">
-                  <Grid container spacing={2} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography
-                        variant="h6"
-                        color="primary"
-                        fontWeight="bold"
-                      >
-                        <MoneyIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Salary Information
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        label="Minimum Salary *"
-                        type="number"
-                        placeholder="50000"
-                        value={minSalary}
-                        onChange={(e) => setMinSalary(e.target.value)}
-                        error={!!errors.minSalary}
-                        helperText={errors.minSalary}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        label="Maximum Salary *"
-                        type="number"
-                        placeholder="80000"
-                        value={maxSalary}
-                        onChange={(e) => setMaxSalary(e.target.value)}
-                        error={!!errors.maxSalary}
-                        helperText={errors.maxSalary}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                      <FormControl fullWidth error={!!errors.currency}>
-                        <InputLabel>Currency</InputLabel>
-                        <Select
-                          value={currency}
-                          label="Currency"
-                          onChange={(e) => setCurrency(e.target.value)}
-                        >
-                          {currencies.map((curr) => (
-                            <MenuItem key={curr.value} value={curr.value}>
-                              {curr.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                      <FormControl fullWidth error={!!errors.perTime}>
-                        <InputLabel>Per</InputLabel>
-                        <Select
-                          value={perTime}
-                          label="Per"
-                          onChange={(e) => setPerTime(e.target.value)}
-                        >
-                          <MenuItem value="HOUR">Hour</MenuItem>
-                          <MenuItem value="DAY">Day</MenuItem>
-                          <MenuItem value="WEEK">Week</MenuItem>
-                          <MenuItem value="MONTH">Month</MenuItem>
-                          <MenuItem value="YEAR">Year</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </Collapse>
-
-                {/* Location Section */}
-                {/* <Collapse in={!isRemote}>
-                  <Grid container spacing={2} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography variant="h6" color="primary" fontWeight="bold">
-                        <LocationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Office Location
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Street Address"
-                        placeholder="123 Main Street"
-                        value={streetAddress}
-                        onChange={(e) => setStreetAddress(e.target.value)}
-                        InputProps={{
-                          startAdornment: <AddressIcon sx={{ mr: 1, color: "action.active" }} />,
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label={isRemote ? "City" : "City *"}
-                        placeholder="New York"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        error={!!errors.city}
-                        helperText={errors.city}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label={isRemote ? "State/Province" : "State/Province *"}
-                        placeholder="NY"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        error={!!errors.state}
-                        helperText={errors.state}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="ZIP/Postal Code"
-                        placeholder="10001"
-                        value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
-                      />
-                    </Grid>
-                  </Grid>
-                </Collapse> */}
-                {/* Location Section - Properly Aligned Design */}
-                <Collapse in={!isRemote} className="p-6">
-                  <Grid container spacing={2} sx={{ mt: 1 }}>
-                    <Grid item xs={12}
-                    
-                    >
-                      <Typography
-                        variant="h6"
-                        color="primary"
-                        fontWeight="bold"
-                      >
-                        <LocationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Office Location
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 2 }}
-                      >
-                        Provide the physical address where employees will work
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Street Address"
-                        placeholder="123 Main Street, Suite 100"
-                        value={streetAddress}
-                        onChange={(e) => setStreetAddress(e.target.value)}
-                        error={!!errors.streetAddress}
-                        helperText={
-                          errors.streetAddress ||
-                          "Complete street address including suite/floor if applicable"
-                        }
-                        InputProps={{
-                          startAdornment: (
-                            <AddressIcon
-                              sx={{ mr: 1, color: "action.active" }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label={!isRemote ? "City *" : "City"}
-                        placeholder="New York"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        error={!!errors.city}
-                        helperText={errors.city}
-                        InputProps={{
-                          startAdornment: (
-                            <LocationIcon
-                              sx={{ mr: 1, color: "action.active" }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label={
-                          !isRemote ? "State/Province *" : "State/Province"
-                        }
-                        placeholder="New York"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        error={!!errors.state}
-                        helperText={errors.state}
-                        InputProps={{
-                          startAdornment: (
-                            <LocationIcon
-                              sx={{ mr: 1, color: "action.active" }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="ZIP/Postal Code"
-                        placeholder="10001"
-                        value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
-                        error={!!errors.zipCode}
-                        helperText={errors.zipCode}
-                        InputProps={{
-                          startAdornment: (
-                            <AddressIcon
-                              sx={{ mr: 1, color: "action.active" }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth error={!!errors.country}>
-                        <InputLabel>Country *</InputLabel>
-                        <Select
-                          value={country}
-                          label="Country *"
-                          onChange={(e) => setCountry(e.target.value)}
-                        >
-                          <MenuItem value="">Select Country</MenuItem>
-                          {countries.map((country) => (
-                            <MenuItem key={country.value} value={country.value}>
-                              {country.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {errors.country && (
-                          <Typography
-                            variant="caption"
-                            color="error"
-                            sx={{ mt: 0.5, ml: 1 }}
-                          >
-                            {errors.country}
-                          </Typography>
-                        )}
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </Collapse>
-                {/* Country (always shown) */}
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth error={!!errors.country}>
-                    <InputLabel>Country *</InputLabel>
-                    <Select
-                      value={country}
-                      label="Country *"
-                      onChange={(e) => setCountry(e.target.value)}
-                    >
-                      <MenuItem value="">Select Country</MenuItem>
-                      {countries.map((country) => (
-                        <MenuItem key={country.value} value={country.value}>
-                          {country.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {errors.country && (
-                      <Typography
-                        variant="caption"
-                        color="error"
-                        sx={{ mt: 0.5, ml: 1 }}
-                      >
-                        {errors.country}
-                      </Typography>
-                    )}
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </Box>
-          </Paper>
-
-          {/* Generated Code */}
-          <Paper
-            elevation={3}
-            sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}
-          >
-            <Box
-              sx={{
-                bgcolor: "success.main",
-                color: "white",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard
-                text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-                onCopy={handleCopy}
-              >
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
-              </CopyToClipboard>
-            </Box>
-
-            {!isFormValid && (
-              <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
-                Please fix the errors above to generate valid structured data.
-              </Alert>
-            )}
-
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML
-              page.
-            </Alert>
-
-            <Box
-              sx={{
-                p: 3,
-                bgcolor: "#1e1e1e",
-                color: "#f8f8f2",
-                maxHeight: 500,
-                overflow: "auto",
-              }}
-            >
-              <pre
-                style={{
-                  fontFamily: "'Fira Code', monospace",
-                  fontSize: "0.875rem",
-                  lineHeight: "1.5",
-                  margin: 0,
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* Job Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  JOB POSTING PREVIEW
-                </Typography>
-              </Box>
-              <Card sx={{ borderRadius: 0 }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {jobTitle || "Job Title"}
-                  </Typography>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 1,
-                    }}
-                  >
-                    <BusinessIcon fontSize="small" />
-                    <Typography variant="body2">
-                      {companyName || "Company Name"}
-                    </Typography>
-                  </Box>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 1,
-                    }}
-                  >
-                    {isRemote ? (
-                      <RemoteIcon fontSize="small" />
-                    ) : (
-                      <LocationIcon fontSize="small" />
-                    )}
-                    <Typography variant="body2">
-                      {isRemote
-                        ? `Remote • ${country || "Country"}`
-                        : `${city ? `${city}, ` : ""}${state || "Location"}`}
-                    </Typography>
-                  </Box>
-
-                  <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-                    <Chip
-                      label={getEmploymentTypeLabel(employmentType)}
-                      size="small"
-                      color="primary"
+              {/* Company Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Company Name</label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="e.g. MetaForge Pro"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
                     />
-                    {isRemote && (
-                      <Chip
-                        icon={<RemoteIcon />}
-                        label="Remote"
-                        size="small"
-                        color="info"
-                      />
-                    )}
-                  </Stack>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Company Website</label>
+                  <div className="relative">
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://metaforge.pro"
+                      value={companyUrl}
+                      onChange={(e) => setCompanyUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
 
-                  {includeSalary && minSalary && maxSalary && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        mb: 2,
-                      }}
+              {/* Logo Section */}
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-slate-700">Hiring Logo</label>
+                  <div className="flex bg-slate-100 rounded-lg p-1 text-[10px] font-black uppercase">
+                    <button
+                      onClick={() => setLogoMode("url")}
+                      className={`px-3 py-1 rounded-md transition-all ${logoMode === "url" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                     >
-                      <MoneyIcon fontSize="small" />
-                      <Typography variant="body2" fontWeight="bold">
-                        {currency} {minSalary} - {maxSalary} per{" "}
-                        {perTime.toLowerCase()}
-                      </Typography>
-                    </Box>
-                  )}
-
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    {description
-                      ? `${description.substring(0, 150)}${
-                          description.length > 150 ? "..." : ""
-                        }`
-                      : "Job description will appear here..."}
-                  </Typography>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mt: 2,
-                    }}
+                      URL
+                    </button>
+                    <button
+                      onClick={() => setLogoMode("upload")}
+                      className={`px-3 py-1 rounded-md transition-all ${logoMode === "upload" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      Upload
+                    </button>
+                  </div>
+                </div>
+                
+                {logoMode === "url" ? (
+                  <div className="relative">
+                    <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://example.com/logo.png"
+                      value={logoUrl}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                    />
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => fileInputRef.current.click()}
+                    className="group border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all rounded-xl p-8 text-center cursor-pointer"
                   >
-                    <CalendarIcon fontSize="small" />
-                    <Typography variant="caption" color="text.secondary">
-                      Posted: {postedDate || "Not set"} • Expires:{" "}
-                      {expiryDate || "Not set"}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Paper>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload} 
+                      className="hidden" 
+                      accept="image/*"
+                    />
+                    <div className="flex flex-col items-center">
+                      <div className="bg-slate-50 p-3 rounded-full mb-2 group-hover:bg-indigo-100 transition-colors">
+                        <Upload className="h-6 w-6 text-slate-300 group-hover:text-indigo-600" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-500 group-hover:text-indigo-700">Choose Company Logo</span>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-            {/* Validation Status */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box
-                sx={{
-                  bgcolor: isFormValid ? "success.main" : "error.main",
-                  color: "white",
-                  p: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight="bold">
-                  VALIDATION STATUS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert
-                    severity={jobTitle.trim() ? "success" : "error"}
-                    variant="outlined"
+              {/* Employment & Salary */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Employment Type</label>
+                  <select
+                    value={employmentType}
+                    onChange={(e) => setEmploymentType(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
                   >
-                    <Typography variant="caption">
-                      Job Title: {jobTitle.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
+                    <option value="FULL_TIME">Full-time</option>
+                    <option value="PART_TIME">Part-time</option>
+                    <option value="CONTRACTOR">Contract</option>
+                    <option value="TEMPORARY">Temporary</option>
+                    <option value="INTERN">Internship</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Salary Range (Min - Max)</label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <DollarSign className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={salaryMin}
+                        onChange={(e) => setSalaryMin(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div className="relative flex-1">
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={salaryMax}
+                        onChange={(e) => setSalaryMax(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                  <Alert
-                    severity={description.trim() ? "success" : "error"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Description:{" "}
-                      {description.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
+              {/* Recruitment Timeline */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Date Posted</label>
+                  <input
+                    type="date"
+                    value={datePosted}
+                    onChange={(e) => setDatePosted(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Expiry Date</label>
+                  <input
+                    type="date"
+                    value={validThrough}
+                    onChange={(e) => setValidThrough(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  />
+                </div>
+              </div>
 
-                  <Alert
-                    severity={companyName.trim() ? "success" : "error"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Company: {companyName.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
+              {/* Location */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <MapPin className="h-3 w-3" />
+                    Job Location
+                  </h3>
+                  <div className="flex bg-slate-100 rounded-lg p-1 text-[10px] font-black uppercase">
+                    <button
+                      onClick={() => setLocationType("Onsite")}
+                      className={`px-3 py-1 rounded-md transition-all ${locationType === "Onsite" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`}
+                    >
+                      On-site
+                    </button>
+                    <button
+                      onClick={() => setLocationType("Remote")}
+                      className={`px-3 py-1 rounded-md transition-all ${locationType === "Remote" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`}
+                    >
+                      Remote
+                    </button>
+                  </div>
+                </div>
 
-                  <Alert
-                    severity={postedDate && expiryDate ? "success" : "error"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Dates:{" "}
-                      {postedDate && expiryDate
-                        ? "✓ Set"
-                        : "✗ Both dates required"}
-                    </Typography>
-                  </Alert>
+                {locationType === "Onsite" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input
+                      type="text"
+                      placeholder="City"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="State"
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Country"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                )}
+                {locationType === "Remote" && (
+                  <div className="bg-emerald-50 text-emerald-700 text-xs font-bold p-4 rounded-xl flex items-center gap-3">
+                     <ShieldCheck className="h-5 w-5" />
+                     Work-from-home capability will be explicitly marked in the schema.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
 
-                  <Alert
-                    severity={country ? "success" : "error"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Country: {country ? "✓ Selected" : "✗ Required"}
-                    </Typography>
-                  </Alert>
+        {/* Preview and Code Panel */}
+        <div className="space-y-8 text-white">
+          {/* Live Preview */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase tracking-wide">Google Jobs Preview</h2>
+            </div>
+            
+            <div className="p-8 pb-12">
+               <div className="max-w-lg mx-auto bg-white rounded-2xl border border-slate-100 shadow-xl overflow-hidden">
+                 <div className="p-6">
+                    <div className="flex gap-4 mb-6">
+                        <div className="h-16 w-16 bg-slate-50 border border-slate-100 rounded-xl p-2 flex items-center justify-center shrink-0">
+                          {logoMode === "url" ? (
+                            logoUrl ? (
+                              <img src={logoUrl} alt="Logo" className="max-h-full max-w-full object-contain" />
+                            ) : (
+                              <Building2 className="h-8 w-8 text-slate-200" />
+                            )
+                          ) : (
+                            uploadedLogo ? (
+                              <img src={uploadedLogo} alt="Logo" className="max-h-full max-w-full object-contain" />
+                            ) : (
+                              <Upload className="h-8 w-8 text-slate-200" />
+                            )
+                          )}
+                        </div>
+                       <div className="flex-1">
+                          <h3 className="text-[18px] font-bold text-slate-900 leading-tight mb-1">{title || "Job Opportunity Title"}</h3>
+                          <div className="text-[14px] text-slate-500 font-medium">{company || "Hiring Company Name"}</div>
+                       </div>
+                       <div className="shrink-0">
+                          <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                             <Briefcase className="h-5 w-5" />
+                          </div>
+                       </div>
+                    </div>
 
-                  <Alert
-                    severity={
-                      includeSalary
-                        ? minSalary && maxSalary
-                          ? "success"
-                          : "warning"
-                        : "info"
-                    }
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Salary:{" "}
-                      {includeSalary
-                        ? minSalary && maxSalary
-                          ? "✓ Complete"
-                          : "⚠ Incomplete"
-                        : "ℹ Not included"}
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+                    <div className="flex flex-wrap gap-x-6 gap-y-3 mb-8">
+                       <div className="flex items-center gap-2 text-slate-600">
+                          <MapPin className="h-4 w-4 text-rose-500" />
+                          <span className="text-[13px] font-bold">
+                            {locationType === "Remote" ? "Work from home" : (city ? `${city}, ${country}` : "Location not specified")}
+                          </span>
+                       </div>
+                       <div className="flex items-center gap-2 text-slate-600">
+                          <Clock className="h-4 w-4 text-amber-500" />
+                          <span className="text-[13px] font-bold uppercase tracking-tight">
+                            {employmentType.replace('_', ' ')}
+                          </span>
+                       </div>
+                       {salaryMin && (
+                         <div className="flex items-center gap-2 text-slate-600">
+                            <DollarSign className="h-4 w-4 text-emerald-500" />
+                            <span className="text-[13px] font-bold italic">
+                              {currency} {salaryMin} - {salaryMax || salaryMin} / {unit.toLowerCase()}
+                            </span>
+                         </div>
+                       )}
+                    </div>
+
+                    <p className="text-[14px] text-slate-600 line-clamp-4 leading-relaxed mb-8 italic">
+                      {description || "A comprehensive job description will appear here, helping search engines match this opportunity with qualified candidates..."}
+                    </p>
+
+                    <div className="flex gap-4">
+                       <button className="flex-1 bg-[#1a73e8] text-white font-bold py-3 rounded-full text-sm hover:bg-[#1557b0] transition-colors shadow-lg shadow-blue-100">
+                          Apply on Site
+                       </button>
+                       <button className="flex-1 bg-slate-50 text-slate-700 font-bold py-3 rounded-full text-sm border border-slate-100 hover:bg-slate-100 transition-colors">
+                          Save Details
+                       </button>
+                    </div>
+                 </div>
+                 
+                 <div className="bg-slate-50 px-6 py-4 flex items-center justify-between border-t border-slate-100">
+                    <span className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">
+                       Posted {datePosted || "today"}
+                    </span>
+                    <div className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-black uppercase tracking-tighter">
+                       <AlertCircle className="h-3 w-3" />
+                       Verified Schema
+                    </div>
+                 </div>
+               </div>
+
+               <p className="text-center text-[11px] text-slate-400 mt-8 font-medium px-12">
+                 Your job postings will be eligible to appear in the Google Search results UI, specifically designed for recruitment.
+               </p>
+            </div>
+          </div>
+
+          {/* Generated Code Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-emerald-600 text-white px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                <h2 className="font-semibold text-lg uppercase tracking-wide">Generated JSON-LD</h2>
+              </div>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  type="button"
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5 text-white" />}
+                </button>
+              </CopyToClipboard>
+            </div>
+            
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-sm">
+               <p className="font-medium italic text-blue-800">Place this code block inside your site's &lt;head&gt; tag.</p>
+               {logoMode === "upload" && (
+                 <p className="mt-1 text-xs font-bold text-blue-600">
+                    ⚠️ Note: Replace the placeholder logo URL in the code with your actual public image link.
+                 </p>
+               )}
+            </div>
+            
+            <div className="bg-[#1e1e1e] p-6 relative group overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 border-b border-l border-white/5 bg-white/5 uppercase text-[10px] font-bold tracking-widest text-[#f8f8f2]/20">
+                  jobs-schema.ld
+               </div>
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/40 pt-4">
+                <span className="text-indigo-400 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
+                  {jsonText}
+                </div>
+                <span className="text-indigo-400 font-bold">&lt;/script&gt;</span>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-indigo-50 border-t border-indigo-100 flex items-start gap-3">
+               <ExternalLink className="h-4 w-4 text-indigo-500 mt-0.5 shrink-0" />
+               <p className="text-[11px] text-indigo-800 leading-normal">
+                  Remember to remove the posting once the position is filled by setting the <strong>validThrough</strong> date or deleting the schema.
+               </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default JobPosting;
-
-// "use client";
-
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-// import { countries, currencies, timezones } from "@/app/constant";
-// const JobPosting = () => {
-//   const formatDate = (date) => {
-//     const d = new Date(date);
-//     const year = d.getFullYear();
-//     let month = d.getMonth() + 1;
-//     if (month < 10) month = `0${month}`;
-//     let day = d.getDate();
-//     if (day < 10) day = `0${day}`;
-//     return `${year}-${month}-${day}`;
-//   };
-
-//   const [jobTitle, setJobTitle] = useState("");
-//   const [description, setDescription] = useState("");
-//   const [postedDate, setPostedDate] = useState("");
-//   const [expiryDate, setExpiryDate] = useState("");
-//   const [companyName, setCompanyName] = useState("");
-//   const [companyUrl, setCompanyUrl] = useState("");
-//   const [employmentType, setEmploymentType] = useState("FULL TIME");
-//   const [includeSalary, setIncludeSalary] = useState(false);
-//   const [isRemote, setIsRemote] = useState(false);
-//   const [minSalary, setMinSalary] = useState(0);
-//   const [maxSalary, setMaxSalary] = useState(0);
-//   const [currency, setCurrency] = useState("");
-//   const [perTime, setPerTime] = useState("");
-//   const [streetAddress, setStreetAddress] = useState("");
-//   const [city, setCity] = useState("");
-//   const [state, setState] = useState("");
-//   const [zipCode, setZipCode] = useState("");
-//   const [country, setCountry] = useState("");
-
-//   const jsonData = {
-//     "@context": "http://schema.org/",
-//     "@type": "JobPosting",
-//     title: jobTitle,
-//     description: description,
-//     datePosted: formatDate(postedDate),
-//     validThrough: formatDate(expiryDate),
-//     hiringOrganization: {
-//       "@type": "Organization",
-//       sameAs: companyUrl,
-//       name: companyName,
-//     },
-//     employmentType: [employmentType],
-//     // Check if includeSalary is true
-//     ...(includeSalary && {
-//       baseSalary: {
-//         "@type": "MonetaryAmount",
-//         currency: currency,
-//         value: {
-//           "@type": "QuantitativeValue",
-//           minValue: minSalary,
-//           maxValue: maxSalary,
-//           unitText: perTime,
-//         },
-//       },
-//     }),
-//     // Check if isRemote is true
-//     ...(isRemote
-//       ? {
-//           jobLocationType: "TELECOMMUTE",
-//           applicantLocationRequirements: {
-//             "@type": "Country",
-//             name: country,
-//           },
-//         }
-//       : {
-//           jobLocation: {
-//             "@type": "Place",
-//             address: {
-//               streetAddress: streetAddress,
-//               addressLocality: city,
-//               addressRegion: state,
-//               postalCode: zipCode,
-//               addressCountry: country,
-//             },
-//           },
-//         }),
-//   };
-//   const jsonText = JSON.stringify(jsonData, null, 2);
-
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         Article Structured Data Generator
-//       </h1>
-//       <p className="text-white text-sm mt-2">
-//         Article, BlogPosting and NewsArticle
-//       </p>
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Job Title
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Job Title"
-//                   value={jobTitle}
-//                   onChange={(e) => setJobTitle(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="message"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Description
-//                 </label>
-//                 <textarea
-//                   id="message"
-//                   rows="2"
-//                   class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Description"
-//                   value={description}
-//                   onChange={(e) => setDescription(e.target.value)}
-//                 ></textarea>
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Posted Date
-//                 </label>
-//                 <input
-//                   type="date"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={postedDate}
-//                   onChange={(e) => setPostedDate(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Expiry Date
-//                 </label>
-//                 <input
-//                   type="date"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={expiryDate}
-//                   onChange={(e) => setExpiryDate(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Company Name
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Company Name"
-//                   value={companyName}
-//                   onChange={(e) => setCompanyName(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Company Url
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Company Url"
-//                   value={companyUrl}
-//                   onChange={(e) => setCompanyUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   htmlFor="type"
-//                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Employment Type
-//                 </label>
-//                 <select
-//                   id="type"
-//                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={employmentType}
-//                   onChange={(e) => setEmploymentType(e.target.value)}
-//                 >
-//                   <option value="Contractor">Contractor</option>
-//                   <option value="Full time">Full time</option>
-//                   <option value="Intern">Intern</option>
-//                   <option value="Other">Other</option>
-//                   <option value="Part time">Part time</option>
-//                   <option value="Per diem">Per diem</option>
-//                   <option value="Temporary">Temporary</option>
-//                 </select>
-//               </div>
-
-//               <div class="flex items-center mb-4 mt-5">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   onChange={() => {
-//                     setIncludeSalary(!includeSalary);
-//                   }}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   Include Salary
-//                 </label>
-//               </div>
-
-//               <div class="flex items-center mb-4">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   onChange={() => {
-//                     setIsRemote(!isRemote);
-//                   }}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   100% remote
-//                 </label>
-//               </div>
-
-//               {includeSalary && (
-//                 <>
-//                   <h1 className="text-white font-semibold mt-5">Salary </h1>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter Minimum salary"
-//                       value={minSalary}
-//                       onChange={(e) => setMinSalary(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter Maximum salary"
-//                       value={maxSalary}
-//                       onChange={(e) => setMaxSalary(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <select
-//                       id="type"
-//                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       value={currency}
-//                       onChange={(e) => setCurrency(e.target.value)}
-//                     >
-//                       <option>Select Currency</option>
-//                       {currencies.map((currency) => (
-//                         <option key={currency.value} value={currency.value}>
-//                           {currency.label}
-//                         </option>
-//                       ))}
-//                     </select>
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <select
-//                       id="type"
-//                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       value={perTime}
-//                       onChange={(e) => setPerTime(e.target.value)}
-//                     >
-//                       <option>Select Per Time</option>
-//                       <option value="Hour">Hour</option>
-//                       <option value="Day">Day</option>
-//                       <option value="Week">Week</option>
-//                       <option value="Month">Month</option>
-
-//                       <option value="Year">Year</option>
-//                     </select>
-//                   </div>
-//                 </>
-//               )}
-
-//               {!isRemote && (
-//                 <>
-//                   <h1 className="text-white font-semibold mt-5">Location </h1>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter street address"
-//                       value={streetAddress}
-//                       onChange={(e) => setStreetAddress(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter city"
-//                       value={city}
-//                       onChange={(e) => setCity(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter state/province/region"
-//                       value={state}
-//                       onChange={(e) => setState(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter zip/postal/code"
-//                       value={zipCode}
-//                       onChange={(e) => setZipCode(e.target.value)}
-//                     />
-//                   </div>
-//                 </>
-//               )}
-//               <div className="mt-5">
-//                 <select
-//                   id="type"
-//                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={country}
-//                   onChange={(e) => setCountry(e.target.value)}
-//                 >
-//                   <option>Select Country</option>
-//                   {countries.map((country) => (
-//                     <option key={country.value} value={country.value}>
-//                       {country.label}
-//                     </option>
-//                   ))}
-//                 </select>
-//               </div>
-
-//               {/* Other form fields go here */}
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//             <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//               CODE
-//             </h1>
-//             <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//               <p className="bg">
-//                 Copy this to the &lt;head&gt; section of your page.
-//               </p>
-//               <CopyToClipboard
-//                 text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//               >
-//                 <div className="ml-auto w-1/6">
-//                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                     Copy
-//                   </button>
-//                 </div>
-//               </CopyToClipboard>
-//             </div>
-//             <div className="space-y-2 mt-5 ml-4">
-//               <pre className="text-white">
-//                 <pre className="text-white">
-//                   {`<script type="application/ld+json">\n`}
-//                   {jsonText}
-//                   {`\n</script>`}
-//                 </pre>
-//               </pre>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default JobPosting;
+}

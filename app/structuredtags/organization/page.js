@@ -1,1255 +1,472 @@
-// "use client";
-
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-// import {
-//   businessCategories,
-//   countries,
-//   currencies,
-//   organizations,
-//   timezones,
-// } from "@/app/constant";
-// const Organization = () => {
-//   const formatDate = (date) => {
-//     const d = new Date(date);
-//     const year = d.getFullYear();
-//     let month = d.getMonth() + 1;
-//     if (month < 10) month = `0${month}`;
-//     let day = d.getDate();
-//     if (day < 10) day = `0${day}`;
-//     return `${year}-${month}-${day}`;
-//   };
-
-//   const [showSocialProfile, setShowSocialProfile] = useState(false);
-
-//   const [organizationType, setOrganizationType] = useState("");
-//   const [organizationName, setOrganizationName] = useState("");
-//   const [logoUrl, setLogoUrl] = useState("");
-//   const [websiteUrl, setWebsiteUrl] = useState("");
-//   const [streetAddress, setStreetAddress] = useState("");
-//   const [city, setCity] = useState("");
-//   const [state, setState] = useState("");
-//   const [country, setCountry] = useState("");
-//   const [pincode, setPincode] = useState("");
-//   const [facebook, setFacebook] = useState("");
-//   const [instagram, setInstagram] = useState("");
-//   const [twitter, setTwitter] = useState("");
-//   const [pintrest, setPintrest] = useState("");
-//   const [linkedIn, setLinkedIn] = useState("");
-//   const [youtube, setYouTube] = useState("");
-
-//   const socialProfiles = [
-//     facebook,
-//     instagram,
-//     linkedIn,
-//     twitter,
-//     pintrest,
-//     youtube,
-//   ].filter((profile) => profile);
-
-//   const addressFields = {
-//     "@type": "PostalAddress",
-//     ...(streetAddress && { streetAddress }),
-//     ...(city && { addressLocality: city }),
-//     ...(state && { addressRegion: state }),
-//     ...(pincode && { postalCode: pincode }),
-//     ...(country && { addressCountry: country }),
-//   };
-
-//   const jsonText = JSON.stringify(
-//     {
-//       "@context": "http://schema.org/",
-//       "@type": "Organization",
-//       name: organizationName,
-//       logo: logoUrl,
-//       url: websiteUrl,
-//       ...(Object.keys(addressFields).length !== 0 && {
-//         address: addressFields,
-//       }),
-//       sameAs: showSocialProfile ? socialProfiles : [],
-//     },
-//     null,
-//     2
-//   );
-
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         Organization Structured Data Generator
-//       </h1>
-//       <p className="text-white text-sm mt-2">Logo and social profiles</p>
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               <h1 className="text-white font-semibold mt-5">Organization </h1>
-//               <div className="mt-5">
-//                 <select
-//                   id="type"
-//                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={organizationType}
-//                   onChange={(e) => setOrganizationType(e.target.value)}
-//                 >
-//                   <option>Select Organization Type</option>
-//                   {organizations.map((organization) => (
-//                     <option key={organization.value} value={organization.value}>
-//                       {organization.label}
-//                     </option>
-//                   ))}
-//                 </select>
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Organization Name"
-//                   value={organizationName}
-//                   onChange={(e) => setOrganizationName(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Logo Url"
-//                   value={logoUrl}
-//                   onChange={(e) => setLogoUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Website Url"
-//                   value={websiteUrl}
-//                   onChange={(e) => setWebsiteUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div class="flex items-center mb-4 mt-5">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   onChange={() => setShowSocialProfile(!showSocialProfile)}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   Include Social Profile
-//                 </label>
-//               </div>
-
-//               <h1 className="text-white font-semibold mt-5">Address </h1>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter street address"
-//                   value={streetAddress}
-//                   onChange={(e) => setStreetAddress(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter city"
-//                   value={city}
-//                   onChange={(e) => setCity(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter state/province/region"
-//                   value={state}
-//                   onChange={(e) => setState(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter zip/postal/code"
-//                   value={pincode}
-//                   onChange={(e) => setPincode(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <select
-//                   id="type"
-//                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={countries}
-//                   onChange={(e) => setCountry(e.target.value)}
-//                 >
-//                   <option>Select Country</option>
-//                   {countries.map((country) => (
-//                     <option key={country.value} value={country.value}>
-//                       {country.label}
-//                     </option>
-//                   ))}
-//                 </select>
-//               </div>
-
-//               {showSocialProfile && (
-//                 <>
-//                   <h1 className="text-white font-semibold mt-5">
-//                     Social Profile{" "}
-//                   </h1>
-//                   <p className="text-white font-semibold mt-2 text-xs">
-//                     If your business doesn’t have a profile, leave the field
-//                     empty.
-//                   </p>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder=" Facebook"
-//                       value={facebook}
-//                       onChange={(e) => setFacebook(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Instagram"
-//                       value={instagram}
-//                       onChange={(e) => setInstagram(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="LinkedIn"
-//                       value={linkedIn}
-//                       onChange={(e) => setLinkedIn(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Twitter"
-//                       value={twitter}
-//                       onChange={(e) => setTwitter(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Pintrest"
-//                       value={pintrest}
-//                       onChange={(e) => setPintrest(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Youtube"
-//                       value={youtube}
-//                       onChange={(e) => setYouTube(e.target.value)}
-//                     />
-//                   </div>
-//                 </>
-//               )}
-//               {/* Other form fields go here */}
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//             <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//               CODE
-//             </h1>
-//             <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//               <p className="bg">
-//                 Copy this to the &lt;head&gt; section of your page.
-//               </p>
-//             </div>
-//             <CopyToClipboard
-//               text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//             >
-//               <div className="ml-auto w-1/6 mt-2">
-//                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                   Copy
-//                 </button>
-//               </div>
-//             </CopyToClipboard>
-
-//             <div className="space-y-2 mt-5 ml-4">
-//               <pre className="text-white">
-//                 <pre className="text-white">
-//                   {`<script type="application/ld+json">\n`}
-//                   {jsonText}
-//                   {`\n</script>`}
-//                 </pre>
-//               </pre>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Organization;
-
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useRef } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  businessCategories,
-  countries,
-  currencies,
-  organizations,
-  timezones,
-} from "@/app/constant";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-  Stack,
-  FormControlLabel,
-  Switch,
-  Collapse,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Fade,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Business as OrganizationIcon,
-  CheckCircle as CheckIcon,
-  Preview as PreviewIcon,
-  Code as CodeIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  LocationOn as LocationIcon,
-  Language as WebsiteIcon,
-  Image as ImageIcon,
-  Category as CategoryIcon,
-  Share as SocialIcon,
-  Home as AddressIcon,
-  Public as CountryIcon,
-  Facebook as FacebookIcon,
-  Instagram as InstagramIcon,
-  LinkedIn as LinkedInIcon,
-  Twitter as TwitterIcon,
-  Pinterest as PinterestIcon,
-  YouTube as YouTubeIcon,
+import { 
+  Building2, 
+  Globe, 
+  Image as ImageIcon, 
+  MapPin, 
+  Share2, 
+  Facebook, 
+  Twitter, 
+  Instagram, 
+  Linkedin, 
+  Youtube, 
   Link as LinkIcon,
-} from "@mui/icons-material";
+  Layout,
+  Eye,
+  Code,
+  CheckCircle2,
+  Copy,
+  Upload,
+  Link2,
+  Trash2,
+  Plus
+} from "lucide-react";
 
-const Organization = () => {
-  const [organizationType, setOrganizationType] = useState("");
-  const [organizationName, setOrganizationName] = useState("");
+export default function OrganizationGenerator() {
+  const [orgType, setOrgType] = useState("Organization");
+  const [name, setName] = useState("");
+  const [altName, setAltName] = useState("");
+  const [url, setUrl] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
-  const [websiteUrl, setWebsiteUrl] = useState("");
-  const [streetAddress, setStreetAddress] = useState("");
+  const [uploadedLogo, setUploadedLogo] = useState(null); // Base64 for preview
+  const [logoMode, setLogoMode] = useState("url"); // "url" or "upload"
+  const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [region, setRegion] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
-  const [pincode, setPincode] = useState("");
-  const [showSocialProfile, setShowSocialProfile] = useState(true); // Set to true by default
-  const [facebook, setFacebook] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [twitter, setTwitter] = useState("");
-  const [pintrest, setPintrest] = useState("");
-  const [linkedIn, setLinkedIn] = useState("");
-  const [youtube, setYouTube] = useState("");
+  const [socials, setSocials] = useState([""]);
   const [copied, setCopied] = useState(false);
-  const [errors, setErrors] = useState({});
+  const fileInputRef = useRef(null);
 
-  // Validation
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!organizationName.trim())
-      newErrors.organizationName = "Organization name is required";
-    if (!organizationType)
-      newErrors.organizationType = "Organization type is required";
-
-    // URL validation
-    const urlPattern = /^https?:\/\/.+/;
-    if (websiteUrl && !urlPattern.test(websiteUrl)) {
-      newErrors.websiteUrl =
-        "Please enter a valid URL starting with http:// or https://";
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedLogo(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
-    if (logoUrl && !urlPattern.test(logoUrl)) {
-      newErrors.logoUrl =
-        "Please enter a valid URL starting with http:// or https://";
-    }
-
-    // Social media URL validation
-    if (showSocialProfile) {
-      if (facebook && !urlPattern.test(facebook)) {
-        newErrors.facebook = "Please enter a valid Facebook URL";
-      }
-      if (instagram && !urlPattern.test(instagram)) {
-        newErrors.instagram = "Please enter a valid Instagram URL";
-      }
-      if (twitter && !urlPattern.test(twitter)) {
-        newErrors.twitter = "Please enter a valid Twitter URL";
-      }
-      if (linkedIn && !urlPattern.test(linkedIn)) {
-        newErrors.linkedIn = "Please enter a valid LinkedIn URL";
-      }
-      if (pintrest && !urlPattern.test(pintrest)) {
-        newErrors.pintrest = "Please enter a valid Pinterest URL";
-      }
-      if (youtube && !urlPattern.test(youtube)) {
-        newErrors.youtube = "Please enter a valid YouTube URL";
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
-  useEffect(() => {
-    validateForm();
-  }, [
-    organizationName,
-    organizationType,
-    websiteUrl,
-    logoUrl,
-    showSocialProfile,
-    facebook,
-    instagram,
-    twitter,
-    linkedIn,
-    pintrest,
-    youtube,
-  ]);
-
-  const socialProfiles = [
-    facebook,
-    instagram,
-    linkedIn,
-    twitter,
-    pintrest,
-    youtube,
-  ].filter((profile) => profile.trim());
+  const addSocial = () => setSocials([...socials, ""]);
+  const removeSocial = (index) => {
+    const newSocials = [...socials];
+    newSocials.splice(index, 1);
+    setSocials(newSocials);
+  };
+  const updateSocial = (index, value) => {
+    const newSocials = [...socials];
+    newSocials[index] = value;
+    setSocials(newSocials);
+  };
 
   const generateJSON = () => {
-    const addressFields = {
+    const validSocials = socials.filter(s => s.trim() !== "");
+    const address = {
       "@type": "PostalAddress",
-      ...(streetAddress && { streetAddress }),
+      ...(street && { streetAddress: street }),
       ...(city && { addressLocality: city }),
-      ...(state && { addressRegion: state }),
-      ...(pincode && { postalCode: pincode }),
+      ...(region && { addressRegion: region }),
+      ...(postalCode && { postalCode: postalCode }),
       ...(country && { addressCountry: country }),
     };
 
-    // Only include address if at least one field is filled
-    const hasAddress = streetAddress || city || state || pincode || country;
-
     return {
       "@context": "https://schema.org",
-      "@type": organizationType || "Organization",
-      name: organizationName,
-      ...(logoUrl && { logo: logoUrl }),
-      ...(websiteUrl && { url: websiteUrl }),
-      ...(hasAddress && { address: addressFields }),
-      ...(showSocialProfile &&
-        socialProfiles.length > 0 && { sameAs: socialProfiles }),
+      "@type": orgType,
+      name: name,
+      ...(altName && { alternateName: altName }),
+      url: url,
+      logo: logoMode === "upload" ? "https://example.com/logo.png" : (logoUrl || undefined),
+      ...((street || city || region || postalCode || country) && { address }),
+      ...(validSocials.length > 0 && { sameAs: validSocials }),
     };
   };
 
   const jsonText = JSON.stringify(generateJSON(), null, 2);
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid =
-    Object.keys(errors).length === 0 &&
-    organizationName.trim() &&
-    organizationType;
-
-  const getSocialIcon = (platform) => {
-    switch (platform.toLowerCase()) {
-      case "facebook":
-        return <FacebookIcon sx={{ color: "#1877F2" }} />;
-      case "instagram":
-        return <InstagramIcon sx={{ color: "#E4405F" }} />;
-      case "twitter":
-        return <TwitterIcon sx={{ color: "#1DA1F2" }} />;
-      case "linkedin":
-        return <LinkedInIcon sx={{ color: "#0A66C2" }} />;
-      case "pinterest":
-        return <PinterestIcon sx={{ color: "#BD081C" }} />;
-      case "youtube":
-        return <YouTubeIcon sx={{ color: "#FF0000" }} />;
-      default:
-        return <SocialIcon />;
-    }
-  };
-
   return (
-    <Box
-      sx={{
-        p: 3,
-        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          mb: 3,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <OrganizationIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Organization Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for organizations with logo, address, and
-              social media profiles.
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <Building2 className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Organization Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl">
+              Generate Schema.org JSON-LD for organizations, helping search engines understand your brand and social presence.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box
-              sx={{
-                bgcolor: "primary.main",
-                color: "white",
-                p: 2,
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <CodeIcon />
-              <Typography variant="h6" fontWeight="bold">
-                ORGANIZATION CONFIGURATION
-              </Typography>
-              {isFormValid && (
-                <Chip
-                  icon={<CheckIcon />}
-                  label="Valid"
-                  sx={{
-                    bgcolor: "rgba(76, 175, 80, 0.8)",
-                    color: "white",
-                    ml: "auto",
-                  }}
-                />
-              )}
-            </Box>
-
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                {/* Organization Details Section */}
-                <Grid item xs={12}>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    color="primary"
-                    fontWeight="bold"
-                  >
-                    <OrganizationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Organization Details
-                  </Typography>
-                </Grid>
-
-                {/* Organization Type */}
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth error={!!errors.organizationType}>
-                    <InputLabel>Organization Type *</InputLabel>
-                    <Select
-                      value={organizationType}
-                      label="Organization Type *"
-                      onChange={(e) => setOrganizationType(e.target.value)}
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex items-center gap-2">
+              <Layout className="h-5 w-5" />
+              <h2 className="font-semibold text-lg tracking-wide uppercase text-white">Configuration</h2>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Basic Info */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Type</label>
+                    <select
+                      value={orgType}
+                      onChange={(e) => setOrgType(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
                     >
-                      <MenuItem value="">Select Organization Type</MenuItem>
-                      {organizations.map((organization) => (
-                        <MenuItem
-                          key={organization.value}
-                          value={organization.value}
-                        >
-                          {organization.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {errors.organizationType && (
-                      <Typography
-                        variant="caption"
-                        color="error"
-                        sx={{ mt: 0.5, ml: 1 }}
-                      >
-                        {errors.organizationType}
-                      </Typography>
-                    )}
-                  </FormControl>
-                </Grid>
+                      <option value="Organization">Organization</option>
+                      <option value="Corporation">Corporation</option>
+                      <option value="EducationalOrganization">Educational Org</option>
+                      <option value="GovernmentOrganization">Government Org</option>
+                      <option value="LocalBusiness">Local Business</option>
+                      <option value="NGO">NGO</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Organization Name *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. MetaForge Pro"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
+                    />
+                  </div>
+                </div>
 
-                {/* Organization Name */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Organization Name *"
-                    placeholder="Your Organization Name"
-                    value={organizationName}
-                    onChange={(e) => setOrganizationName(e.target.value)}
-                    error={!!errors.organizationName}
-                    helperText={
-                      errors.organizationName ||
-                      `${organizationName.length} characters`
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <OrganizationIcon
-                          sx={{ mr: 1, color: "action.active" }}
-                        />
-                      ),
-                    }}
-                  />
-                </Grid>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Alternate Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. MetaForge"
+                      value={altName}
+                      onChange={(e) => setAltName(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Website URL</label>
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <input
+                        type="url"
+                        placeholder="https://example.com"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                {/* Logo URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Logo URL"
-                    placeholder="https://example.com/logo.png"
-                    value={logoUrl}
-                    onChange={(e) => setLogoUrl(e.target.value)}
-                    error={!!errors.logoUrl}
-                    helperText={
-                      errors.logoUrl ||
-                      "High-quality logo image (recommended: square format)"
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <ImageIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                {/* Website URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Website URL"
-                    placeholder="https://yourorganization.com"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    error={!!errors.websiteUrl}
-                    helperText={
-                      errors.websiteUrl ||
-                      "Official website of the organization"
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <WebsiteIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                {/* Address Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Organization Address" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Typography
-                    variant="h6"
-                    color="primary"
-                    fontWeight="bold"
-                    gutterBottom
-                  >
-                    <LocationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Address Information
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 2 }}
-                  >
-                    {
-                      " Provide the organization's physical address (all fields are optional)"
-                    }
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Street Address"
-                    placeholder="123 Main Street, Suite 100"
-                    value={streetAddress}
-                    onChange={(e) => setStreetAddress(e.target.value)}
-                    helperText="Complete street address including suite/floor if applicable"
-                    InputProps={{
-                      startAdornment: (
-                        <AddressIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="City"
-                    placeholder="New York"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <LocationIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="State/Province"
-                    placeholder="New York"
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <LocationIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="ZIP/Postal Code"
-                    placeholder="10001"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <AddressIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Country</InputLabel>
-                    <Select
-                      value={country}
-                      label="Country"
-                      onChange={(e) => setCountry(e.target.value)}
+              {/* Logo Section */}
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-slate-700">Organization Logo</label>
+                  <div className="flex bg-slate-100 rounded-lg p-1 text-[11px] font-bold uppercase tracking-tighter">
+                    <button
+                      onClick={() => setLogoMode("url")}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${logoMode === "url" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                     >
-                      <MenuItem value="">Select Country</MenuItem>
-                      {countries.map((country) => (
-                        <MenuItem key={country.value} value={country.value}>
-                          {country.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                {/* Social Profiles Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Social Media Profiles" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={showSocialProfile}
-                        onChange={(e) => setShowSocialProfile(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label={
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <SocialIcon fontSize="small" />
-                        Include Social Media Profiles
-                      </Box>
-                    }
-                  />
-                </Grid>
-
-                <Collapse in={showSocialProfile} className="px-4">
-                  <Grid container spacing={2} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography
-                        variant="h6"
-                        color="primary"
-                        fontWeight="bold"
-                        gutterBottom
-                      >
-                        <SocialIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Social Media Profiles
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 2 }}
-                      >
-                        {
-                          " Add your organization's social media profiles (leave empty if not available)"
-                        }
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Facebook URL"
-                        placeholder="https://facebook.com/yourorganization"
-                        value={facebook}
-                        onChange={(e) => setFacebook(e.target.value)}
-                        error={!!errors.facebook}
-                        helperText={errors.facebook}
-                        InputProps={{
-                          startAdornment: (
-                            <FacebookIcon sx={{ mr: 1, color: "#1877F2" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Instagram URL"
-                        placeholder="https://instagram.com/yourorganization"
-                        value={instagram}
-                        onChange={(e) => setInstagram(e.target.value)}
-                        error={!!errors.instagram}
-                        helperText={errors.instagram}
-                        InputProps={{
-                          startAdornment: (
-                            <InstagramIcon sx={{ mr: 1, color: "#E4405F" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Twitter URL"
-                        placeholder="https://twitter.com/yourorganization"
-                        value={twitter}
-                        onChange={(e) => setTwitter(e.target.value)}
-                        error={!!errors.twitter}
-                        helperText={errors.twitter}
-                        InputProps={{
-                          startAdornment: (
-                            <TwitterIcon sx={{ mr: 1, color: "#1DA1F2" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="LinkedIn URL"
-                        placeholder="https://linkedin.com/company/yourorganization"
-                        value={linkedIn}
-                        onChange={(e) => setLinkedIn(e.target.value)}
-                        error={!!errors.linkedIn}
-                        helperText={errors.linkedIn}
-                        InputProps={{
-                          startAdornment: (
-                            <LinkedInIcon sx={{ mr: 1, color: "#0A66C2" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Pinterest URL"
-                        placeholder="https://pinterest.com/yourorganization"
-                        value={pintrest}
-                        onChange={(e) => setPintrest(e.target.value)}
-                        error={!!errors.pintrest}
-                        helperText={errors.pintrest}
-                        InputProps={{
-                          startAdornment: (
-                            <PinterestIcon sx={{ mr: 1, color: "#BD081C" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="YouTube URL"
-                        placeholder="https://youtube.com/yourorganization"
-                        value={youtube}
-                        onChange={(e) => setYouTube(e.target.value)}
-                        error={!!errors.youtube}
-                        helperText={errors.youtube}
-                        InputProps={{
-                          startAdornment: (
-                            <YouTubeIcon sx={{ mr: 1, color: "#FF0000" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Collapse>
-              </Grid>
-            </Box>
-          </Paper>
-
-          {/* Generated Code */}
-          <Paper
-            elevation={3}
-            sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}
-          >
-            <Box
-              sx={{
-                bgcolor: "success.main",
-                color: "white",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard
-                text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-                onCopy={handleCopy}
-              >
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
-              </CopyToClipboard>
-            </Box>
-
-            {!isFormValid && (
-              <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
-                Please fix the errors above to generate valid structured data.
-              </Alert>
-            )}
-
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML
-              page.
-            </Alert>
-
-            <Box
-              sx={{
-                p: 3,
-                bgcolor: "#1e1e1e",
-                color: "#f8f8f2",
-                maxHeight: 500,
-                overflow: "auto",
-              }}
-            >
-              <pre
-                style={{
-                  fontFamily: "'Fira Code', monospace",
-                  fontSize: "0.875rem",
-                  lineHeight: "1.5",
-                  margin: 0,
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* Organization Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  ORGANIZATION PREVIEW
-                </Typography>
-              </Box>
-              <Card sx={{ borderRadius: 0 }}>
-                {logoUrl ? (
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={logoUrl}
-                    alt="Organization logo"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
+                      <Link2 className="h-3 w-3" />
+                      URL
+                    </button>
+                    <button
+                      onClick={() => setLogoMode("upload")}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${logoMode === "upload" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      <Upload className="h-3 w-3" />
+                      Upload
+                    </button>
+                  </div>
+                </div>
+                
+                {logoMode === "url" ? (
+                  <div className="relative">
+                    <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://example.com/logo.png"
+                      value={logoUrl}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                    />
+                  </div>
                 ) : (
-                  <Box
-                    sx={{
-                      height: 200,
-                      bgcolor: "#f5f5f5",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                      gap: 1,
-                    }}
+                  <div 
+                    onClick={() => fileInputRef.current.click()}
+                    className="group border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all rounded-xl p-6 text-center cursor-pointer"
                   >
-                    <OrganizationIcon
-                      sx={{ fontSize: 48, color: "text.secondary" }}
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload} 
+                      className="hidden" 
+                      accept="image/*"
                     />
-                    <Typography color="text.secondary">
-                      No logo selected
-                    </Typography>
-                  </Box>
+                    <div className="flex flex-col items-center">
+                      <div className="bg-slate-50 group-hover:bg-indigo-100 p-2 rounded-full transition-colors mb-2">
+                        <Upload className="h-6 w-6 text-slate-400 group-hover:text-indigo-600" />
+                      </div>
+                      <span className="text-sm font-medium text-slate-600 group-hover:text-indigo-700 font-bold">Upload Logo</span>
+                    </div>
+                  </div>
                 )}
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {organizationName || "Organization Name"}
-                  </Typography>
+              </div>
 
-                  {organizationType && (
-                    <Chip
-                      label={organizationType}
-                      size="small"
-                      color="primary"
-                      sx={{ mb: 2 }}
+              {/* Address */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <MapPin className="h-3 w-3" />
+                  Physical Address
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Street Address</label>
+                    <input
+                      type="text"
+                      placeholder="123 Main St"
+                      value={street}
+                      onChange={(e) => setStreet(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                     />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">City</label>
+                    <input
+                      type="text"
+                      placeholder="San Francisco"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">State / Region</label>
+                    <input
+                      type="text"
+                      placeholder="California"
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Postal Code</label>
+                    <input
+                      type="text"
+                      placeholder="94103"
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Country</label>
+                    <input
+                      type="text"
+                      placeholder="USA"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Social Profiles */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <Share2 className="h-3 w-3" />
+                    Social Profiles
+                  </h3>
+                  <button
+                    onClick={addSocial}
+                    className="flex items-center gap-1 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-md text-[11px] font-bold hover:bg-indigo-100 transition-all"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add Profile
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  {socials.map((social, index) => (
+                    <div key={index} className="flex gap-2">
+                      <div className="relative flex-1">
+                        <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <input
+                          type="url"
+                          placeholder="https://facebook.com/metaforge"
+                          value={social}
+                          onChange={(e) => updateSocial(index, e.target.value)}
+                          className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                        />
+                      </div>
+                      {socials.length > 1 && (
+                        <button
+                          onClick={() => removeSocial(index)}
+                          className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Preview and Code Panel */}
+        <div className="space-y-8">
+          {/* Live Preview */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase text-white tracking-wide">Brand Identity Preview</h2>
+            </div>
+            
+            <div className="p-8">
+              <div className="max-w-md mx-auto bg-white rounded-2xl border border-slate-100 shadow-xl overflow-hidden">
+                <div className="bg-slate-50 p-6 flex flex-col items-center text-center">
+                  <div className="h-24 w-24 rounded-2xl bg-white shadow-md border border-slate-100 p-4 mb-4 flex items-center justify-center overflow-hidden">
+                    {logoMode === "url" ? (
+                      logoUrl ? (
+                        <img src={logoUrl} alt="Logo" className="max-h-full max-w-full object-contain" />
+                      ) : (
+                        <Building2 className="h-12 w-12 text-slate-200" />
+                      )
+                    ) : (
+                      uploadedLogo ? (
+                        <img src={uploadedLogo} alt="Logo" className="max-h-full max-w-full object-contain" />
+                      ) : (
+                        <Upload className="h-12 w-12 text-slate-200" />
+                      )
+                    )}
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 leading-tight">
+                    {name || "Organization Name"}
+                  </h3>
+                  {altName && <p className="text-slate-500 text-sm mt-1 font-medium italic">({altName})</p>}
+                  
+                  <div className="flex items-center gap-1.5 mt-4 text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100">
+                    <Globe className="h-3 w-3" />
+                    {url ? new URL(url).hostname : "website.com"}
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  {/* Address */}
+                  {(street || city || region || postalCode || country) && (
+                    <div className="flex gap-4">
+                      <div className="bg-slate-50 p-2.5 rounded-lg h-fit">
+                        <MapPin className="h-5 w-5 text-slate-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Headquarters</h4>
+                        <p className="text-sm text-slate-700 leading-relaxed font-medium">
+                          {street && <>{street}<br /></>}
+                          {city && <>{city}, </>}
+                          {region && <>{region} </>}
+                          {postalCode && <>{postalCode}</>}
+                          {country && <><br />{country}</>}
+                        </p>
+                      </div>
+                    </div>
                   )}
 
-                  {websiteUrl && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        mb: 1,
-                      }}
-                    >
-                      <WebsiteIcon fontSize="small" />
-                      <Typography
-                        variant="body2"
-                        component="a"
-                        href={websiteUrl}
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        {websiteUrl}
-                      </Typography>
-                    </Box>
+                  {/* Socials */}
+                  {socials.some(s => s.trim() !== "") && (
+                    <div>
+                      <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <Share2 className="h-3 w-3" />
+                        Connected Profiles
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {socials.filter(s => s.trim() !== "").map((s, idx) => (
+                          <div key={idx} className="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 flex items-center gap-2">
+                            <LinkIcon className="h-3 w-3 text-slate-400" />
+                            {new URL(s).hostname.replace('www.', '')}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
+                </div>
+              </div>
+              
+              <div className="mt-8 p-4 bg-amber-50 rounded-xl border border-amber-100 text-[13px] text-amber-800 italic text-center">
+                Knowledge Graph appearance may vary depending on local SEO authority and site history.
+              </div>
+            </div>
+          </div>
 
-                  {(city || state || country) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        mb: 1,
-                      }}
-                    >
-                      <LocationIcon fontSize="small" />
-                      <Typography variant="body2">
-                        {[city, state, country].filter(Boolean).join(", ") ||
-                          "Address not provided"}
-                      </Typography>
-                    </Box>
-                  )}
+          {/* Code Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden text-white">
+            <div className="bg-emerald-600 px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                <h2 className="font-semibold text-lg uppercase tracking-wide">Generated JSON-LD</h2>
+              </div>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  type="button"
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5 text-white" />}
+                </button>
+              </CopyToClipboard>
+            </div>
+            
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-xs font-bold italic">
+               <p>TIP: Incorporate this into your site's header, typically on the homepage.</p>
+               {logoMode === "upload" && (
+                 <p className="mt-1 text-blue-600">
+                    ⚠️ Note: Replace the placeholder logo URL in the code with your actual public image link.
+                 </p>
+               )}
+            </div>
 
-                  {socialProfiles.length > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography
-                        variant="body2"
-                        fontWeight="bold"
-                        gutterBottom
-                      >
-                        Social Media:
-                      </Typography>
-                      <Stack direction="row" spacing={1} flexWrap="wrap">
-                        {facebook && <FacebookIcon sx={{ color: "#1877F2" }} />}
-                        {instagram && (
-                          <InstagramIcon sx={{ color: "#E4405F" }} />
-                        )}
-                        {twitter && <TwitterIcon sx={{ color: "#1DA1F2" }} />}
-                        {linkedIn && <LinkedInIcon sx={{ color: "#0A66C2" }} />}
-                        {pintrest && (
-                          <PinterestIcon sx={{ color: "#BD081C" }} />
-                        )}
-                        {youtube && <YouTubeIcon sx={{ color: "#FF0000" }} />}
-                      </Stack>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Paper>
-
-            {/* Validation Status */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box
-                sx={{
-                  bgcolor: isFormValid ? "success.main" : "error.main",
-                  color: "white",
-                  p: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight="bold">
-                  VALIDATION STATUS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert
-                    severity={organizationName.trim() ? "success" : "error"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Organization Name:{" "}
-                      {organizationName.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={organizationType ? "success" : "error"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Organization Type:{" "}
-                      {organizationType ? "✓ Selected" : "✗ Required"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={logoUrl ? "success" : "info"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Logo: {logoUrl ? "✓ Added" : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={websiteUrl ? "success" : "info"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Website:{" "}
-                      {websiteUrl ? "✓ Added" : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={city || state || country ? "success" : "info"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Address:{" "}
-                      {city || state || country ? "✓ Added" : "ℹ Optional"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={socialProfiles.length > 0 ? "success" : "info"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Social Media:{" "}
-                      {socialProfiles.length > 0
-                        ? `✓ ${socialProfiles.length} profile${
-                            socialProfiles.length !== 1 ? "s" : ""
-                          }`
-                        : "ℹ Optional"}
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+            <div className="bg-[#1e1e1e] p-6 relative group">
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30">
+                <span className="text-slate-500 font-bold tracking-tighter opacity-50">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
+                  {jsonText}
+                </div>
+                <span className="text-slate-500 font-bold tracking-tighter opacity-50">&lt;/script&gt;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default Organization;
+}

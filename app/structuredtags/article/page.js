@@ -1,44 +1,25 @@
-
 "use client";
-import React, { useState } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
-  Divider,
-  Alert,
-  IconButton,
-  Tooltip,
-  Avatar,
-  Stack,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Article as ArticleIcon,
-  CheckCircle as CheckIcon,
-  Person as PersonIcon,
-  Business as BusinessIcon,
-  CalendarToday as CalendarIcon,
-  Link as LinkIcon,
-  Image as ImageIcon,
-  Code as CodeIcon,
-  Preview as PreviewIcon,
-  Description as DescriptionIcon,
-} from "@mui/icons-material";
 
-const Article = () => {
+import React, { useState, useRef } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { 
+  FileText, 
+  Image as ImageIcon, 
+  Calendar, 
+  User, 
+  Building, 
+  Link as LinkIcon, 
+  Copy, 
+  CheckCircle2, 
+  Eye, 
+  Layout,
+  Type,
+  Upload,
+  Link2
+} from "lucide-react";
+// import AdBanner from "../../components/AdBanner";
+
+export default function ArticleStructuredData() {
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -53,6 +34,8 @@ const Article = () => {
   const [url, setUrl] = useState("");
   const [headline, setHeadline] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [uploadedImage, setUploadedImage] = useState(null); // Base64 for preview
+  const [imageMode, setImageMode] = useState("url"); // "url" or "upload"
   const [datePublished, setDatePublished] = useState(formatDate(Date.now()));
   const [dateModified, setDateModified] = useState(formatDate(Date.now()));
   const [authorType, setAuthorType] = useState("Person");
@@ -60,6 +43,18 @@ const Article = () => {
   const [logoUrl, setLogoUrl] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [copied, setCopied] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const jsonData = {
     "@context": "https://schema.org",
@@ -81,695 +76,319 @@ const Article = () => {
       },
     },
     headline: headline,
-    image: imageUrl,
+    image: imageMode === "upload" ? "https://example.com/photos/1x1/photo.jpg" : imageUrl,
     datePublished: datePublished,
     dateModified: dateModified,
   };
 
   const jsonText = JSON.stringify(jsonData, null, 2);
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case "Article":
-        return <ArticleIcon />;
-      case "BlogPosting":
-        return <DescriptionIcon />;
-      case "NewsArticle":
-        return <ArticleIcon />;
-      default:
-        return <ArticleIcon />;
-    }
-  };
-
-  const getTypeColor = (type) => {
-    switch (type) {
-      case "Article":
-        return "#2196F3";
-      case "BlogPosting":
-        return "#9C27B0";
-      case "NewsArticle":
-        return "#FF5722";
-      default:
-        return "#2196F3";
-    }
-  };
-
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <ArticleIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Article Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Generate structured data for Article, BlogPosting, and NewsArticle content types.
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <FileText className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Article Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl">
+              Generate Schema.org JSON-LD for Articles, Blog Postings, and News Articles.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", gap: 1 }}>
-              <CodeIcon />
-              <Typography variant="h6" fontWeight="bold">
-                ARTICLE CONFIGURATION
-              </Typography>
-            </Box>
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                {/* Article Type */}
-                <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Content Type</InputLabel>
-                    <Select
-                      value={type}
-                      label="Content Type"
-                      onChange={(e) => setType(e.target.value)}
-                    >
-                      <MenuItem value="Article">
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <ArticleIcon fontSize="small" />
-                          Article
-                        </Box>
-                      </MenuItem>
-                      <MenuItem value="BlogPosting">
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <DescriptionIcon fontSize="small" />
-                          Blog Posting
-                        </Box>
-                      </MenuItem>
-                      <MenuItem value="NewsArticle">
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <ArticleIcon fontSize="small" />
-                          News Article
-                        </Box>
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex items-center gap-2">
+              <Layout className="h-5 w-5" />
+              <h2 className="font-semibold text-lg tracking-wide uppercase text-white">Configuration</h2>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Content Type</label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
+                  >
+                    <option value="Article">Article</option>
+                    <option value="BlogPosting">Blog Posting</option>
+                    <option value="NewsArticle">News Article</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Article URL</label>
+                  <div className="relative">
+                    <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://example.com/article"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
 
-                {/* URL */}
-                <Grid item xs={12} sm={8}>
-                  <TextField
-                    fullWidth
-                    label="Article URL"
-                    placeholder="https://example.com/article"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    InputProps={{
-                      startAdornment: <LinkIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                    helperText="The canonical URL of the article"
-                  />
-                </Grid>
-
-                {/* Headline */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Headline"
-                    placeholder="Enter your article headline"
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-700">Headline</label>
+                <div className="relative">
+                  <Type className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Enter article headline"
                     value={headline}
                     onChange={(e) => setHeadline(e.target.value)}
-                    helperText={`${headline.length} characters (recommended: 30-60 for SEO)`}
-                    inputProps={{ maxLength: 110 }}
+                    className="w-full bg-white border border-slate-300 rounded-md pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                   />
-                </Grid>
+                </div>
+                <p className="text-[11px] text-slate-500 uppercase tracking-tighter">Recommended: 30-60 Characters</p>
+              </div>
 
-                {/* Image URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Featured Image URL"
-                    placeholder="https://example.com/image.jpg"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    InputProps={{
-                      startAdornment: <ImageIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                    helperText="Main image for the article (recommended: 1200x630px)"
-                  />
-                </Grid>
+              {/* Image Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-slate-700">Featured Image</label>
+                  <div className="flex bg-slate-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setImageMode("url")}
+                      className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all ${imageMode === "url" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      <Link2 className="h-3.5 w-3.5" />
+                      URL
+                    </button>
+                    <button
+                      onClick={() => setImageMode("upload")}
+                      className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all ${imageMode === "upload" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      <Upload className="h-3.5 w-3.5" />
+                      Upload
+                    </button>
+                  </div>
+                </div>
+                
+                {imageMode === "url" ? (
+                  <div className="relative">
+                    <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://example.com/featured-image.jpg"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    />
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => fileInputRef.current.click()}
+                    className="group border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all rounded-xl p-6 text-center cursor-pointer"
+                  >
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload} 
+                      className="hidden" 
+                      accept="image/*"
+                    />
+                    <div className="flex flex-col items-center">
+                      <div className="bg-slate-50 group-hover:bg-indigo-100 p-2 rounded-full transition-colors mb-2">
+                        <Upload className="h-6 w-6 text-slate-400 group-hover:text-indigo-600" />
+                      </div>
+                      <span className="text-sm font-medium text-slate-600 group-hover:text-indigo-700">Click to upload image</span>
+                      <span className="text-xs text-slate-400 mt-1">PNG, JPG, WebP up to 5MB</span>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-                {/* Dates */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Date Published"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Date Published</label>
+                  <input
                     type="date"
                     value={datePublished}
                     onChange={(e) => setDatePublished(e.target.value)}
-                    InputProps={{
-                      startAdornment: <CalendarIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                    InputLabelProps={{ shrink: true }}
+                    className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Date Modified"
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Date Modified</label>
+                  <input
                     type="date"
                     value={dateModified}
                     onChange={(e) => setDateModified(e.target.value)}
-                    InputProps={{
-                      startAdornment: <CalendarIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                    InputLabelProps={{ shrink: true }}
+                    className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
-                </Grid>
+                </div>
+              </div>
 
-                {/* Author Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 1 }}>
-                    <Chip label="Author Information" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Author Type</InputLabel>
-                    <Select
-                      value={authorType}
-                      label="Author Type"
-                      onChange={(e) => setAuthorType(e.target.value)}
-                    >
-                      <MenuItem value="Person">
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <PersonIcon fontSize="small" />
-                          Person
-                        </Box>
-                      </MenuItem>
-                      <MenuItem value="Organization">
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <BusinessIcon fontSize="small" />
-                          Organization
-                        </Box>
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12} sm={8}>
-                  <TextField
-                    fullWidth
-                    label="Author Name"
-                    placeholder={authorType === "Person" ? "John Doe" : "Company Name"}
-                    value={authorName}
-                    onChange={(e) => setAuthorName(e.target.value)}
-                    InputProps={{
-                      startAdornment: authorType === "Person" ? 
-                        <PersonIcon sx={{ mr: 1, color: "action.active" }} /> :
-                        <BusinessIcon sx={{ mr: 1, color: "action.active" }} />
-                    }}
-                  />
-                </Grid>
-
-                {/* Publisher Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 1 }}>
-                    <Chip label="Publisher Information" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Publisher Name"
-                    placeholder="Your Website/Company Name"
-                    value={publisherName}
-                    onChange={(e) => setPublisherName(e.target.value)}
-                    InputProps={{
-                      startAdornment: <BusinessIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Publisher Logo URL"
-                    placeholder="https://example.com/logo.png"
-                    value={logoUrl}
-                    onChange={(e) => setLogoUrl(e.target.value)}
-                    InputProps={{
-                      startAdornment: <ImageIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                    helperText="Square logo (recommended: 112x112px)"
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-          </Paper>
-
-          {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard text={`<script type="application/ld+json">\n${jsonText}\n</script>`} onCopy={handleCopy}>
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
-              </CopyToClipboard>
-            </Box>
-            
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML page.
-            </Alert>
-
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 500, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* Article Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  ARTICLE PREVIEW
-                </Typography>
-              </Box>
-              <Card sx={{ borderRadius: 0 }}>
-                {imageUrl ? (
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={imageUrl}
-                    alt="Article featured image"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      bgcolor: "#f5f5f5", 
-                      display: "flex", 
-                      alignItems: "center", 
-                      justifyContent: "center",
-                      flexDirection: "column",
-                      gap: 1
-                    }}
-                  >
-                    <ImageIcon sx={{ fontSize: 48, color: "text.secondary" }} />
-                    <Typography color="text.secondary">
-                      No image selected
-                    </Typography>
-                  </Box>
-                )}
-                <CardContent>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-                    <Chip 
-                      icon={getTypeIcon(type)} 
-                      label={type} 
-                      size="small" 
-                      sx={{ bgcolor: getTypeColor(type), color: "white" }}
+              <div className="pt-4 border-t border-slate-100">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Author Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Author Type</label>
+                    <div className="relative">
+                      {authorType === "Person" ? <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" /> : <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />}
+                      <select
+                        value={authorType}
+                        onChange={(e) => setAuthorType(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-md pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                      >
+                        <option value="Person">Person</option>
+                        <option value="Organization">Organization</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Author Name</label>
+                    <input
+                      type="text"
+                      placeholder={authorType === "Person" ? "Jane Doe" : "Author Org Name"}
+                      value={authorName}
+                      onChange={(e) => setAuthorName(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                     />
-                  </Box>
-                  
-                  <Typography variant="h6" gutterBottom>
-                    {headline || "Article Headline Goes Here"}
-                  </Typography>
-                  
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                    {authorType === "Person" ? <PersonIcon fontSize="small" /> : <BusinessIcon fontSize="small" />}
-                    <Typography variant="body2" color="text.secondary">
-                      By {authorName || "Author Name"}
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                    <BusinessIcon fontSize="small" />
-                    <Typography variant="body2" color="text.secondary">
-                      Published by {publisherName || "Publisher Name"}
-                    </Typography>
-                  </Box>
-                  
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <CalendarIcon fontSize="small" />
-                    <Typography variant="caption" color="text.secondary">
-                      Published: {datePublished} | Modified: {dateModified}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Paper>
+                  </div>
+                </div>
+              </div>
 
-            {/* SEO Tips */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "info.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  SEO OPTIMIZATION TIPS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert severity={headline.length >= 30 && headline.length <= 60 ? "success" : "warning"} variant="outlined">
-                    <Typography variant="caption">
-                      Headline: {headline.length >= 30 && headline.length <= 60 ? "✓ Optimal length" : "⚠ Recommended 30-60 chars"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={imageUrl ? "success" : "warning"} variant="outlined">
-                    <Typography variant="caption">
-                      Featured Image: {imageUrl ? "✓ Added" : "⚠ Recommended for better visibility"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={url ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Canonical URL: {url ? "✓ Added" : "✗ Required field"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={authorName && publisherName ? "success" : "warning"} variant="outlined">
-                    <Typography variant="caption">
-                      Author & Publisher: {authorName && publisherName ? "✓ Complete" : "⚠ Fill both fields"}
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+              <div className="pt-4 border-t border-slate-100">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Publisher Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Publisher Name</label>
+                    <input
+                      type="text"
+                      placeholder="My Website Name"
+                      value={publisherName}
+                      onChange={(e) => setPublisherName(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-slate-700">Logo URL</label>
+                    <input
+                      type="url"
+                      placeholder="https://example.com/logo.png"
+                      value={logoUrl}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* <AdBanner slot="article-structured-bottom-config" className="max-w-xl mx-auto" /> */}
+        </div>
+
+        {/* Preview and Code Panel */}
+        <div className="flex flex-col gap-8">
+          {/* <AdBanner slot="article-structured-top-preview" /> */}
+
+          {/* Social Preview - NOW ON TOP */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden order-first">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase text-white">Live Preview</h2>
+            </div>
+            <div className="p-6">
+              <div className="border border-slate-100 rounded-xl overflow-hidden bg-white shadow-md">
+                {imageMode === "url" ? (
+                  imageUrl ? (
+                    <img src={imageUrl} alt="Article" className="w-full h-56 object-cover" />
+                  ) : (
+                    <div className="w-full h-56 bg-slate-50 flex items-center justify-center border-b border-slate-100 italic text-slate-400">
+                      <div className="flex flex-col items-center gap-2">
+                        <ImageIcon className="h-12 w-12 text-slate-200" />
+                        <span>Preview Image will appear here</span>
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  uploadedImage ? (
+                    <img src={uploadedImage} alt="Article" className="w-full h-56 object-cover" />
+                  ) : (
+                    <div className="w-full h-56 bg-slate-50 flex items-center justify-center border-b border-slate-100 italic text-slate-400">
+                      <div className="flex flex-col items-center gap-2">
+                        <Upload className="h-12 w-12 text-slate-200" />
+                        <span>Uploaded image for preview</span>
+                      </div>
+                    </div>
+                  )
+                )}
+                <div className="p-5 space-y-4">
+                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold bg-indigo-100 text-indigo-700">
+                    {type}
+                  </span>
+                  <h3 className="text-xl font-extrabold text-slate-900 leading-tight">
+                    {headline || "Engaging Article Headline Preview"}
+                  </h3>
+                  <div className="flex items-center gap-3 pt-2">
+                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+                      {logoUrl ? <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" /> : <Building className="h-5 w-5 text-slate-400" />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">{publisherName || "Site Publisher"}</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-none mt-1">{datePublished}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Code Panel - NOW ON BOTTOM */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-emerald-600 text-white px-6 py-4 flex justify-between items-center">
+              <h2 className="font-semibold text-lg uppercase text-white">Generated JSON-LD</h2>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  type="button"
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5" />}
+                </button>
+              </CopyToClipboard>
+            </div>
+            
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-sm">
+              <p className="font-medium italic">Place this code block inside your site's &lt;head&gt; tag.</p>
+              {imageMode === "upload" && (
+                <p className="mt-1 text-xs font-bold text-blue-600">
+                  ⚠️ Note: Replace the placeholder image URL in the code with your actual public image link.
+                </p>
+              )}
+            </div>
+
+            <div className="bg-[#1e1e1e] p-6 relative group">
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30">
+                <span className="text-slate-500">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
+                  {jsonText}
+                </div>
+                <span className="text-slate-500">&lt;/script&gt;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default Article;
-
-// "use client";
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-
-// const Article = () => {
-//   const formatDate = (date) => {
-//     const d = new Date(date);
-//     const year = d.getFullYear();
-//     let month = d.getMonth() + 1;
-//     if (month < 10) month = `0${month}`;
-//     let day = d.getDate();
-//     if (day < 10) day = `0${day}`;
-//     return `${year}-${month}-${day}`;
-//   };
-
-//   const [type, setType] = useState("Article");
-//   const [url, setUrl] = useState("");
-//   const [headline, setHeadline] = useState("");
-//   const [imageUrl, setImageUrl] = useState("");
-//   const [datePublished, setDatePublished] = useState(formatDate(Date.now()));
-//   const [dateModified, setDateModified] = useState(formatDate(Date.now()));
-//   const [authorType, setAuthorType] = useState("Person");
-//   const [publisherName, setPublisherName] = useState("");
-//   const [logoUrl, setLogoUrl] = useState("");
-//   const [authorName, setAuthorName] = useState("");
-//   const jsonData = {
-//     "@context": "http://schema.org/",
-//     "@type": type,
-//     mainEntityOfPage: {
-//       "@type": "WebPage",
-//       "@id": url,
-//     },
-//     author: {
-//       "@type": authorType,
-//       name: authorName,
-//     },
-//     publisher: {
-//       "@type": "Organization",
-//       name: publisherName,
-//       logo: {
-//         "@type": "ImageObject",
-//         url: logoUrl,
-//       },
-//     },
-//     headline: headline,
-//     image: imageUrl,
-//     datePublished: datePublished,
-//     dateModified: dateModified,
-//   };
-
-//   const jsonText = JSON.stringify(jsonData, null, 2);
-
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         Article Structured Data Generator
-//       </h1>
-//       <p className="text-white text-sm mt-2">
-//         Article, BlogPosting and NewsArticle
-//       </p>
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               <div className="mt-5">
-//                 <label
-//                   htmlFor="type"
-//                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Type
-//                 </label>
-//                 <select
-//                   id="type"
-//                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={type}
-//                   onChange={(e) => setType(e.target.value)}
-//                 >
-//                   <option value="">Select Type</option>
-//                   <option value="Article">Article</option>
-//                   <option value="BlogPosting">BlogPosting</option>
-//                   <option value="NewsArticle">NewsArticle</option>
-//                 </select>
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Url
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Url"
-//                   value={url}
-//                   onChange={(e) => setUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Headline
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Headline"
-//                   value={headline}
-//                   onChange={(e) => setHeadline(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Image Url
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Paste Image Url"
-//                   value={imageUrl}
-//                   onChange={(e) => setImageUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Date Published
-//                 </label>
-//                 <input
-//                   type="date"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={datePublished}
-//                   onChange={(e) => setDatePublished(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Date Modified
-//                 </label>
-//                 <input
-//                   type="date"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={dateModified}
-//                   onChange={(e) => setDateModified(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="countries"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Author
-//                 </label>
-//                 <select
-//                   id="countries"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={authorType}
-//                   onChange={(e) => setAuthorType(e.target.value)}
-//                 >
-//                   <option value="Organization">Organization</option>
-//                   <option value="Person">Person</option>
-//                 </select>
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Author Name
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Publisher Name"
-//                   value={authorName}
-//                   onChange={(e) => setAuthorName(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Publisher Name
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Publisher Name"
-//                   value={publisherName}
-//                   onChange={(e) => setPublisherName(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Logo Url
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Paste Image Url"
-//                   value={logoUrl}
-//                   onChange={(e) => setLogoUrl(e.target.value)}
-//                 />
-//               </div>
-//               {/* Other form fields go here */}
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//             <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//               CODE
-//             </h1>
-//             <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//               <p className="bg">
-//                 Copy this to the &lt;head&gt; section of your page.
-//               </p>
-//               <CopyToClipboard
-//                 text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//               >
-//                 <div className="ml-auto w-1/6">
-//                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                     Copy
-//                   </button>
-//                 </div>
-//               </CopyToClipboard>
-//             </div>
-//             <div className="space-y-2 mt-5 ml-4">
-//               <pre className="text-white">
-//                 <pre className="text-white">
-//                   {`<script type="application/ld+json">\n`}
-//                   {jsonText}
-//                   {`\n</script>`}
-//                 </pre>
-//               </pre>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Article;
+}

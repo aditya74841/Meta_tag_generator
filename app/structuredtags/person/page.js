@@ -1,153 +1,82 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { countries } from "@/app/constant";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-  Stack,
-  FormControlLabel,
-  Switch,
-  Collapse,
-  Divider,
-  Avatar,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Person as PersonIcon,
-  CheckCircle as CheckIcon,
-  Preview as PreviewIcon,
-  Code as CodeIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  LocationOn as LocationIcon,
-  Language as WebsiteIcon,
-  Image as ImageIcon,
-  Work as JobIcon,
-  Business as CompanyIcon,
-  Share as SocialIcon,
-  Home as AddressIcon,
-  Public as CountryIcon,
-  Facebook as FacebookIcon,
-  Instagram as InstagramIcon,
-  LinkedIn as LinkedInIcon,
-  Twitter as TwitterIcon,
-  Pinterest as PinterestIcon,
-  YouTube as YouTubeIcon,
-  Badge as BadgeIcon,
-} from "@mui/icons-material";
 
-const Person = () => {
+import React, { useState, useRef } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { 
+  User, 
+  Globe, 
+  Briefcase, 
+  Building2, 
+  MapPin, 
+  Share2, 
+  Image as ImageIcon, 
+  Upload, 
+  Link2,
+  Trash2,
+  Plus,
+  Layout,
+  Eye,
+  Code,
+  CheckCircle2,
+  Copy,
+  Link as LinkIcon
+} from "lucide-react";
+
+export default function PersonGenerator() {
   const [name, setName] = useState("");
-  const [photoUrl, setPhotoUrl] = useState("");
-  const [websiteUrl, setWebsiteUrl] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [company, setCompany] = useState("");
-  const [streetAddress, setStreetAddress] = useState("");
+  const [url, setUrl] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [uploadedPhoto, setUploadedPhoto] = useState(null); // Base64 for preview
+  const [photoMode, setPhotoMode] = useState("url"); // "url" or "upload"
+  const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [region, setRegion] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
-  const [zip, setZip] = useState("");
-  const [showAddress, setShowAddress] = useState(false);
-  const [showSocialProfile, setShowSocialProfile] = useState(false);
-  const [facebook, setFacebook] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [twitter, setTwitter] = useState("");
-  const [pintrest, setPintrest] = useState("");
-  const [linkedIn, setLinkedIn] = useState("");
-  const [youtube, setYouTube] = useState("");
+  const [socials, setSocials] = useState([""]);
   const [copied, setCopied] = useState(false);
-  const [errors, setErrors] = useState({});
+  const fileInputRef = useRef(null);
 
-  // Validation
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!name.trim()) newErrors.name = "Name is required";
-
-    // URL validation
-    const urlPattern = /^https?:\/\/.+/;
-    if (websiteUrl && !urlPattern.test(websiteUrl)) {
-      newErrors.websiteUrl =
-        "Please enter a valid URL starting with http:// or https://";
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedPhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
-    if (photoUrl && !urlPattern.test(photoUrl)) {
-      newErrors.photoUrl =
-        "Please enter a valid URL starting with http:// or https://";
-    }
-
-    // Social media URL validation
-    if (showSocialProfile) {
-      if (facebook && !urlPattern.test(facebook)) {
-        newErrors.facebook = "Please enter a valid Facebook URL";
-      }
-      if (instagram && !urlPattern.test(instagram)) {
-        newErrors.instagram = "Please enter a valid Instagram URL";
-      }
-      if (twitter && !urlPattern.test(twitter)) {
-        newErrors.twitter = "Please enter a valid Twitter URL";
-      }
-      if (linkedIn && !urlPattern.test(linkedIn)) {
-        newErrors.linkedIn = "Please enter a valid LinkedIn URL";
-      }
-      if (pintrest && !urlPattern.test(pintrest)) {
-        newErrors.pintrest = "Please enter a valid Pinterest URL";
-      }
-      if (youtube && !urlPattern.test(youtube)) {
-        newErrors.youtube = "Please enter a valid YouTube URL";
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
-  useEffect(() => {
-    validateForm();
-  }, [
-    name,
-    websiteUrl,
-    photoUrl,
-    showSocialProfile,
-    facebook,
-    instagram,
-    twitter,
-    linkedIn,
-    pintrest,
-    youtube,
-  ]);
-
-  const socialProfiles = [
-    facebook,
-    instagram,
-    linkedIn,
-    twitter,
-    pintrest,
-    youtube,
-  ].filter((profile) => profile.trim());
+  const addSocial = () => setSocials([...socials, ""]);
+  const removeSocial = (index) => {
+    const newSocials = [...socials];
+    newSocials.splice(index, 1);
+    setSocials(newSocials);
+  };
+  const updateSocial = (index, value) => {
+    const newSocials = [...socials];
+    newSocials[index] = value;
+    setSocials(newSocials);
+  };
 
   const generateJSON = () => {
+    const validSocials = socials.filter(s => s.trim() !== "");
+    const address = {
+      "@type": "PostalAddress",
+      ...(street && { streetAddress: street }),
+      ...(city && { addressLocality: city }),
+      ...(region && { addressRegion: region }),
+      ...(postalCode && { postalCode: postalCode }),
+      ...(country && { addressCountry: country }),
+    };
+
     return {
       "@context": "https://schema.org",
       "@type": "Person",
       name: name,
-      ...(photoUrl && { image: photoUrl }),
-      ...(websiteUrl && { url: websiteUrl }),
       ...(jobTitle && { jobTitle: jobTitle }),
       ...(company && {
         worksFor: {
@@ -155,1126 +84,387 @@ const Person = () => {
           name: company,
         },
       }),
-      ...(showAddress &&
-        (streetAddress || city || state || zip || country) && {
-          address: {
-            "@type": "PostalAddress",
-            ...(streetAddress && { streetAddress: streetAddress }),
-            ...(city && { addressLocality: city }),
-            ...(state && { addressRegion: state }),
-            ...(zip && { postalCode: zip }),
-            ...(country && { addressCountry: country }),
-          },
-        }),
-      ...(showSocialProfile &&
-        socialProfiles.length > 0 && { sameAs: socialProfiles }),
+      ...(url && { url: url }),
+      image: photoMode === "upload" ? "https://example.com/photos/1x1/photo.jpg" : (photoUrl || undefined),
+      ...((street || city || region || postalCode || country) && { address }),
+      ...(validSocials.length > 0 && { sameAs: validSocials }),
     };
   };
 
   const jsonText = JSON.stringify(generateJSON(), null, 2);
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid = Object.keys(errors).length === 0 && name.trim();
-
   return (
-    <Box
-      sx={{
-        p: 3,
-        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          mb: 3,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <PersonIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Person Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for people with job information, contact
-              details, and social profiles.
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <User className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Person Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl">
+              Create a rich digital profile for search engines. Professional headshot, career info, and social connections.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 text-slate-800">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box
-              sx={{
-                bgcolor: "primary.main",
-                color: "white",
-                p: 2,
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <CodeIcon />
-              <Typography variant="h6" fontWeight="bold">
-                PERSON CONFIGURATION
-              </Typography>
-              {isFormValid && (
-                <Chip
-                  icon={<CheckIcon />}
-                  label="Valid"
-                  sx={{
-                    bgcolor: "rgba(76, 175, 80, 0.8)",
-                    color: "white",
-                    ml: "auto",
-                  }}
-                />
-              )}
-            </Box>
-
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                {/* Person Details Section */}
-                <Grid item xs={12}>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    color="primary"
-                    fontWeight="bold"
-                  >
-                    <PersonIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Person Details
-                  </Typography>
-                </Grid>
-
-                {/* Name */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Full Name *"
-                    placeholder="John Doe"
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex items-center gap-2">
+              <Layout className="h-5 w-5" />
+              <h2 className="font-semibold text-lg tracking-wide uppercase">Core Identity</h2>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Identity */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Full Name *</label>
+                  <input
+                    type="text"
+                    placeholder="Jane Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    error={!!errors.name}
-                    helperText={errors.name || `${name.length} characters`}
-                    InputProps={{
-                      startAdornment: (
-                        <PersonIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold"
                   />
-                </Grid>
-
-                {/* Photo URL */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Photo URL"
-                    placeholder="https://example.com/photo.jpg"
-                    value={photoUrl}
-                    onChange={(e) => setPhotoUrl(e.target.value)}
-                    error={!!errors.photoUrl}
-                    helperText={
-                      errors.photoUrl ||
-                      "Professional headshot or profile picture"
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <ImageIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                {/* Website URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Website URL"
-                    placeholder="https://yourwebsite.com"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    error={!!errors.websiteUrl}
-                    helperText={
-                      errors.websiteUrl || "Personal website or portfolio"
-                    }
-                    InputProps={{
-                      startAdornment: (
-                        <WebsiteIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                {/* Professional Information */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Professional Information" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Job Title"
-                    placeholder="Software Engineer"
-                    value={jobTitle}
-                    onChange={(e) => setJobTitle(e.target.value)}
-                    helperText="Current position or role"
-                    InputProps={{
-                      startAdornment: (
-                        <JobIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Company"
-                    placeholder="Company Name"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    helperText="Current employer or organization"
-                    InputProps={{
-                      startAdornment: (
-                        <CompanyIcon sx={{ mr: 1, color: "action.active" }} />
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                {/* Optional Sections */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Additional Information" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Stack direction="row" spacing={2}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={showAddress}
-                          onChange={(e) => setShowAddress(e.target.checked)}
-                          color="primary"
-                        />
-                      }
-                      label={
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <LocationIcon fontSize="small" />
-                          Include Address
-                        </Box>
-                      }
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Personal Website</label>
+                  <div className="relative">
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://janedoe.me"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                     />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={showSocialProfile}
-                          onChange={(e) =>
-                            setShowSocialProfile(e.target.checked)
-                          }
-                          color="primary"
-                        />
-                      }
-                      label={
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <SocialIcon fontSize="small" />
-                          Include Social Profiles
-                        </Box>
-                      }
+                  </div>
+                </div>
+              </div>
+
+              {/* Career */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Job Title</label>
+                  <div className="relative">
+                    <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Senior Developer"
+                      value={jobTitle}
+                      onChange={(e) => setJobTitle(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                     />
-                  </Stack>
-                </Grid>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-slate-700">Works For (Org Name)</label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Global Tech Corp"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
 
-                {/* Address Section */}
-                <Collapse in={showAddress} className="px-4">
-                  <Grid container spacing={3} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography
-                        variant="h6"
-                        color="primary"
-                        fontWeight="bold"
-                        gutterBottom
-                      >
-                        <LocationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Address Information
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 2 }}
-                      >
-                        {" Provide the person's address information"}
-                      </Typography>
-                    </Grid>
+              {/* Photo */}
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-slate-700">Profile Photo</label>
+                  <div className="flex bg-slate-100 rounded-lg p-1 text-[10px] font-black uppercase">
+                    <button
+                      onClick={() => setPhotoMode("url")}
+                      className={`px-3 py-1 rounded-md transition-all ${photoMode === "url" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      URL
+                    </button>
+                    <button
+                      onClick={() => setPhotoMode("upload")}
+                      className={`px-3 py-1 rounded-md transition-all ${photoMode === "upload" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      Upload
+                    </button>
+                  </div>
+                </div>
+                
+                {photoMode === "url" ? (
+                  <div className="relative">
+                    <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://example.com/photo.jpg"
+                      value={photoUrl}
+                      onChange={(e) => setPhotoUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                    />
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => fileInputRef.current.click()}
+                    className="group border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all rounded-xl p-8 text-center cursor-pointer"
+                  >
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload} 
+                      className="hidden" 
+                      accept="image/*"
+                    />
+                    <div className="flex flex-col items-center">
+                      <div className="bg-slate-50 p-3 rounded-full mb-2 group-hover:bg-indigo-100 transition-colors">
+                        <Upload className="h-6 w-6 text-slate-300 group-hover:text-indigo-600" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-500 group-hover:text-indigo-700">Choose Profile Picture</span>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Street Address"
-                        placeholder="123 Main Street, Apt 4B"
-                        value={streetAddress}
-                        onChange={(e) => setStreetAddress(e.target.value)}
-                        InputProps={{
-                          startAdornment: (
-                            <AddressIcon
-                              sx={{ mr: 1, color: "action.active" }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Grid>
+              {/* Address */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <MapPin className="h-3 w-3" />
+                  Primary Residence
+                </h3>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Street Address"
+                    value={street}
+                    onChange={(e) => setStreet(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      placeholder="City"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    />
+                    <input
+                      type="text"
+                      placeholder="State / Region"
+                      value={region}
+                      onChange={(e) => setRegion(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      placeholder="Postal Code"
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Country"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
 
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="City"
-                        placeholder="New York"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        InputProps={{
-                          startAdornment: (
-                            <LocationIcon
-                              sx={{ mr: 1, color: "action.active" }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="State/Province"
-                        placeholder="New York"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        InputProps={{
-                          startAdornment: (
-                            <LocationIcon
-                              sx={{ mr: 1, color: "action.active" }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="ZIP/Postal Code"
-                        placeholder="10001"
-                        value={zip}
-                        onChange={(e) => setZip(e.target.value)}
-                        InputProps={{
-                          startAdornment: (
-                            <AddressIcon
-                              sx={{ mr: 1, color: "action.active" }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <InputLabel>Country</InputLabel>
-                        <Select
-                          value={country}
-                          label="Country"
-                          onChange={(e) => setCountry(e.target.value)}
+               {/* Socials */}
+               <div className="space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <Share2 className="h-3 w-3" />
+                    Digital Footprint
+                  </h3>
+                  <button
+                    onClick={addSocial}
+                    className="flex items-center gap-1 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-black uppercase hover:bg-indigo-100 transition-all"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add Link
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  {socials.map((social, index) => (
+                    <div key={index} className="flex gap-2">
+                      <div className="relative flex-1">
+                        <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <input
+                          type="url"
+                          placeholder="https://linkedin.com/in/jane-doe"
+                          value={social}
+                          onChange={(e) => updateSocial(index, e.target.value)}
+                          className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                        />
+                      </div>
+                      {socials.length > 1 && (
+                        <button
+                          onClick={() => removeSocial(index)}
+                          className="p-2 text-slate-400 hover:text-red-500 transition-colors"
                         >
-                          <MenuItem value="">Select Country</MenuItem>
-                          {countries.map((country) => (
-                            <MenuItem key={country.value} value={country.value}>
-                              {country.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </Collapse>
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                {/* Social Profiles Section */}
-                <Collapse in={showSocialProfile} className="px-4">
-                  <Grid container spacing={3} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography
-                        variant="h6"
-                        color="primary"
-                        fontWeight="bold"
-                        gutterBottom
-                      >
-                        <SocialIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Social Media Profiles
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 2 }}
-                      >
-                        Add social media profiles (leave empty if not available)
-                      </Typography>
-                    </Grid>
+        {/* Right Side - Preview & Code */}
+        <div className="space-y-8">
+          {/* Live Preview */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase tracking-wide">Identity Card Preview</h2>
+            </div>
+            
+            <div className="p-8">
+              <div className="max-w-md mx-auto bg-white rounded-3xl border border-slate-100 shadow-2xl overflow-hidden relative">
+                <div className="h-32 bg-indigo-600 relative overflow-hidden">
+                   <div className="absolute inset-0 opacity-20 flex flex-wrap gap-4 p-4 grayscale">
+                     <Share2 className="h-12 w-12 text-white" />
+                     <Globe className="h-8 w-8 text-white" />
+                     <User className="h-16 w-16 text-white" />
+                   </div>
+                </div>
+                
+                <div className="px-6 pb-8 pt-16 flex flex-col items-center">
+                  <div className="absolute top-12 left-1/2 -translate-x-1/2 h-40 w-40 rounded-full border-[6px] border-white shadow-xl bg-slate-50 overflow-hidden text-slate-800">
+                    {photoMode === "url" ? (
+                      photoUrl ? (
+                        <img src={photoUrl} alt="Person" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center">
+                          <User className="h-16 w-16 text-slate-200" />
+                        </div>
+                      )
+                    ) : (
+                      uploadedPhoto ? (
+                        <img src={uploadedPhoto} alt="Person" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center">
+                          <Upload className="h-16 w-16 text-slate-200" />
+                        </div>
+                      )
+                    )}
+                  </div>
 
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Facebook URL"
-                        placeholder="https://facebook.com/username"
-                        value={facebook}
-                        onChange={(e) => setFacebook(e.target.value)}
-                        error={!!errors.facebook}
-                        helperText={errors.facebook}
-                        InputProps={{
-                          startAdornment: (
-                            <FacebookIcon sx={{ mr: 1, color: "#1877F2" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
+                  <h3 className="text-2xl font-black text-slate-900 mt-2">{name || "Your Name"}</h3>
+                  <div className="text-indigo-600 font-bold text-sm tracking-wide mt-1 uppercase">{jobTitle || "Your Current Role"}</div>
+                  
+                  {company && (
+                    <div className="flex items-center gap-2 text-slate-400 text-xs mt-3 uppercase tracking-widest font-black">
+                      <Building2 className="h-3 w-3" />
+                      {company}
+                    </div>
+                  )}
 
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Instagram URL"
-                        placeholder="https://instagram.com/username"
-                        value={instagram}
-                        onChange={(e) => setInstagram(e.target.value)}
-                        error={!!errors.instagram}
-                        helperText={errors.instagram}
-                        InputProps={{
-                          startAdornment: (
-                            <InstagramIcon sx={{ mr: 1, color: "#E4405F" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
+                  <div className="w-full border-t border-slate-100 my-6"></div>
 
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Twitter URL"
-                        placeholder="https://twitter.com/username"
-                        value={twitter}
-                        onChange={(e) => setTwitter(e.target.value)}
-                        error={!!errors.twitter}
-                        helperText={errors.twitter}
-                        InputProps={{
-                          startAdornment: (
-                            <TwitterIcon sx={{ mr: 1, color: "#1DA1F2" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
+                  <div className="w-full space-y-4">
+                    {/* Information List */}
+                    {(url || city || country) && (
+                      <div className="space-y-3">
+                        {url && (
+                          <div className="flex items-center gap-3 text-slate-600">
+                             <Globe className="h-4 w-4 text-indigo-500" />
+                             <span className="text-xs font-bold truncate max-w-[200px]">{new URL(url).hostname}</span>
+                          </div>
+                        )}
+                        {(city || country) && (
+                          <div className="flex items-center gap-3 text-slate-600">
+                             <MapPin className="h-4 w-4 text-rose-500" />
+                             <span className="text-xs font-bold uppercase tracking-tighter">
+                               {city}{city && country && ", "} {country}
+                             </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="LinkedIn URL"
-                        placeholder="https://linkedin.com/in/username"
-                        value={linkedIn}
-                        onChange={(e) => setLinkedIn(e.target.value)}
-                        error={!!errors.linkedIn}
-                        helperText={errors.linkedIn}
-                        InputProps={{
-                          startAdornment: (
-                            <LinkedInIcon sx={{ mr: 1, color: "#0A66C2" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Pinterest URL"
-                        placeholder="https://pinterest.com/username"
-                        value={pintrest}
-                        onChange={(e) => setPintrest(e.target.value)}
-                        error={!!errors.pintrest}
-                        helperText={errors.pintrest}
-                        InputProps={{
-                          startAdornment: (
-                            <PinterestIcon sx={{ mr: 1, color: "#BD081C" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="YouTube URL"
-                        placeholder="https://youtube.com/c/username"
-                        value={youtube}
-                        onChange={(e) => setYouTube(e.target.value)}
-                        error={!!errors.youtube}
-                        helperText={errors.youtube}
-                        InputProps={{
-                          startAdornment: (
-                            <YouTubeIcon sx={{ mr: 1, color: "#FF0000" }} />
-                          ),
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Collapse>
-              </Grid>
-            </Box>
-          </Paper>
+                    {/* Socials Link Mockup */}
+                    {socials.some(s => s.trim() !== "") && (
+                       <div className="flex flex-wrap justify-center gap-2 pt-2">
+                         {socials.filter(s => s.trim() !== "").map((s, idx) => (
+                           <div key={idx} className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 text-indigo-500">
+                             <LinkIcon className="h-4 w-4" />
+                           </div>
+                         ))}
+                       </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-center text-[11px] text-slate-400 mt-8 leading-relaxed px-12">
+                Structured data helps Google generate rich snippets for personal brands, resumes, and authoritative bios in search results.
+              </p>
+            </div>
+          </div>
 
           {/* Generated Code */}
-          <Paper
-            elevation={3}
-            sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}
-          >
-            <Box
-              sx={{
-                bgcolor: "success.main",
-                color: "white",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard
-                text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-                onCopy={handleCopy}
-              >
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden text-white">
+            <div className="bg-emerald-600 px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                <h2 className="font-semibold text-lg uppercase tracking-wide">Generated JSON-LD</h2>
+              </div>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  type="button"
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5 text-white" />}
+                </button>
               </CopyToClipboard>
-            </Box>
-
-            {!isFormValid && (
-              <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
-                Please fix the errors above to generate valid structured data.
-              </Alert>
-            )}
-
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML
-              page.
-            </Alert>
-
-            <Box
-              sx={{
-                p: 3,
-                bgcolor: "#1e1e1e",
-                color: "#f8f8f2",
-                maxHeight: 500,
-                overflow: "auto",
-              }}
-            >
-              <pre
-                style={{
-                  fontFamily: "'Fira Code', monospace",
-                  fontSize: "0.875rem",
-                  lineHeight: "1.5",
-                  margin: 0,
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* Person Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  PERSON PREVIEW
-                </Typography>
-              </Box>
-              <Card sx={{ borderRadius: 0 }}>
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                      mb: 2,
-                    }}
-                  >
-                    {photoUrl ? (
-                      <Avatar
-                        src={photoUrl}
-                        alt={name}
-                        sx={{ width: 64, height: 64 }}
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <Avatar
-                        sx={{ width: 64, height: 64, bgcolor: "primary.main" }}
-                      >
-                        <PersonIcon sx={{ fontSize: 40 }} />
-                      </Avatar>
-                    )}
-                    <Box>
-                      <Typography variant="h6" gutterBottom>
-                        {name || "Person Name"}
-                      </Typography>
-                      {jobTitle && (
-                        <Typography variant="body2" color="text.secondary">
-                          {jobTitle}
-                        </Typography>
-                      )}
-                      {company && (
-                        <Typography variant="body2" color="text.secondary">
-                          at {company}
-                        </Typography>
-                      )}
-                    </Box>
-                  </Box>
-
-                  {websiteUrl && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        mb: 1,
-                      }}
-                    >
-                      <WebsiteIcon fontSize="small" />
-                      <Typography
-                        variant="body2"
-                        component="a"
-                        href={websiteUrl}
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        {websiteUrl}
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {showAddress && (city || state || country) && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        mb: 1,
-                      }}
-                    >
-                      <LocationIcon fontSize="small" />
-                      <Typography variant="body2">
-                        {[city, state, country].filter(Boolean).join(", ") ||
-                          "Address not provided"}
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {socialProfiles.length > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography
-                        variant="body2"
-                        fontWeight="bold"
-                        gutterBottom
-                      >
-                        Social Media:
-                      </Typography>
-                      <Stack direction="row" spacing={1} flexWrap="wrap">
-                        {facebook && <FacebookIcon sx={{ color: "#1877F2" }} />}
-                        {instagram && (
-                          <InstagramIcon sx={{ color: "#E4405F" }} />
-                        )}
-                        {twitter && <TwitterIcon sx={{ color: "#1DA1F2" }} />}
-                        {linkedIn && <LinkedInIcon sx={{ color: "#0A66C2" }} />}
-                        {pintrest && (
-                          <PinterestIcon sx={{ color: "#BD081C" }} />
-                        )}
-                        {youtube && <YouTubeIcon sx={{ color: "#FF0000" }} />}
-                      </Stack>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Paper>
-
-            {/* Validation Status */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box
-                sx={{
-                  bgcolor: isFormValid ? "success.main" : "error.main",
-                  color: "white",
-                  p: 2,
-                }}
-              >
-                <Typography variant="h6" fontWeight="bold">
-                  VALIDATION STATUS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert
-                    severity={name.trim() ? "success" : "error"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Name: {name.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={photoUrl ? "success" : "info"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Photo:{" "}
-                      {photoUrl ? "✓ Added" : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={websiteUrl ? "success" : "info"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Website: {websiteUrl ? "✓ Added" : "ℹ Optional"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={jobTitle && company ? "success" : "info"}
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Professional Info:{" "}
-                      {jobTitle && company
-                        ? "✓ Complete"
-                        : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={
-                      showAddress
-                        ? city || state || country
-                          ? "success"
-                          : "warning"
-                        : "info"
-                    }
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Address:{" "}
-                      {showAddress
-                        ? city || state || country
-                          ? "✓ Added"
-                          : "⚠ Incomplete"
-                        : "ℹ Not included"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert
-                    severity={
-                      showSocialProfile
-                        ? socialProfiles.length > 0
-                          ? "success"
-                          : "warning"
-                        : "info"
-                    }
-                    variant="outlined"
-                  >
-                    <Typography variant="caption">
-                      Social Media:{" "}
-                      {showSocialProfile
-                        ? socialProfiles.length > 0
-                          ? `✓ ${socialProfiles.length} profile${
-                              socialProfiles.length !== 1 ? "s" : ""
-                            }`
-                          : "⚠ No profiles added"
-                        : "ℹ Not included"}
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+            </div>
+            
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-xs font-bold italic">
+               <p>TIP: Add this schema to your "About Me" or Biography page.</p>
+               {photoMode === "upload" && (
+                 <p className="mt-1 text-blue-600">
+                    ⚠️ Note: Replace the placeholder image URL in the code with your actual public profile picture link.
+                 </p>
+               )}
+            </div>
+            
+            <div className="bg-[#1e1e1e] p-6 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 border-b border-l border-white/5 bg-white/5 uppercase text-[10px] font-bold tracking-widest text-[#f8f8f2]/30">
+                APPLICATION/LD+JSON
+              </div>
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30 pt-4">
+                <span className="text-indigo-400/60 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
+                  {jsonText}
+                </div>
+                <span className="text-indigo-400/60 font-bold">&lt;/script&gt;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default Person;
-
-// "use client";
-
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-// import {
-//   businessCategories,
-//   countries,
-//   currencies,
-//   organizations,
-//   timezones,
-// } from "@/app/constant";
-// const Person = () => {
-//   const [showAddress, setShowAddress] = useState(false);
-//   const [showSocialProfile, setShowSocialProfile] = useState(false);
-//   const [name, setName] = useState("");
-//   const [photoUrl, setPhotoUrl] = useState("");
-//   const [websiteUrl, setWebsiteUrl] = useState("");
-//   const [jobTitle, setJobTitle] = useState("");
-//   const [company, setCompany] = useState("");
-//   const [streetAddress, setStreetAddress] = useState("");
-//   const [city, setCity] = useState("");
-//   const [state, setState] = useState("");
-//   const [country, setCountry] = useState("");
-//   const [zip, setZip] = useState("");
-//   const [facebook, setFacebook] = useState("");
-//   const [instagram, setInstagram] = useState("");
-//   const [twitter, setTwitter] = useState("");
-//   const [pintrest, setPintrest] = useState("");
-//   const [linkedIn, setLinkedIn] = useState("");
-//   const [youtube, setYouTube] = useState("");
-
-//   const jsonText = JSON.stringify(
-//     {
-//       "@context": "http://schema.org/",
-//       "@type": "Person",
-//       "name": name,
-//       "image": photoUrl,
-//       "url": websiteUrl,
-//       "jobTitle": jobTitle,
-//       "worksFor": {
-//         "@type": "Organization",
-//         "name": company
-//       },
-//       ...(showAddress && {
-//         "address": {
-//           "@type": "PostalAddress",
-//           "streetAddress": streetAddress,
-//           "addressLocality": city,
-//           "addressRegion": state,
-//           "postalCode": zip,
-//           "addressCountry": country
-//         }
-//       }),
-//       "sameAs": showSocialProfile ? [facebook, instagram, linkedIn, twitter, pintrest, youtube] : undefined
-//     },
-//     null,
-//     2
-//   );
-
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         Person Structured Data Generator
-//       </h1>
-//       <p className="text-white text-sm mt-2">
-//         Job information and social profiles
-//       </p>
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               <h1 className="text-white font-semibold mt-5">Person Details </h1>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter  Name"
-//                   value={name}
-//                   onChange={(e) => setName(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Photo Url"
-//                   value={photoUrl}
-//                   onChange={(e) => setPhotoUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Website Url"
-//                   value={websiteUrl}
-//                   onChange={(e) => setWebsiteUrl(e.target.value)}
-//                 />
-//               </div>
-
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Job Title"
-//                   value={jobTitle}
-//                   onChange={(e) => setJobTitle(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Company"
-//                   value={company}
-//                   onChange={(e) => setCompany(e.target.value)}
-//                 />
-//               </div>
-
-//               <div class="flex items-center mb-4 mt-5">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   onChange={() => setShowAddress(!showAddress)}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   Include address
-//                 </label>
-//               </div>
-//               <div class="flex items-center mb-4 mt-5">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   onChange={() => setShowSocialProfile(!showSocialProfile)}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   Include Social Profile
-//                 </label>
-//               </div>
-
-//               {showAddress && (
-//                 <>
-//                   <h1 className="text-white font-semibold mt-5">Address </h1>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter street address"
-//                       value={streetAddress}
-//                       onChange={(e) => setStreetAddress(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter city"
-//                       value={city}
-//                       onChange={(e) => setCity(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter state/province/region"
-//                       value={state}
-//                       onChange={(e) => setState(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Enter zip/postal/code"
-//                       value={zip}
-//                       onChange={(e) => setZip(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <select
-//                       id="type"
-//                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       value={country}
-//                       onChange={(e) => setCountry(e.target.value)}
-//                     >
-//                       <option>Select Country</option>
-//                       {countries.map((country) => (
-//                         <option key={country.value} value={country.value}>
-//                           {country.label}
-//                         </option>
-//                       ))}
-//                     </select>
-//                   </div>
-//                 </>
-//               )}
-//               {showSocialProfile && (
-//                 <>
-//                   <h1 className="text-white font-semibold mt-5">
-//                     Social Profile{" "}
-//                   </h1>
-//                   <p className="text-white font-semibold mt-2 text-xs">
-//                     If your business doesn’t have a profile, leave the field
-//                     empty.
-//                   </p>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder=" Facebook"
-//                       value={facebook}
-//                       onChange={(e) => setFacebook(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder=" Instagram"
-//                       value={instagram}
-//                       onChange={(e) => setInstagram(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="LinkedIn"
-//                       value={linkedIn}
-//                       onChange={(e) => setLinkedIn(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Twitter"
-//                       value={twitter}
-//                       onChange={(e) => setTwitter(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Pintrest"
-//                       value={pintrest}
-//                       onChange={(e) => setPintrest(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Youtube"
-//                       value={youtube}
-//                       onChange={(e) => setYouTube(e.target.value)}
-//                     />
-//                   </div>
-//                 </>
-//               )}
-//               {/* Other form fields go here */}
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//             <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//               CODE
-//             </h1>
-//             <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//               <p className="bg">
-//                 Copy this to the &lt;head&gt; section of your page.
-//               </p>
-//               </div>
-//               <CopyToClipboard
-//                 text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//               >
-//                 <div className="ml-auto w-1/6 mt-2">
-//                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                     Copy
-//                   </button>
-//                 </div>
-//               </CopyToClipboard>
-
-//             <div className="space-y-2 mt-5 ml-4">
-//               <pre className="text-white">
-//                 <pre className="text-white">
-//                   {`<script type="application/ld+json">\n`}
-//                   {jsonText}
-//                   {`\n</script>`}
-//                 </pre>
-//               </pre>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Person;
+}

@@ -1,54 +1,32 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-  Stack,
-  Breadcrumbs,
-  Link,
-  Divider,
-  Fade,
-  Collapse,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Navigation as BreadcrumbIcon,
-  CheckCircle as CheckIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Preview as PreviewIcon,
-  Code as CodeIcon,
+import { 
+  Navigation, 
+  Home, 
+  ChevronRight, 
+  Plus, 
+  Trash2, 
+  Copy, 
+  CheckCircle2, 
+  Eye, 
+  Code,
   Link as LinkIcon,
-  Home as HomeIcon,
-  ChevronRight as ChevronRightIcon,
-  DragIndicator as DragIcon,
-  Visibility as VisibilityIcon,
-  Warning as WarningIcon,
-} from "@mui/icons-material";
+  Layout,
+  AlertCircle
+} from "lucide-react";
 
-const BreadCrumb = () => {
+export default function BreadcrumbGenerator() {
   const [items, setItems] = useState([
     { name: "Home", url: "https://example.com" },
     { name: "", url: "" }
   ]);
-  const [jsonText, setJsonText] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const handleInputChange = (index, event) => {
-    const { name, value } = event.target;
+  const handleInputChange = (index, field, value) => {
     const list = [...items];
-    list[index][name] = value;
+    list[index][field] = value;
     setItems(list);
   };
 
@@ -79,9 +57,8 @@ const BreadCrumb = () => {
     return JSON.stringify(jsonData, null, 2);
   };
 
-  useEffect(() => {
-    setJsonText(generateJson());
-  }, [items]);
+  const jsonText = generateJson();
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
@@ -91,478 +68,212 @@ const BreadCrumb = () => {
   const validItemsCount = items.filter(item => item.name.trim() && item.url.trim()).length;
 
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <BreadcrumbIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Breadcrumb Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-             {" Create breadcrumb navigation structured data to enhance your website's search appearance."}
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <Navigation className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Breadcrumb Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl">
+              Enhance your website's search appearance with breadcrumb navigation schema.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <CodeIcon />
-                <Typography variant="h6" fontWeight="bold">
-                  BREADCRUMB CONFIGURATION
-                </Typography>
-              </Box>
-              <Chip 
-                label={`${validItemsCount} valid items`} 
-                sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "white" }}
-              />
-            </Box>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Layout className="h-5 w-5" />
+                <h2 className="font-semibold text-lg tracking-wide uppercase">Configuration</h2>
+              </div>
+              <span className="bg-indigo-500 text-[10px] font-bold px-2 py-1 rounded-full uppercase">
+                {validItemsCount} Valid Items
+              </span>
+            </div>
             
-            <Box sx={{ p: 3 }}>
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body2">
-                {"  Add breadcrumb items in order from the homepage to the current page. The first item is typically 'Home'"}
-                </Typography>
-              </Alert>
+            <div className="p-6">
+              <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="h-5 w-5 text-amber-500" />
+                  <p className="text-sm text-amber-800">
+                    Add breadcrumb items in order from the homepage to the current page. The first item is typically "Home".
+                  </p>
+                </div>
+              </div>
 
-              <Stack spacing={2}>
+              <div className="space-y-4">
                 {items.map((item, index) => (
-                  <Fade in={true} key={index} timeout={300}>
-                    <Card 
-                      variant="outlined" 
-                      sx={{ 
-                        position: "relative",
-                        border: item.name.trim() && item.url.trim() ? "2px solid #4CAF50" : "1px solid #e0e0e0",
-                        transition: "all 0.3s ease"
-                      }}
-                    >
-                      <CardContent sx={{ pb: 2 }}>
-                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                            <DragIcon sx={{ color: "text.secondary" }} />
-                            <Typography variant="subtitle1" fontWeight="bold">
-                              {index === 0 ? "Home Page" : `Level ${index + 1}`}
-                            </Typography>
-                            <Chip 
-                              label={`Position ${index + 1}`} 
-                              size="small" 
-                              color="primary" 
-                              variant="outlined"
-                            />
-                          </Box>
-                          
-                          {items.length > 1 && (
-                            <IconButton
-                              onClick={() => handleRemoveItem(index)}
-                              color="error"
-                              size="small"
-                              sx={{ 
-                                opacity: items.length === 1 ? 0.3 : 1,
-                                pointerEvents: items.length === 1 ? "none" : "auto"
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          )}
-                        </Box>
+                  <div 
+                    key={index}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      item.name.trim() && item.url.trim() 
+                      ? "border-emerald-100 bg-emerald-50/30" 
+                      : "border-slate-100 bg-white"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold">
+                          {index + 1}
+                        </span>
+                        <h3 className="font-bold text-slate-800 text-sm">
+                          {index === 0 ? "Homepage" : `Level ${index + 1}`}
+                        </h3>
+                      </div>
+                      
+                      {items.length > 1 && (
+                        <button
+                          onClick={() => handleRemoveItem(index)}
+                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
 
-                        <Grid container spacing={2}>
-                          <Grid item xs={12} sm={6}>
-                            <TextField
-                              fullWidth
-                              label="Page Name"
-                              placeholder={index === 0 ? "Home" : "Page Title"}
-                              value={item.name}
-                              onChange={(e) => handleInputChange(index, { target: { name: "name", value: e.target.value } })}
-                              size="small"
-                              InputProps={{
-                                startAdornment: index === 0 ? <HomeIcon sx={{ mr: 1, color: "action.active" }} /> : null,
-                              }}
-                              error={!item.name.trim() && item.url.trim()}
-                              helperText={!item.name.trim() && item.url.trim() ? "Name is required" : ""}
-                            />
-                          </Grid>
-                          <Grid item xs={12} sm={6}>
-                            <TextField
-                              fullWidth
-                              label="Page URL"
-                              placeholder={index === 0 ? "https://example.com" : "https://example.com/page"}
-                              value={item.url}
-                              onChange={(e) => handleInputChange(index, { target: { name: "url", value: e.target.value } })}
-                              size="small"
-                              InputProps={{
-                                startAdornment: <LinkIcon sx={{ mr: 1, color: "action.active" }} />,
-                              }}
-                              error={!item.url.trim() && item.name.trim()}
-                              helperText={!item.url.trim() && item.name.trim() ? "URL is required" : ""}
-                            />
-                          </Grid>
-                        </Grid>
-
-                        {/* Item Status */}
-                        <Box sx={{ mt: 1, display: "flex", justifyContent: "flex-end" }}>
-                          {item.name.trim() && item.url.trim() ? (
-                            <Chip 
-                              icon={<CheckIcon />} 
-                              label="Valid" 
-                              color="success" 
-                              size="small" 
-                            />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Page Name</label>
+                        <div className="relative">
+                          {index === 0 ? (
+                            <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                           ) : (
-                            <Chip 
-                              icon={<WarningIcon />} 
-                              label="Incomplete" 
-                              color="warning" 
-                              size="small" 
-                            />
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 flex items-center justify-center">
+                              <span className="text-[10px] font-bold text-slate-300">T</span>
+                            </div>
                           )}
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Fade>
+                          <input
+                            type="text"
+                            placeholder={index === 0 ? "Home" : "Page Title"}
+                            value={item.name}
+                            onChange={(e) => handleInputChange(index, "name", e.target.value)}
+                            className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Page URL</label>
+                        <div className="relative">
+                          <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                          <input
+                            type="url"
+                            placeholder={index === 0 ? "https://example.com" : "https://example.com/page"}
+                            value={item.url}
+                            onChange={(e) => handleInputChange(index, "url", e.target.value)}
+                            className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
 
-                {/* Add Item Button */}
-                <Button
+                <button
                   onClick={handleAddItem}
-                  variant="outlined"
-                  startIcon={<AddIcon />}
-                  sx={{ 
-                    mt: 2, 
-                    py: 1.5,
-                    borderStyle: "dashed",
-                    "&:hover": {
-                      borderStyle: "solid"
-                    }
-                  }}
-                  fullWidth
+                  className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-500 font-semibold hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all"
                 >
-                  Add Breadcrumb Item
-                </Button>
-              </Stack>
-            </Box>
-          </Paper>
+                  <Plus className="h-5 w-5" />
+                  Add Breadcrumb Level
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard text={`<script type="application/ld+json">\n${jsonText}\n</script>`} onCopy={handleCopy}>
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
+        {/* Preview and Code Panel */}
+        <div className="flex flex-col gap-8 text-white">
+          {/* Live Preview */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase">Live Preview</h2>
+            </div>
+            <div className="p-8">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Website Appearance</h3>
+                  <div className="bg-white border border-slate-100 rounded-xl p-6 shadow-sm">
+                    <nav className="flex" aria-label="Breadcrumb">
+                      <ol className="flex items-center space-x-2 flex-wrap">
+                        {items.filter(item => item.name.trim()).map((item, index, filteredArr) => (
+                          <li key={index} className="flex items-center">
+                            {index !== 0 && <ChevronRight className="h-4 w-4 text-slate-300 mx-1 flex-shrink-0" />}
+                            <a 
+                              href={item.url || "#"} 
+                              className={`flex items-center text-sm font-medium transition-colors ${
+                                index === filteredArr.length - 1 
+                                ? "text-indigo-600 font-bold" 
+                                : "text-slate-500 hover:text-indigo-500"
+                              }`}
+                            >
+                              {index === 0 && <Home className="h-4 w-4 mr-1.5" />}
+                              {item.name || `Item ${index + 1}`}
+                            </a>
+                          </li>
+                        ))}
+                      </ol>
+                    </nav>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Search Result Preview</h3>
+                  <div className="bg-white border border-slate-100 rounded-xl p-6 shadow-md max-w-lg">
+                    <h4 className="text-xl font-bold text-indigo-700 leading-tight mb-1">
+                      {items[items.length - 1]?.name || "Current Page Title"}
+                    </h4>
+                    <div className="flex items-center text-[13px] text-emerald-700 mb-2 truncate">
+                      {items.filter(item => item.name.trim()).map(item => item.name).join(" › ")}
+                    </div>
+                    <p className="text-sm text-slate-600 line-clamp-2">
+                      Experience seamless navigation with our newly implemented breadcrumb architecture. Improve SEO and user hierarchy today...
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Code Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-emerald-600 text-white px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                <h2 className="font-semibold text-lg uppercase">Generated JSON-LD</h2>
+              </div>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5" />}
+                </button>
               </CopyToClipboard>
-            </Box>
+            </div>
             
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML page.
-            </Alert>
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-sm italic font-medium">
+              Copy and paste this into the &lt;head&gt; section of your HTML.
+            </div>
 
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 400, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* Breadcrumb Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  BREADCRUMB PREVIEW
-                </Typography>
-              </Box>
-              <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  How it appears on your website:
-                </Typography>
-                
-                <Paper variant="outlined" sx={{ p: 2, bgcolor: "#f9f9f9" }}>
-                  <Breadcrumbs 
-                    separator={<ChevronRightIcon fontSize="small" />}
-                    aria-label="breadcrumb"
-                  >
-                    {items.filter(item => item.name.trim()).map((item, index) => (
-                      <Link
-                        key={index}
-                        underline="hover"
-                        color={index === items.filter(item => item.name.trim()).length - 1 ? "text.primary" : "inherit"}
-                        href={item.url || "#"}
-                        sx={{ 
-                          display: "flex", 
-                          alignItems: "center",
-                          fontWeight: index === items.filter(item => item.name.trim()).length - 1 ? "bold" : "normal"
-                        }}
-                      >
-                        {index === 0 && <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />}
-                        {item.name || `Item ${index + 1}`}
-                      </Link>
-                    ))}
-                  </Breadcrumbs>
-                </Paper>
-
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-                  This is how your breadcrumb navigation will look to users.
-                </Typography>
-              </Box>
-            </Paper>
-
-            {/* Search Engine Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "info.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <VisibilityIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  SEARCH RESULT PREVIEW
-                </Typography>
-              </Box>
-              <Box sx={{ p: 3 }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  How it might appear in search results:
-                </Typography>
-                
-                <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 1, p: 2, bgcolor: "#fafafa" }}>
-                  <Typography variant="h6" sx={{ color: "#1a0dab", cursor: "pointer" }}>
-                    {items[items.length - 1]?.name || "Current Page Title"}
-                  </Typography>
-                  <Typography variant="body2" color="success.main" gutterBottom>
-                    {items.filter(item => item.name.trim()).map(item => item.name).join(" › ")}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Page description would appear here, potentially enhanced with breadcrumb data.
-                  </Typography>
-                </Box>
-
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-                  Breadcrumbs may appear in search results to show page hierarchy.
-                </Typography>
-              </Box>
-            </Paper>
-
-            {/* Validation Status */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: validItemsCount >= 2 ? "success.main" : "error.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  VALIDATION STATUS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert severity={validItemsCount >= 2 ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Valid Items: {validItemsCount >= 2 ? `✓ ${validItemsCount} items` : `✗ Need at least 2 items (have ${validItemsCount})`}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={items[0]?.name.toLowerCase().includes("home") ? "success" : "warning"} variant="outlined">
-                    <Typography variant="caption">
-                      First Item: {items[0]?.name.toLowerCase().includes("home") ? "✓ Starts with Home" : "⚠ Consider starting with 'Home'"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={items.every(item => !item.name.trim() || item.url.trim()) ? "success" : "warning"} variant="outlined">
-                    <Typography variant="caption">
-                      URLs: {items.every(item => !item.name.trim() || item.url.trim()) ? "✓ All valid" : "⚠ Some missing URLs"}
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+            <div className="bg-[#1e1e1e] p-6 relative">
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto">
+                <span className="text-slate-500">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
+                  {jsonText}
+                </div>
+                <span className="text-slate-500">&lt;/script&gt;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default BreadCrumb;
-
-
-
-
-// "use client";
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-
-// const BreadCrumb = () => {
-//   const formatDate = (date) => {
-//     const d = new Date(date);
-//     const year = d.getFullYear();
-//     let month = d.getMonth() + 1;
-//     if (month < 10) month = `0${month}`;
-//     let day = d.getDate();
-//     if (day < 10) day = `0${day}`;
-//     return `${year}-${month}-${day}`;
-//   };
-
-//   const [items, setItems] = useState([{ name: "", url: "" }]);
-//   const [jsonText, setJsonText] = useState("");
-
-//   const handleInputChange = (index, event) => {
-//     const { name, value } = event.target;
-//     const list = [...items];
-//     list[index][name] = value;
-//     setItems(list);
-//     generateJson(list); // Update JSON whenever input changes
-//   };
-
-//   const handleAddItem = () => {
-//     setItems([...items, { name: "", url: "" }]);
-//     generateJson([...items, { name: "", url: "" }]);
-//   };
-
-//   const handleRemoveItem = (index) => {
-//     const list = [...items];
-//     list.splice(index, 1);
-//     setItems(list);
-//     generateJson(list); // Update JSON whenever an item is removed
-//   };
-
-//   const generateJson = (updatedItems) => {
-//     const jsonData = {
-//       "@context": "http://schema.org/",
-//       "@type": "BreadcrumbList",
-//       itemListElement: updatedItems.map((item, index) => ({
-//         "@type": "ListItem",
-//         position: index + 1,
-//         name: item.name,
-//         item: item.url,
-//       })),
-//     };
-//     setJsonText(JSON.stringify(jsonData, null, 2));
-//   };
-
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         Article Structured Data Generator
-//       </h1>
-//       <p className="text-white text-sm mt-2">Breadcrumb</p>
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               {items.map((item, index) => (
-//                 <div key={index} className="mt-5">
-//                   <label
-//                     htmlFor={`name${index}`}
-//                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                   >
-//                     Name
-//                   </label>
-//                   <input
-//                     type="text"
-//                     id={`name${index}`}
-//                     name="name"
-//                     value={item.name}
-//                     onChange={(e) => handleInputChange(index, e)}
-//                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                     placeholder="Enter Name"
-//                   />
-              
-//                   <label
-//                     htmlFor={`url${index}`}
-//                     className="block mt-3 mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                   >
-//                     URL
-//                   </label>
-//                   <input
-//                     type="text"
-//                     id={`url${index}`}
-//                     name="url"
-//                     value={item.url}
-//                     onChange={(e) => handleInputChange(index, e)}
-//                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                     placeholder="Enter URL"
-//                   />
-//                   {index !== 0 && (
-//                     <button
-//                       type="button"
-//                       className="mt-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//                       onClick={() => handleRemoveItem(index)}
-//                     >
-//                       Remove
-//                     </button>
-//                   )}
-//                 </div>
-//               ))}
-//               <div className="mt-5">
-//                 <button
-//                   type="button"
-//                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//                   onClick={handleAddItem}
-//                 >
-//                   Add Item
-//                 </button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//             <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//               CODE
-//             </h1>
-//             <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//               <p className="bg">
-//                 Copy this to the &lt;head&gt; section of your page.
-//               </p>
-//               <CopyToClipboard
-//                 text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//               >
-//                 <div className="ml-auto w-1/6">
-//                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                     Copy
-//                   </button>
-//                 </div>
-//               </CopyToClipboard>
-//             </div>
-//             <div className="space-y-2 mt-5 ml-4">
-//               <pre className="text-white">
-//                 {`<script type="application/ld+json">\n`}
-//                 {jsonText}
-//                 {`\n</script>`}
-//               </pre>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default BreadCrumb;
+}

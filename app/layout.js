@@ -2,7 +2,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 import { Inter } from "next/font/google";
 import "./globals.css";
-import MiniDrawer from "./components/Sidebar";
+import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -37,31 +37,20 @@ export default function RootLayout({ children }) {
       <body
         className={inter.className}
         style={{
-          backgroundColor: "black",
           margin: 0,
           padding: 0,
           fontFamily: inter.style.fontFamily,
         }}
       >
-        <div style={{ display: "flex", minHeight: "100vh" }}>
-          <MiniDrawer />
-          <div
-            style={{
-              flexGrow: 1,
-              marginTop: "64px",
-              minHeight: "100vh",
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-            }}
-          >
-            <div style={{ flexGrow: 1 }}>
+        <Sidebar>
+          <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+            <div className="flex-1">
               {children}
               <Analytics />
             </div>
             <Footer />
           </div>
-        </div>
+        </Sidebar>
       </body>
     </html>
   );

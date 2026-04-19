@@ -1,1426 +1,502 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useRef } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  businessCategories,
-  countries,
-  currencies,
-  timezones,
-} from "@/app/constant";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
-  Alert,
-  IconButton,
-  Tooltip,
-  Stack,
-  FormControlLabel,
-  Switch,
-  Collapse,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Fade,
-  FormGroup,
-  Checkbox,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Business as BusinessIcon,
-  CheckCircle as CheckIcon,
-  Preview as PreviewIcon,
-  Code as CodeIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  LocationOn as LocationIcon,
-  Phone as PhoneIcon,
-  Language as WebsiteIcon,
+import { 
+  Store, 
+  MapPin, 
+  Phone, 
+  Globe, 
+  Clock, 
+  DollarSign, 
+  Layout, 
+  Eye, 
+  Code, 
+  CheckCircle2, 
+  Copy,
+  Plus,
+  Trash2,
   Image as ImageIcon,
-  AttachMoney as PriceIcon,
-  Schedule as ScheduleIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Facebook as FacebookIcon,
-  Instagram as InstagramIcon,
-  LinkedIn as LinkedInIcon,
-  Twitter as TwitterIcon,
-  Pinterest as PinterestIcon,
-  YouTube as YouTubeIcon,
-  Share as SocialIcon,
-  AccessTime as TimeIcon,
-  Category as CategoryIcon,
-  Store as StoreIcon,
-  Home as AddressIcon,
-  Public as CountryIcon,
-} from "@mui/icons-material";
+  Upload,
+  Link2,
+  AlertCircle,
+  Navigation,
+  Star,
+  ChevronDown
+} from "lucide-react";
 
-const LocalBusiness = () => {
-  const [businessType, setBusinessType] = useState("");
-  const [businessName, setBusinessName] = useState("");
+export default function LocalBusinessGenerator() {
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("LocalBusiness");
   const [imageUrl, setImageUrl] = useState("");
-  const [priceRange, setPriceRange] = useState("");
+  const [uploadedImage, setUploadedImage] = useState(null); // Base64 for preview
+  const [imageMode, setImageMode] = useState("url"); // "url" or "upload"
+  const [priceRange, setPriceRange] = useState("$$");
   const [telephone, setTelephone] = useState("");
-  const [websiteUrl, setWebsiteUrl] = useState("");
-  const [streetAddress, setStreetAddress] = useState("");
+  const [url, setUrl] = useState("");
+  const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [region, setRegion] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
-  const [zip, setZip] = useState("");
-  const [showSocialProfile, setShowSocialProfile] = useState(false);
-  const [facebook, setFacebook] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [twitter, setTwitter] = useState("");
-  const [pintrest, setPintrest] = useState("");
-  const [linkedIn, setLinkedIn] = useState("");
-  const [youtube, setYouTube] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  const [items, setItems] = useState([
-    { daysoftheweek: [], openTime: "", closeTime: "" },
+  const [openingHours, setOpeningHours] = useState([
+    { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:00", closes: "18:00" }
   ]);
+  const [copied, setCopied] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const daysOfWeek = [
-    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-  ];
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-  const handleInputChange = (index, event) => {
-    const { name, value } = event.target;
-    const list = [...items];
-    if (name === "daysoftheweek") {
-      const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
-      list[index][name] = selectedOptions;
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const addHours = () => setOpeningHours([...openingHours, { days: [], opens: "09:00", closes: "18:00" }]);
+  const removeHours = (index) => {
+    const newHours = [...openingHours];
+    newHours.splice(index, 1);
+    setOpeningHours(newHours);
+  };
+  const toggleDay = (index, day) => {
+    const newHours = [...openingHours];
+    const days = newHours[index].days;
+    if (days.includes(day)) {
+      newHours[index].days = days.filter(d => d !== day);
     } else {
-      list[index][name] = value;
+      newHours[index].days = [...days, day];
     }
-    setItems(list);
+    setOpeningHours(newHours);
   };
-
-  const handleAddItem = () => {
-    setItems([...items, { daysoftheweek: [], openTime: "", closeTime: "" }]);
-  };
-
-  const handleRemoveItem = (index) => {
-    if (items.length > 1) {
-      const list = [...items];
-      list.splice(index, 1);
-      setItems(list);
-    }
-  };
-
-  const handleDayChange = (index, day) => {
-    const list = [...items];
-    const dayIndex = list[index].daysoftheweek.indexOf(day);
-    if (dayIndex > -1) {
-      list[index].daysoftheweek.splice(dayIndex, 1);
-    } else {
-      list[index].daysoftheweek.push(day);
-    }
-    setItems(list);
-  };
-
-  // Validation
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!businessName.trim()) newErrors.businessName = "Business name is required";
-    if (!businessType) newErrors.businessType = "Business type is required";
-    if (!telephone.trim()) newErrors.telephone = "Phone number is required";
-    if (!city.trim()) newErrors.city = "City is required";
-    if (!state.trim()) newErrors.state = "State/Province is required";
-    if (!country) newErrors.country = "Country is required";
-
-    // URL validation
-    const urlPattern = /^https?:\/\/.+/;
-    if (websiteUrl && !urlPattern.test(websiteUrl)) {
-      newErrors.websiteUrl = "Please enter a valid URL starting with http:// or https://";
-    }
-    if (imageUrl && !urlPattern.test(imageUrl)) {
-      newErrors.imageUrl = "Please enter a valid URL starting with http:// or https://";
-    }
-
-    // Social media URL validation
-    if (showSocialProfile) {
-      if (facebook && !urlPattern.test(facebook)) {
-        newErrors.facebook = "Please enter a valid Facebook URL";
-      }
-      if (instagram && !urlPattern.test(instagram)) {
-        newErrors.instagram = "Please enter a valid Instagram URL";
-      }
-      if (twitter && !urlPattern.test(twitter)) {
-        newErrors.twitter = "Please enter a valid Twitter URL";
-      }
-      if (linkedIn && !urlPattern.test(linkedIn)) {
-        newErrors.linkedIn = "Please enter a valid LinkedIn URL";
-      }
-      if (pintrest && !urlPattern.test(pintrest)) {
-        newErrors.pintrest = "Please enter a valid Pinterest URL";
-      }
-      if (youtube && !urlPattern.test(youtube)) {
-        newErrors.youtube = "Please enter a valid YouTube URL";
-      }
-    }
-
-    // Opening hours validation
-    items.forEach((item, index) => {
-      if (item.openTime && item.closeTime && item.openTime >= item.closeTime) {
-        newErrors[`hours_${index}`] = "Close time must be after open time";
-      }
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  useEffect(() => {
-    validateForm();
-  }, [businessName, businessType, telephone, city, state, country, websiteUrl, imageUrl, items, showSocialProfile, facebook, instagram, twitter, linkedIn, pintrest, youtube]);
-
-  const socialProfiles = [
-    facebook,
-    instagram,
-    linkedIn,
-    twitter,
-    pintrest,
-    youtube,
-  ].filter((profile) => profile.trim());
 
   const generateJSON = () => {
-    const validHours = items.filter(item => 
-      item.daysoftheweek.length > 0 && item.openTime && item.closeTime
-    );
-
     return {
       "@context": "https://schema.org",
-      "@type": businessType || "LocalBusiness",
-      name: businessName,
-      ...(imageUrl && { image: imageUrl }),
-      ...(priceRange && { priceRange: priceRange }),
-      ...(telephone && { telephone: telephone }),
-      ...(websiteUrl && { url: websiteUrl }),
+      "@type": category,
+      name: name,
+      image: imageMode === "upload" ? "https://example.com/photos/1x1/photo.jpg" : (imageUrl || undefined),
+      priceRange: priceRange,
+      telephone: telephone,
+      url: url,
       address: {
         "@type": "PostalAddress",
-        ...(streetAddress && { streetAddress: streetAddress }),
-        ...(city && { addressLocality: city }),
-        ...(state && { addressRegion: state }),
-        ...(zip && { postalCode: zip }),
-        ...(country && { addressCountry: country }),
+        streetAddress: street,
+        addressLocality: city,
+        addressRegion: region,
+        postalCode: postalCode,
+        addressCountry: country
       },
-      ...(validHours.length > 0 && {
-        openingHoursSpecification: validHours.map((item) => ({
-          "@type": "OpeningHoursSpecification",
-          dayOfWeek: item.daysoftheweek,
-          opens: item.openTime,
-          closes: item.closeTime,
-        }))
-      }),
-      ...(showSocialProfile && socialProfiles.length > 0 && { sameAs: socialProfiles }),
+      openingHoursSpecification: openingHours.map(h => ({
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: h.days,
+        opens: h.opens,
+        closes: h.closes
+      }))
     };
   };
 
   const jsonText = JSON.stringify(generateJSON(), null, 2);
+  const snippet = `<script type="application/ld+json">\n${jsonText}\n</script>`;
 
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid = Object.keys(errors).length === 0 && 
-    businessName.trim() && businessType && telephone.trim() && 
-    city.trim() && state.trim() && country;
-
-  const getSocialIcon = (platform) => {
-    switch (platform.toLowerCase()) {
-      case 'facebook': return <FacebookIcon />;
-      case 'instagram': return <InstagramIcon />;
-      case 'twitter': return <TwitterIcon />;
-      case 'linkedin': return <LinkedInIcon />;
-      case 'pinterest': return <PinterestIcon />;
-      case 'youtube': return <YouTubeIcon />;
-      default: return <SocialIcon />;
-    }
-  };
-
   return (
-    <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 text-slate-800 font-sans">
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          borderRadius: 2
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <BusinessIcon sx={{ fontSize: 32 }} />
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Local Business Structured Data Generator
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
-              Create structured data for local businesses and restaurants to enhance local search visibility.
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      <div className="bg-indigo-600 text-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/20 p-3 rounded-lg">
+            <Store className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Local Business Structured Data</h1>
+            <p className="text-indigo-100 mt-1 max-w-2xl font-medium">
+              Optimize your local SEO. Proper schema helps your business appear in the local pack and Google Maps with hours, ratings, and contact info.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Configuration Panel */}
-        <Grid item xs={12} lg={8}>
-          <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "primary.main", color: "white", p: 2, display: "flex", alignItems: "center", gap: 1 }}>
-              <CodeIcon />
-              <Typography variant="h6" fontWeight="bold">
-                BUSINESS CONFIGURATION
-              </Typography>
-              {isFormValid && (
-                <Chip 
-                  icon={<CheckIcon />} 
-                  label="Valid" 
-                  sx={{ bgcolor: "rgba(76, 175, 80, 0.8)", color: "white", ml: "auto" }}
-                />
-              )}
-            </Box>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-fit">
+            <div className="bg-slate-800 text-white px-6 py-4 flex items-center gap-2">
+              <Layout className="h-5 w-5" />
+              <h2 className="font-semibold text-lg tracking-wide uppercase">Store Settings</h2>
+            </div>
             
-            <Box sx={{ p: 3 }}>
-              <Grid container spacing={3}>
-                {/* Business Details Section */}
-                <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
-                    <StoreIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Business Details
-                  </Typography>
-                </Grid>
+            <div className="p-6 space-y-6">
+              {/* Core Identity */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Business Name *</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Zen Coffee Roast"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                  >
+                    <option value="LocalBusiness">Local Business (General)</option>
+                    <option value="Restaurant">Restaurant</option>
+                    <option value="CafeOrCoffeeShop">Cafe / Coffee Shop</option>
+                    <option value="Store">Retail Store</option>
+                    <option value="AutomotiveBusiness">Automotive</option>
+                    <option value="HealthAndBeautyBusiness">Health & Beauty</option>
+                    <option value="ProfessionalService">Professional Service</option>
+                  </select>
+                </div>
+              </div>
 
-                {/* Business Type */}
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth error={!!errors.businessType}>
-                    <InputLabel>Business Type *</InputLabel>
-                    <Select
-                      value={businessType}
-                      label="Business Type *"
-                      onChange={(e) => setBusinessType(e.target.value)}
-                      startAdornment={<CategoryIcon sx={{ mr: 1, color: "action.active" }} />}
+              {/* Contact Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Phone Number</label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="tel"
+                      placeholder="+1 (555) 000-0000"
+                      value={telephone}
+                      onChange={(e) => setTelephone(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Website URL</label>
+                  <div className="relative">
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <input
+                      type="url"
+                      placeholder="https://zenrost.com"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Price & Image */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-slate-700">Price Range</label>
+                  <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
+                    {["$", "$$", "$$$", "$$$$"].map(p => (
+                      <button
+                        key={p}
+                        onClick={() => setPriceRange(p)}
+                        className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all ${priceRange === p ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                   <label className="block text-sm font-bold text-slate-700">Storefront Image</label>
+                   <div 
+                    onClick={() => fileInputRef.current.click()}
+                    className="flex justify-between items-center bg-slate-100 rounded-lg p-1 text-[10px] font-black uppercase mb-1"
+                   >
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setImageMode("url"); }}
+                      className={`px-3 py-1 rounded-md transition-all ${imageMode === "url" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                     >
-                      <MenuItem value="">Select Business Type</MenuItem>
-                      {businessCategories.map((category) => (
-                        <MenuItem key={category.value} value={category.value}>
-                          {category.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {errors.businessType && (
-                      <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1 }}>
-                        {errors.businessType}
-                      </Typography>
-                    )}
-                  </FormControl>
-                </Grid>
+                      URL
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setImageMode("upload"); }}
+                      className={`px-3 py-1 rounded-md transition-all ${imageMode === "upload" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                    >
+                      Upload
+                    </button>
+                  </div>
 
-                {/* Business Name */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Business Name *"
-                    placeholder="Your Business Name"
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    error={!!errors.businessName}
-                    helperText={errors.businessName || `${businessName.length} characters`}
-                    InputProps={{
-                      startAdornment: <BusinessIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
+                  {imageMode === "url" ? (
+                    <div className="relative">
+                      <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <input
+                        type="url"
+                        placeholder="https://example.com/store.jpg"
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-3 py-2 text-xs focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  ) : (
+                    <div 
+                      onClick={() => fileInputRef.current.click()}
+                      className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 hover:border-indigo-400 transition-all cursor-pointer group"
+                    >
+                      <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*" />
+                      <Upload className="h-4 w-4 text-slate-400 group-hover:text-indigo-600" />
+                      <span className="text-xs font-bold text-slate-500 group-hover:text-indigo-700 truncate">
+                        {uploadedImage ? "Image Loaded" : "Upload Image"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                {/* Image URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Business Image URL"
-                    placeholder="https://example.com/business-image.jpg"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    error={!!errors.imageUrl}
-                    helperText={errors.imageUrl || "High-quality image of your business"}
-                    InputProps={{
-                      startAdornment: <ImageIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                {/* Price Range and Phone */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Price Range"
-                    placeholder="$ - $$$$ or $10-50"
-                    value={priceRange}
-                    onChange={(e) => setPriceRange(e.target.value)}
-                    helperText="Price range indication (e.g., $$, $10-50, Budget-Friendly)"
-                    InputProps={{
-                      startAdornment: <PriceIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Phone Number *"
-                    placeholder="+1-555-123-4567"
-                    value={telephone}
-                    onChange={(e) => setTelephone(e.target.value)}
-                    error={!!errors.telephone}
-                    helperText={errors.telephone}
-                    InputProps={{
-                      startAdornment: <PhoneIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                {/* Website URL */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Website URL"
-                    placeholder="https://yourbusiness.com"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    error={!!errors.websiteUrl}
-                    helperText={errors.websiteUrl}
-                    InputProps={{
-                      startAdornment: <WebsiteIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                {/* Address Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Business Address" />
-                  </Divider>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                    <LocationIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Address Information
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Street Address"
-                    placeholder="123 Main Street, Suite 100"
-                    value={streetAddress}
-                    onChange={(e) => setStreetAddress(e.target.value)}
-                    helperText="Complete street address including suite/floor if applicable"
-                    InputProps={{
-                      startAdornment: <AddressIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="City *"
-                    placeholder="New York"
+              {/* Address */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <MapPin className="h-3 w-3" />
+                  Physical Location
+                </h3>
+                <input
+                  type="text"
+                  placeholder="Street Address"
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="City"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    error={!!errors.city}
-                    helperText={errors.city}
-                    InputProps={{
-                      startAdornment: <LocationIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="State/Province *"
-                    placeholder="New York"
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    error={!!errors.state}
-                    helperText={errors.state}
-                    InputProps={{
-                      startAdornment: <LocationIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
+                  <input
+                    type="text"
+                    placeholder="State / Region"
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="ZIP/Postal Code"
-                    placeholder="10001"
-                    value={zip}
-                    onChange={(e) => setZip(e.target.value)}
-                    InputProps={{
-                      startAdornment: <AddressIcon sx={{ mr: 1, color: "action.active" }} />,
-                    }}
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Postal Code"
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono font-bold"
                   />
-                </Grid>
+                  <input
+                    type="text"
+                    placeholder="Country"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
 
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth error={!!errors.country}>
-                    <InputLabel>Country *</InputLabel>
-                    <Select
-                      value={country}
-                      label="Country *"
-                      onChange={(e) => setCountry(e.target.value)}
+              {/* Hours */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                 <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                      <Clock className="h-3 w-3" />
+                      Operating Hours
+                    </h3>
+                    <button
+                      onClick={addHours}
+                      className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full hover:bg-indigo-100 transition-all border border-indigo-100"
                     >
-                      <MenuItem value="">Select Country</MenuItem>
-                      {countries.map((country) => (
-                        <MenuItem key={country.value} value={country.value}>
-                          {country.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {errors.country && (
-                      <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1 }}>
-                        {errors.country}
-                      </Typography>
-                    )}
-                  </FormControl>
-                </Grid>
+                      Add Period
+                    </button>
+                 </div>
 
-                {/* Opening Hours Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Business Hours" />
-                  </Divider>
-                </Grid>
+                 {openingHours.map((h, hIdx) => (
+                   <div key={hIdx} className="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-4 border-l-4 border-l-indigo-400">
+                      <div className="flex flex-wrap gap-1.5">
+                        {daysOfWeek.map(day => (
+                          <button
+                            key={day}
+                            onClick={() => toggleDay(hIdx, day)}
+                            className={`px-2 py-1 rounded text-[10px] font-black border transition-all ${h.days.includes(day) ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-slate-400 border-slate-200"}`}
+                          >
+                            {day.slice(0, 3)}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-4">
+                         <div className="flex-1 space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Opens</label>
+                            <input type="time" value={h.opens} onChange={(e) => {
+                              const newHours = [...openingHours];
+                              newHours[hIdx].opens = e.target.value;
+                              setOpeningHours(newHours);
+                            }} className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500 font-bold" />
+                         </div>
+                         <div className="flex-1 space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Closes</label>
+                            <input type="time" value={h.closes} onChange={(e) => {
+                              const newHours = [...openingHours];
+                              newHours[hIdx].closes = e.target.value;
+                              setOpeningHours(newHours);
+                            }} className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500 font-bold" />
+                         </div>
+                         <button onClick={() => removeHours(hIdx)} className="p-2 text-slate-300 hover:text-rose-500 transition-colors mt-5">
+                            <Trash2 className="h-4 w-4" />
+                         </button>
+                      </div>
+                   </div>
+                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <Grid item xs={12}>
-                  <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                    <ScheduleIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                    Opening Hours
-                  </Typography>
-                  
-                  <Stack spacing={2}>
-                    {items.map((item, index) => (
-                      <Card key={index} variant="outlined" sx={{ p: 2 }}>
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                          <Typography variant="subtitle1" fontWeight="bold">
-                            Hours #{index + 1}
-                          </Typography>
-                          {items.length > 1 && (
-                            <IconButton
-                              onClick={() => handleRemoveItem(index)}
-                              color="error"
-                              size="small"
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          )}
-                        </Box>
+        {/* Right Side - Previews */}
+        <div className="space-y-8">
+          {/* Google Search/Maps Preview */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              <h2 className="font-semibold text-lg uppercase tracking-wide">Local Result Preview</h2>
+            </div>
+            
+            <div className="p-8">
+               <div className="max-w-md mx-auto bg-white rounded-2xl border border-slate-100 shadow-2xl overflow-hidden group">
+                  <div className="relative h-48 sm:h-56 bg-slate-100 overflow-hidden">
+                   {imageMode === "url" ? (
+                     imageUrl ? (
+                       <img src={imageUrl} alt="Front" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                     ) : (
+                       <div className="h-full w-full flex items-center justify-center opacity-10 grayscale">
+                          <Store className="h-20 w-20" />
+                       </div>
+                     )
+                   ) : (
+                     uploadedImage ? (
+                       <img src={uploadedImage} alt="Front" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                     ) : (
+                       <div className="h-full w-full flex items-center justify-center opacity-10 grayscale">
+                          <Upload className="h-20 w-20" />
+                       </div>
+                     )
+                   )}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-6 pt-12">
+                       <h3 className="text-white text-2xl font-black leading-tight drop-shadow-md">{name || "Your Local Business"}</h3>
+                    </div>
+                  </div>
 
-                        <Grid container spacing={2}>
-                          <Grid item xs={12}>
-                            <Typography variant="body2" gutterBottom>
-                              Select Days of the Week:
-                            </Typography>
-                            <FormGroup row>
-                              {daysOfWeek.map((day) => (
-                                <FormControlLabel
-                                  key={day}
-                                  control={
-                                    <Checkbox
-                                      checked={item.daysoftheweek.includes(day)}
-                                      onChange={() => handleDayChange(index, day)}
-                                      size="small"
-                                    />
-                                  }
-                                  label={day.slice(0, 3)}
-                                />
-                              ))}
-                            </FormGroup>
-                          </Grid>
-                          
-                          <Grid item xs={12} sm={6}>
-                            <TextField
-                              fullWidth
-                              label="Opening Time"
-                              type="time"
-                              value={item.openTime}
-                              onChange={(e) => handleInputChange(index, e)}
-                              name="openTime"
-                              InputLabelProps={{ shrink: true }}
-                              InputProps={{
-                                startAdornment: <TimeIcon sx={{ mr: 1, color: "action.active" }} />,
-                              }}
-                            />
-                          </Grid>
-                          
-                          <Grid item xs={12} sm={6}>
-                            <TextField
-                              fullWidth
-                              label="Closing Time"
-                              type="time"
-                              value={item.closeTime}
-                              onChange={(e) => handleInputChange(index, e)}
-                              name="closeTime"
-                              error={!!errors[`hours_${index}`]}
-                              helperText={errors[`hours_${index}`]}
-                              InputLabelProps={{ shrink: true }}
-                              InputProps={{
-                                startAdornment: <TimeIcon sx={{ mr: 1, color: "action.active" }} />,
-                              }}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Card>
-                    ))}
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                       <div className="flex text-amber-500">
+                          {[...Array(5)].map((_, i) => <Star key={i} className="h-3 w-3 fill-current" />)}
+                       </div>
+                       <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">4.9 • {category}</span>
+                    </div>
 
-                    <Button
-                      onClick={handleAddItem}
-                      variant="outlined"
-                      startIcon={<AddIcon />}
-                      fullWidth
-                      sx={{ borderStyle: "dashed", py: 1.5 }}
-                    >
-                      Add Another Time Period
-                    </Button>
-                  </Stack>
-                </Grid>
+                    <div className="space-y-4">
+                       <div className="flex items-start gap-4">
+                          <div className="p-2 bg-rose-50 rounded-lg text-rose-500 shrink-0">
+                             <MapPin className="h-4 w-4" />
+                          </div>
+                          <div>
+                             <span className="text-[13px] font-bold text-slate-700 block">Location</span>
+                             <span className="text-xs text-slate-500 leading-relaxed italic">
+                               {street || "Add street address..."}{city && `, ${city}`}
+                             </span>
+                          </div>
+                          <button className="ml-auto p-2 border border-slate-100 rounded-full hover:bg-slate-50 text-indigo-600">
+                             <Navigation className="h-4 w-4" />
+                          </button>
+                       </div>
 
-                {/* Social Profiles Section */}
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 2 }}>
-                    <Chip label="Social Media" />
-                  </Divider>
-                </Grid>
+                       <div className="flex items-start gap-4 pt-4 border-t border-slate-50">
+                          <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600 shrink-0">
+                             <Clock className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1">
+                             <div className="flex items-center justify-between">
+                                <span className="text-[13px] font-bold text-slate-700">Store Hours</span>
+                                <span className="text-[10px] font-black text-emerald-600 uppercase bg-emerald-50 px-2 py-0.5 rounded-full">Open Now</span>
+                             </div>
+                             <div className="mt-2 space-y-1">
+                                {openingHours.slice(0, 1).map((h, i) => (
+                                  <div key={i} className="flex justify-between text-[11px] text-slate-500 font-medium">
+                                    <span>{h.days.length > 0 ? h.days[0] : "Mon"} - {h.days.length > 0 ? h.days[h.days.length-1] : "Fri"}</span>
+                                    <span className="font-black text-slate-700">{h.opens} - {h.closes}</span>
+                                  </div>
+                                ))}
+                             </div>
+                          </div>
+                       </div>
 
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={showSocialProfile}
-                        onChange={(e) => setShowSocialProfile(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label={
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <SocialIcon fontSize="small" />
-                        Include Social Media Profiles
-                      </Box>
-                    }
-                  />
-                </Grid>
+                       <div className="flex items-center gap-3 pt-6">
+                          <button className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 text-white font-black py-2.5 rounded-xl text-xs hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                             <Phone className="h-3.5 w-3.5" />
+                             Call Now
+                          </button>
+                          <button className="flex-1 flex items-center justify-center gap-2 bg-white text-slate-700 border border-slate-200 font-black py-2.5 rounded-xl text-xs hover:bg-slate-50 transition-all">
+                             <Globe className="h-3.5 w-3.5" />
+                             Website
+                          </button>
+                       </div>
+                    </div>
+                  </div>
+               </div>
+            </div>
+          </div>
 
-                <Collapse in={showSocialProfile} className="px-4">
-                  <Grid container spacing={2} sx={{ mt: 1 }}>
-                    <Grid item xs={12}>
-                      <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                        <SocialIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                        Social Media Profiles
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Add your business social media profiles (leave empty if not available)
-                      </Typography>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Facebook URL"
-                        placeholder="https://facebook.com/yourbusiness"
-                        value={facebook}
-                        onChange={(e) => setFacebook(e.target.value)}
-                        error={!!errors.facebook}
-                        helperText={errors.facebook}
-                        InputProps={{
-                          startAdornment: <FacebookIcon sx={{ mr: 1, color: "#1877F2" }} />,
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Instagram URL"
-                        placeholder="https://instagram.com/yourbusiness"
-                        value={instagram}
-                        onChange={(e) => setInstagram(e.target.value)}
-                        error={!!errors.instagram}
-                        helperText={errors.instagram}
-                        InputProps={{
-                          startAdornment: <InstagramIcon sx={{ mr: 1, color: "#E4405F" }} />,
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Twitter URL"
-                        placeholder="https://twitter.com/yourbusiness"
-                        value={twitter}
-                        onChange={(e) => setTwitter(e.target.value)}
-                        error={!!errors.twitter}
-                        helperText={errors.twitter}
-                        InputProps={{
-                          startAdornment: <TwitterIcon sx={{ mr: 1, color: "#1DA1F2" }} />,
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="LinkedIn URL"
-                        placeholder="https://linkedin.com/company/yourbusiness"
-                        value={linkedIn}
-                        onChange={(e) => setLinkedIn(e.target.value)}
-                        error={!!errors.linkedIn}
-                        helperText={errors.linkedIn}
-                        InputProps={{
-                          startAdornment: <LinkedInIcon sx={{ mr: 1, color: "#0A66C2" }} />,
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Pinterest URL"
-                        placeholder="https://pinterest.com/yourbusiness"
-                        value={pintrest}
-                        onChange={(e) => setPintrest(e.target.value)}
-                        error={!!errors.pintrest}
-                        helperText={errors.pintrest}
-                        InputProps={{
-                          startAdornment: <PinterestIcon sx={{ mr: 1, color: "#BD081C" }} />,
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="YouTube URL"
-                        placeholder="https://youtube.com/yourbusiness"
-                        value={youtube}
-                        onChange={(e) => setYouTube(e.target.value)}
-                        error={!!errors.youtube}
-                        helperText={errors.youtube}
-                        InputProps={{
-                          startAdornment: <YouTubeIcon sx={{ mr: 1, color: "#FF0000" }} />,
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Collapse>
-              </Grid>
-            </Box>
-          </Paper>
-
-          {/* Generated Code */}
-          <Paper elevation={3} sx={{ mt: 3, borderRadius: 2, overflow: "hidden" }}>
-            <Box sx={{ bgcolor: "success.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="h6" fontWeight="bold">
-                GENERATED JSON-LD CODE
-              </Typography>
-              <CopyToClipboard text={`<script type="application/ld+json">\n${jsonText}\n</script>`} onCopy={handleCopy}>
-                <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
-                  <IconButton sx={{ color: "white" }}>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Tooltip>
+          {/* Generated Code Panel */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden text-white">
+            <div className="bg-emerald-600 px-6 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                <h2 className="font-semibold text-lg uppercase tracking-wide">Generated JSON-LD</h2>
+              </div>
+              <CopyToClipboard text={snippet} onCopy={handleCopy}>
+                <button 
+                  type="button"
+                  className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
+                  title={copied ? "Copied!" : "Copy to clipboard"}
+                >
+                  {copied ? <CheckCircle2 className="h-5 w-5 text-emerald-300" /> : <Copy className="h-5 w-5 text-white" />}
+                </button>
               </CopyToClipboard>
-            </Box>
+            </div>
             
-            {!isFormValid && (
-              <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
-                Please fix the errors above to generate valid structured data.
-              </Alert>
-            )}
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-sm italic">
+               <p className="font-semibold text-blue-800">Place this code block inside your site's &lt;head&gt; tag.</p>
+               {imageMode === "upload" && (
+                 <p className="mt-1 text-xs font-bold text-blue-600">
+                    ⚠️ Note: Replace the placeholder image URL in the code with your actual public image link.
+                 </p>
+               )}
+            </div>
             
-            <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
-              Add this JSON-LD script to the &lt;head&gt; section of your HTML page.
-            </Alert>
-
-            <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 500, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
-                lineHeight: "1.5",
-                margin: 0,
-                whiteSpace: "pre-wrap"
-              }}>
-                {`<script type="application/ld+json">
-${jsonText}
-</script>`}
-              </pre>
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Preview Panel */}
-        <Grid item xs={12} lg={4}>
-          <Stack spacing={2}>
-            {/* Business Preview */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: "warning.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  <PreviewIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                  BUSINESS PREVIEW
-                </Typography>
-              </Box>
-              <Card sx={{ borderRadius: 0 }}>
-                {imageUrl ? (
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={imageUrl}
-                    alt="Business image"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      bgcolor: "#f5f5f5", 
-                      display: "flex", 
-                      alignItems: "center", 
-                      justifyContent: "center",
-                      flexDirection: "column",
-                      gap: 1
-                    }}
-                  >
-                    <BusinessIcon sx={{ fontSize: 48, color: "text.secondary" }} />
-                    <Typography color="text.secondary">
-                      No image selected
-                    </Typography>
-                  </Box>
-                )}
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {businessName || "Your Business Name"}
-                  </Typography>
-                  
-                  {businessType && (
-                    <Chip 
-                      label={businessType} 
-                      size="small" 
-                      color="primary" 
-                      sx={{ mb: 2 }}
-                    />
-                  )}
-                  
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                    <LocationIcon fontSize="small" />
-                    <Typography variant="body2">
-                      {city && state ? `${city}, ${state}` : "Location not set"}
-                    </Typography>
-                  </Box>
-
-                  {telephone && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                      <PhoneIcon fontSize="small" />
-                      <Typography variant="body2">
-                        {telephone}
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {priceRange && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                      <PriceIcon fontSize="small" />
-                      <Typography variant="body2">
-                        {priceRange}
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {items.filter(item => item.daysoftheweek.length > 0).length > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
-                        Opening Hours:
-                      </Typography>
-                      {items.filter(item => item.daysoftheweek.length > 0).slice(0, 2).map((item, index) => (
-                        <Typography key={index} variant="caption" display="block">
-                          {item.daysoftheweek.join(', ')}: {item.openTime} - {item.closeTime}
-                        </Typography>
-                      ))}
-                    </Box>
-                  )}
-
-                  {socialProfiles.length > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="body2" fontWeight="bold" gutterBottom>
-                        Social Media:
-                      </Typography>
-                      <Stack direction="row" spacing={1}>
-                        {facebook && <FacebookIcon sx={{ color: "#1877F2" }} />}
-                        {instagram && <InstagramIcon sx={{ color: "#E4405F" }} />}
-                        {twitter && <TwitterIcon sx={{ color: "#1DA1F2" }} />}
-                        {linkedIn && <LinkedInIcon sx={{ color: "#0A66C2" }} />}
-                        {pintrest && <PinterestIcon sx={{ color: "#BD081C" }} />}
-                        {youtube && <YouTubeIcon sx={{ color: "#FF0000" }} />}
-                      </Stack>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Paper>
-
-            {/* Validation Status */}
-            <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Box sx={{ bgcolor: isFormValid ? "success.main" : "error.main", color: "white", p: 2 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  VALIDATION STATUS
-                </Typography>
-              </Box>
-              <Box sx={{ p: 2 }}>
-                <Stack spacing={1}>
-                  <Alert severity={businessName.trim() ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Business Name: {businessName.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={businessType ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Business Type: {businessType ? "✓ Selected" : "✗ Required"}
-                    </Typography>
-                  </Alert>
-                  
-                  <Alert severity={telephone.trim() ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Phone: {telephone.trim() ? "✓ Added" : "✗ Required"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert severity={city.trim() && state.trim() && country ? "success" : "error"} variant="outlined">
-                    <Typography variant="caption">
-                      Address: {city.trim() && state.trim() && country ? "✓ Complete" : "✗ City, State & Country required"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert severity={items.filter(item => item.daysoftheweek.length > 0 && item.openTime && item.closeTime).length > 0 ? "success" : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      Hours: {items.filter(item => item.daysoftheweek.length > 0 && item.openTime && item.closeTime).length > 0 ? "✓ Added" : "ℹ Optional but recommended"}
-                    </Typography>
-                  </Alert>
-
-                  <Alert severity={socialProfiles.length > 0 ? "success" : "info"} variant="outlined">
-                    <Typography variant="caption">
-                      Social Media: {socialProfiles.length > 0 ? `✓ ${socialProfiles.length} profile${socialProfiles.length !== 1 ? 's' : ''}` : "ℹ Optional"}
-                    </Typography>
-                  </Alert>
-                </Stack>
-              </Box>
-            </Paper>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+            <div className="bg-[#1e1e1e] p-6 relative group overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 border-b border-l border-white/5 bg-white/5 uppercase text-[10px] font-black tracking-widest text-[#f8f8f2]/20">
+                  local-schema.json
+               </div>
+              <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/40 pt-4">
+                <span className="text-indigo-400 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1 font-medium">
+                  {jsonText}
+                </div>
+                <span className="text-indigo-400 font-bold">&lt;/script&gt;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default LocalBusiness;
-
-
-
-
-// "use client";
-
-// import React, { useState } from "react";
-// import { CopyToClipboard } from "react-copy-to-clipboard";
-// import {
-//   businessCategories,
-//   countries,
-//   currencies,
-//   timezones,
-// } from "@/app/constant";
-// const LocalBusiness = () => {
-//   const [showSocialProfile, setShowSocialProfile] = useState(false);
-
-//   const [businessType, setBusinessType] = useState("");
-//   const [businessName, setBusinessName] = useState("");
-//   const [imageUrl, setImageUrl] = useState("");
-//   const [priceRange, setPriceRange] = useState("");
-//   const [telephone, setTelephone] = useState("");
-//   const [websiteUrl, setWebsiteUrl] = useState("");
-//   const [streetAddress, setStreetAddress] = useState("");
-//   const [city, setCity] = useState("");
-//   const [state, setState] = useState("");
-//   const [country, setCountry] = useState("");
-//   const [zip, setZip] = useState("");
-//   const [facebook, setFacebook] = useState("");
-//   const [instagram, setInstagram] = useState("");
-//   const [twitter, setTwitter] = useState("");
-//   const [pintrest, setPintrest] = useState("");
-//   const [linkedIn, setLinkedIn] = useState("");
-//   const [youtube, setYouTube] = useState("");
-
-//   const socialProfiles = [
-//     facebook,
-//     instagram,
-//     linkedIn,
-//     twitter,
-//     pintrest,
-//     youtube,
-//   ].filter((profile) => profile);
-
-//   const [items, setItems] = useState([
-//     { daysoftheweek: [], openTime: "", closeTime: "" },
-//   ]);
-
-//   const handleInputChange = (index, event) => {
-//     const { name, value } = event.target;
-//     const list = [...items];
-//     if (name === "daysoftheweek") {
-//       list[index][name] = value.split(","); // Split the value into an array
-//     } else {
-//       list[index][name] = value;
-//     }
-//     setItems(list);
-//   };
-
-//   const handleAddItem = () => {
-//     setItems([...items, { daysoftheweek: [], openTime: "", closeTime: "" }]);
-//   };
-
-//   const handleRemoveItem = (index) => {
-//     const list = [...items];
-//     list.splice(index, 1);
-//     setItems(list);
-//   };
-
-//   const jsonText = JSON.stringify(
-//     {
-//       "@context": "http://schema.org/",
-//       "@type": "LocalBusiness",
-//       name: businessName,
-//       image: imageUrl,
-//       priceRange: priceRange,
-//       telephone: telephone,
-//       url: websiteUrl,
-//       address: {
-//         "@type": "PostalAddress",
-//         streetAddress: streetAddress,
-//         addressLocality: city,
-//         addressRegion: state,
-//         postalCode: zip,
-//         addressCountry: country,
-//       },
-//       openingHoursSpecification: items.map((item) => ({
-//         "@type": "OpeningHoursSpecification",
-//         dayOfWeek: item.daysoftheweek,
-//         opens: item.openTime,
-//         closes: item.closeTime,
-//       })),
-//       sameAs: showSocialProfile ? socialProfiles : [],
-//     },
-//     null,
-//     2
-//   );
-//   return (
-//     <div className="px-3">
-//       <h1 className="text-white text-xl text-bold">
-//         Local Business Structured Data Generator
-//       </h1>
-//       <p className="text-white text-sm mt-2">LocalBusiness and Restaurant</p>
-//       <div className="flex mt-5">
-//         <div className="w-full border">
-//           <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//             OPTIONS
-//           </h1>
-//           <div className="py-4 px-5 bg-gray-800">
-//             <form>
-//               <h1 className="text-white font-semibold mt-5">
-//                 Business Detail{" "}
-//               </h1>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Type
-//                 </label>
-//                 <select
-//                   id="type"
-//                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={businessType}
-//                   onChange={(e) => setBusinessType(e.target.value)}
-//                 >
-//                   <option>Select Business Type</option>
-//                   {businessCategories.map((category) => (
-//                     <option key={category.value} value={category.value}>
-//                       {category.label}
-//                     </option>
-//                   ))}
-//                 </select>
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Name
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Business Name"
-//                   value={businessName}
-//                   onChange={(e) => setBusinessName(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Image Url
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Image Url"
-//                   value={imageUrl}
-//                   onChange={(e) => setImageUrl(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Price Range
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Price Range"
-//                   value={priceRange}
-//                   onChange={(e) => setPriceRange(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Telephone
-//                 </label>
-//                 <input
-//                   type="tel"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Telphone Number"
-//                   value={telephone}
-//                   onChange={(e) => setTelephone(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <label
-//                   for="first_name"
-//                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                 >
-//                   Website Url
-//                 </label>
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter Website Url"
-//                   value={websiteUrl}
-//                   onChange={(e) => setWebsiteUrl(e.target.value)}
-//                 />
-//               </div>
-//               <div class="flex items-center mb-4 mt-5">
-//                 <input
-//                   id="default-checkbox"
-//                   type="checkbox"
-//                   value=""
-//                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-//                   onChange={() => setShowSocialProfile(!showSocialProfile)}
-//                 />
-//                 <label
-//                   for="default-checkbox"
-//                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-//                 >
-//                   Include Social Profile
-//                 </label>
-//               </div>
-//               <h1 className="text-white font-semibold mt-5">Address </h1>
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter street address"
-//                   value={streetAddress}
-//                   onChange={(e) => setStreetAddress(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter city"
-//                   value={city}
-//                   onChange={(e) => setCity(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter state/province/region"
-//                   value={state}
-//                   onChange={(e) => setState(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <input
-//                   type="text"
-//                   id="first_name"
-//                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   placeholder="Enter zip/postal/code"
-//                   value={zip}
-//                   onChange={(e) => setZip(e.target.value)}
-//                 />
-//               </div>
-//               <div className="mt-5">
-//                 <select
-//                   id="type"
-//                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                   value={country}
-//                   onChange={(e) => setCountry(e.target.value)}
-//                 >
-//                   <option>Select Country</option>
-//                   {countries.map((country) => (
-//                     <option key={country.value} value={country.value}>
-//                       {country.label}
-//                     </option>
-//                   ))}
-//                 </select>
-//               </div>
-//               <h1 className="text-white font-semibold mt-5">Opening Houres </h1>
-//               {items.map((item, index) => (
-//                 <div key={index} className="mt-5">
-//                   <div className="mt-5">
-//                     <select
-//                       id={`daysoftheweek${index}`}
-//                       name="daysoftheweek"
-//                       multiple
-//                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       value={item.daysoftheweek}
-//                       onChange={(e) => {
-//                         // console.log(e.target.value)
-//                         handleInputChange(index, e);
-//                       }}
-//                       // onChange={(e) => {
-//                       //   const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
-//                       //   handleInputChange(index, { target: { name: 'daysoftheweek', value: selectedOptions } });
-//                       // }}
-//                     >
-//                       <option>Select Day's of the week</option>
-//                       <option value="Sunday">Sunday</option>
-//                       <option value="Monday">Monday</option>
-//                       <option value="Tuesday">Tuesday</option>
-//                       <option value="Wednesday">Wednesday</option>
-//                       <option value="Thursday">Thursday</option>
-//                       <option value="Friday">Friday</option>
-//                       <option value="Saturday">Saturday</option>
-//                     </select>
-//                   </div>
-
-//                   <label
-//                     htmlFor={`url${index}`}
-//                     className="block mt-3 mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                   >
-//                     Open Time
-//                   </label>
-//                   <input
-//                     type="time"
-//                     id={`openTime${index}`} // Use unique id for each time input
-//                     name="openTime" // Change name attribute for openTime
-//                     value={item.openTime}
-//                     onChange={(e) => handleInputChange(index, e)}
-//                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                     placeholder="Enter Open Time"
-//                   />
-//                   <label
-//                     htmlFor={`url${index}`}
-//                     className="block mt-3 mb-2 text-sm font-medium text-gray-900 dark:text-white"
-//                   >
-//                     Close Time
-//                   </label>
-//                   <input
-//                     type="time"
-//                     id={`closeTime${index}`} // Use unique id for each time input
-//                     name="closeTime" // Change name attribute for closeTime
-//                     value={item.closeTime}
-//                     onChange={(e) => handleInputChange(index, e)}
-//                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                     placeholder="Enter Close Time"
-//                   />
-//                   {index !== 0 && (
-//                     <button
-//                       type="button"
-//                       className="mt-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//                       onClick={() => handleRemoveItem(index)}
-//                     >
-//                       Remove
-//                     </button>
-//                   )}
-//                 </div>
-//               ))}
-//               <div className="mt-5">
-//                 <button
-//                   type="button"
-//                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-//                   onClick={handleAddItem}
-//                 >
-//                   Add Item
-//                 </button>
-//               </div>
-//               {showSocialProfile && (
-//                 <>
-//                   <h1 className="text-white font-semibold mt-5">
-//                     Social Profile{" "}
-//                   </h1>
-//                   <p className="text-white font-semibold mt-2 text-xs">
-//                     If your business doesn’t have a profile, leave the field
-//                     empty.
-//                   </p>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder=" Facebook"
-//                       value={facebook}
-//                       onChange={(e) => setFacebook(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder=" Instagram"
-//                       value={instagram}
-//                       onChange={(e) => setInstagram(e.target.value)}
-//                     />
-//                   </div>
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="LinkedIn"
-//                       value={linkedIn}
-//                       onChange={(e) => setLinkedIn(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Twitter"
-//                       value={twitter}
-//                       onChange={(e) => setTwitter(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Pintrest"
-//                       value={pintrest}
-//                       onChange={(e) => setPintrest(e.target.value)}
-//                     />
-//                   </div>
-
-//                   <div className="mt-5">
-//                     <input
-//                       type="text"
-//                       id="first_name"
-//                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//                       placeholder="Youtube"
-//                       value={youtube}
-//                       onChange={(e) => setYouTube(e.target.value)}
-//                     />
-//                   </div>
-//                 </>
-//               )}{" "}
-//               {/* Other form fields go here */}
-//             </form>
-//           </div>
-//         </div>
-//         <div className="w-full border">
-//           <div>
-//             <h1 className="text-white uppercase font-semibold py-1 pl-5 bg-slate-600">
-//               CODE
-//             </h1>
-//             <div className="text-white font-semibold py-2 pl-5 text-xs bg-slate-800">
-//               <p className="bg">
-//                 Copy this to the &lt;head&gt; section of your page.
-//               </p>
-//               <CopyToClipboard
-//                 text={`<script type="application/ld+json">\n${jsonText}\n</script>`}
-//               >
-//                 <div className="ml-auto w-1/6">
-//                   <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-//                     Copy
-//                   </button>
-//                 </div>
-//               </CopyToClipboard>
-//             </div>
-//             <div className="space-y-2 mt-5 ml-4">
-//               <pre className="text-white">
-//                 <pre className="text-white">
-//                   {`<script type="application/ld+json">\n`}
-//                   {jsonText}
-//                   {`\n</script>`}
-//                 </pre>
-//               </pre>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default LocalBusiness;
+}

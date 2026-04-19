@@ -269,19 +269,20 @@ const Home = () => {
       {/* <HeadlessDemo /> */}
       
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)" }}>
+      <Box sx={{ flexGrow: 1, bgcolor: "var(--bg-primary)" }}>
         <Container maxWidth="xl" sx={{ py: 4 }}>
           
           {/* Hero Section */}
           <Paper 
-            elevation={3} 
+            elevation={0} 
             sx={{ 
               p: 4, 
               mb: 4, 
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              bgcolor: "var(--theme-color)",
               color: "white",
               borderRadius: 3,
-              textAlign: "center"
+              textAlign: "center",
+              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)"
             }}
           >
             <Typography variant="h2" fontWeight="bold" gutterBottom>
