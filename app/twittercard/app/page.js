@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
   Box,
@@ -63,7 +63,7 @@ const App = () => {
   const [errors, setErrors] = useState({});
 
   // Validation
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors = {};
 
     // Basic validation
@@ -107,13 +107,13 @@ const App = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  useEffect(() => {
-    validateForm();
   }, [site, description, isIncludeAndroid, isIncludeiPhone, isIncludeiPad, 
       androidName, androidURL, androidId, iPhoneName, iPhoneURL, iPhoneId, 
       ipadName, ipadURL, ipadId]);
+
+  useEffect(() => {
+    validateForm();
+  }, [validateForm]);
 
   const generateMetaTags = () => {
     const metaTags = [];
@@ -257,7 +257,7 @@ const App = () => {
                     Select App Platforms
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Choose which platforms your app is available on
+                    {"Choose which platforms your app is available on"}
                   </Typography>
 
                   <Stack spacing={2}>

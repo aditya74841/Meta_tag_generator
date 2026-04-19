@@ -1,7 +1,8 @@
 
 
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
   Box,
@@ -50,7 +51,7 @@ const Summary = () => {
   const [errors, setErrors] = useState({});
 
   // Validation
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors = {};
 
     // Required fields validation
@@ -74,11 +75,11 @@ const Summary = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [title, site, description, imageUrl, imageAltText]);
 
   useEffect(() => {
     validateForm();
-  }, [title, site, description, imageUrl, imageAltText]);
+  }, [validateForm]);
 
   const generateMetaTags = () => {
     const metaTags = [];
@@ -411,9 +412,11 @@ const Summary = () => {
                         borderRadius: 1,
                         bgcolor: "#fafafa"
                       }}>
-                        <img 
+                        <Image 
                           src={imageUrl} 
                           alt={imageAltText || "Summary image"}
+                          width={80}
+                          height={80}
                           style={{ 
                             width: "80px", 
                             height: "80px", 
@@ -421,6 +424,7 @@ const Summary = () => {
                             borderRadius: "8px",
                             display: "block"
                           }}
+                          unoptimized
                           onError={(e) => {
                             e.target.style.display = 'none';
                           }}
