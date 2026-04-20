@@ -138,7 +138,7 @@ export default function WebsiteGenerator() {
                     <Info className="h-5 w-5 text-indigo-600 mt-0.5 flex-shrink-0" />
                     <div className="text-sm text-indigo-800">
                       <p className="font-semibold mb-1">How it works:</p>
-                      <p>Use your site's search URL with <span className="font-mono bg-indigo-100 px-1 rounded">{"{search_term_string}"}</span> as the placeholder.</p>
+                      <p>Use your site&apos;s search URL with <span className="font-mono bg-indigo-100 px-1 rounded">{"{search_term_string}"}</span> as the placeholder.</p>
                     </div>
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export default function WebsiteGenerator() {
 
             <div className="bg-[#1e1e1e] p-6 relative">
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30">
-                <span className="text-slate-500">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-slate-500">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
                   {jsonText}
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import {
   Calendar,
@@ -325,7 +326,7 @@ export default function EventGenerator() {
                 <div className="h-44 bg-slate-100 relative overflow-hidden">
                   {imageMode === "url" ? (
                     imageUrl ? (
-                      <img src={imageUrl} alt="Event Banner" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                      <Image width={800} height={400} unoptimized src={imageUrl} alt="Event Banner" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center opacity-20 grayscale">
                         <Calendar className="h-20 w-20 text-slate-400" />
@@ -333,7 +334,7 @@ export default function EventGenerator() {
                     )
                   ) : (
                     uploadedImage ? (
-                      <img src={uploadedImage} alt="Event Banner" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                      <Image width={800} height={400} unoptimized src={uploadedImage} alt="Event Banner" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center opacity-20 grayscale">
                         <Upload className="h-20 w-20 text-slate-400" />
@@ -423,7 +424,7 @@ export default function EventGenerator() {
             </div>
 
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-sm">
-              <p className="font-medium italic">Place this code block inside your site's &lt;head&gt; tag.</p>
+              <p className="font-medium italic">Place this code block inside your site&apos;s &lt;head&gt; tag.</p>
               {imageMode === "upload" && (
                 <p className="mt-1 text-xs font-bold text-blue-600">
                   ⚠️ Note: Replace the placeholder image URL in the code with your actual public image link.
@@ -434,7 +435,7 @@ export default function EventGenerator() {
                   event-schema.json
                 </div>
                 <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30 pt-4 px-1">
-                  <span className="text-indigo-400 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                  <span className="text-indigo-400 font-bold">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                   <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1 font-medium">
                     {jsonText}
                   </div>

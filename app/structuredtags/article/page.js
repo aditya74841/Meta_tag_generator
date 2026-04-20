@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { 
   FileText, 
@@ -311,7 +312,7 @@ export default function ArticleStructuredData() {
               <div className="border border-slate-100 rounded-xl overflow-hidden bg-white shadow-md">
                 {imageMode === "url" ? (
                   imageUrl ? (
-                    <img src={imageUrl} alt="Article" className="w-full h-56 object-cover" />
+                    <Image width={800} height={400} unoptimized src={imageUrl} alt="Article" className="w-full h-56 object-cover" />
                   ) : (
                     <div className="w-full h-56 bg-slate-50 flex items-center justify-center border-b border-slate-100 italic text-slate-400">
                       <div className="flex flex-col items-center gap-2">
@@ -322,7 +323,7 @@ export default function ArticleStructuredData() {
                   )
                 ) : (
                   uploadedImage ? (
-                    <img src={uploadedImage} alt="Article" className="w-full h-56 object-cover" />
+                    <Image width={800} height={400} unoptimized src={uploadedImage} alt="Article" className="w-full h-56 object-cover" />
                   ) : (
                     <div className="w-full h-56 bg-slate-50 flex items-center justify-center border-b border-slate-100 italic text-slate-400">
                       <div className="flex flex-col items-center gap-2">
@@ -341,7 +342,7 @@ export default function ArticleStructuredData() {
                   </h3>
                   <div className="flex items-center gap-3 pt-2">
                     <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
-                      {logoUrl ? <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" /> : <Building className="h-5 w-5 text-slate-400" />}
+                      {logoUrl ? <Image width={800} height={400} unoptimized src={logoUrl} alt="Logo" className="w-full h-full object-contain" /> : <Building className="h-5 w-5 text-slate-400" />}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-slate-800">{publisherName || "Site Publisher"}</p>
@@ -369,7 +370,7 @@ export default function ArticleStructuredData() {
             </div>
             
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-sm">
-              <p className="font-medium italic">Place this code block inside your site's &lt;head&gt; tag.</p>
+              <p className="font-medium italic">Place this code block inside your site&apos;s &lt;head&gt; tag.</p>
               {imageMode === "upload" && (
                 <p className="mt-1 text-xs font-bold text-blue-600">
                   ⚠️ Note: Replace the placeholder image URL in the code with your actual public image link.
@@ -379,7 +380,7 @@ export default function ArticleStructuredData() {
 
             <div className="bg-[#1e1e1e] p-6 relative group">
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30">
-                <span className="text-slate-500">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-slate-500">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
                   {jsonText}
                 </div>

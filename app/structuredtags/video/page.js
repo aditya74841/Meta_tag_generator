@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { 
   Video as VideoIcon, 
@@ -238,7 +239,7 @@ export default function VideoGenerator() {
                   <div className="relative aspect-video bg-slate-900 overflow-hidden group-hover:bg-black transition-colors">
                     {imageMode === "url" ? (
                       thumbnailUrl ? (
-                        <img src={thumbnailUrl} alt="Thumbnail" className="h-full w-full object-cover opacity-70 group-hover:opacity-40 transition-opacity duration-700" />
+                        <Image width={800} height={400} unoptimized src={thumbnailUrl} alt="Thumbnail" className="h-full w-full object-cover opacity-70 group-hover:opacity-40 transition-opacity duration-700" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
                            <Tv className="h-20 w-20 text-white" />
@@ -246,7 +247,7 @@ export default function VideoGenerator() {
                       )
                     ) : (
                       uploadedThumbnail ? (
-                        <img src={uploadedThumbnail} alt="Thumbnail" className="h-full w-full object-cover opacity-70 group-hover:opacity-40 transition-opacity duration-700" />
+                        <Image width={800} height={400} unoptimized src={uploadedThumbnail} alt="Thumbnail" className="h-full w-full object-cover opacity-70 group-hover:opacity-40 transition-opacity duration-700" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
                            <Upload className="h-20 w-20 text-white" />
@@ -332,7 +333,7 @@ export default function VideoGenerator() {
                   video-schema.json
                </div>
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/40 pt-4">
-                <span className="text-indigo-400 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-indigo-400 font-bold">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1 font-medium">
                   {jsonText}
                 </div>

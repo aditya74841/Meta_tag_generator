@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { 
   Utensils, 
@@ -22,7 +23,8 @@ import {
   Timer,
   BookOpen,
   Wheat,
-  ListOrdered
+  ListOrdered,
+  Star
 } from "lucide-react";
 
 export default function RecipeGenerator() {
@@ -322,7 +324,7 @@ export default function RecipeGenerator() {
                   <div className="relative h-56 bg-slate-50 overflow-hidden">
                     {imageMode === "url" ? (
                       imageUrl ? (
-                        <img src={imageUrl} alt="Dish" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <Image width={800} height={400} unoptimized src={imageUrl} alt="Dish" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
                            <ChefHat className="h-24 w-24" />
@@ -330,7 +332,7 @@ export default function RecipeGenerator() {
                       )
                     ) : (
                       uploadedImage ? (
-                        <img src={uploadedImage} alt="Dish" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <Image width={800} height={400} unoptimized src={uploadedImage} alt="Dish" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
                            <Upload className="h-24 w-24" />
@@ -416,7 +418,7 @@ export default function RecipeGenerator() {
             </div>
             
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-xs font-black uppercase tracking-tight italic">
-               <p>Place this code block inside your site's &lt;head&gt; tag.</p>
+               <p>Place this code block inside your site&apos;s &lt;head&gt; tag.</p>
                {imageMode === "upload" && (
                  <p className="mt-1 text-blue-600">
                     ⚠️ Note: Replace the placeholder image URL in the code with your actual public recipe image link.
@@ -429,7 +431,7 @@ export default function RecipeGenerator() {
                   recipe-schema.ld
                </div>
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/40 pt-4">
-                <span className="text-indigo-400 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-indigo-400 font-bold">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1 font-medium">
                   {jsonText}
                 </div>

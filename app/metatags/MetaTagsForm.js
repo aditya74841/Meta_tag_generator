@@ -56,7 +56,7 @@ export default function MetaTagsForm() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">Meta Tags Generator</h1>
             <p className="text-blue-100 mt-1 max-w-2xl">
-              Generate your web page's most helpful meta tags to improve SEO and search engine experience.
+              Generate your web page&apos;s most helpful meta tags to improve SEO and search engine experience.
             </p>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function MetaTagsForm() {
           <div className="bg-slate-800 text-white px-6 py-4">
             <h2 className="font-semibold text-lg tracking-wide">OPTIONS</h2>
           </div>
-          
+
           <div className="p-6 space-y-6">
             <div className="space-y-4">
               {/* Charset */}

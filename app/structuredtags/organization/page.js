@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { 
   Building2, 
@@ -359,13 +360,13 @@ export default function OrganizationGenerator() {
                   <div className="h-24 w-24 rounded-2xl bg-white shadow-md border border-slate-100 p-4 mb-4 flex items-center justify-center overflow-hidden">
                     {logoMode === "url" ? (
                       logoUrl ? (
-                        <img src={logoUrl} alt="Logo" className="max-h-full max-w-full object-contain" />
+                        <Image width={800} height={400} unoptimized src={logoUrl} alt="Logo" className="max-h-full max-w-full object-contain" />
                       ) : (
                         <Building2 className="h-12 w-12 text-slate-200" />
                       )
                     ) : (
                       uploadedLogo ? (
-                        <img src={uploadedLogo} alt="Logo" className="max-h-full max-w-full object-contain" />
+                        <Image width={800} height={400} unoptimized src={uploadedLogo} alt="Logo" className="max-h-full max-w-full object-contain" />
                       ) : (
                         <Upload className="h-12 w-12 text-slate-200" />
                       )
@@ -447,7 +448,7 @@ export default function OrganizationGenerator() {
             </div>
             
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-xs font-bold italic">
-               <p>TIP: Incorporate this into your site's header, typically on the homepage.</p>
+               <p>TIP: Incorporate this into your site&apos;s header, typically on the homepage.</p>
                {logoMode === "upload" && (
                  <p className="mt-1 text-blue-600">
                     ⚠️ Note: Replace the placeholder logo URL in the code with your actual public image link.
@@ -457,7 +458,7 @@ export default function OrganizationGenerator() {
 
             <div className="bg-[#1e1e1e] p-6 relative group">
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30">
-                <span className="text-slate-500 font-bold tracking-tighter opacity-50">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-slate-500 font-bold tracking-tighter opacity-50">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
                   {jsonText}
                 </div>

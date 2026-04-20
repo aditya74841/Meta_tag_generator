@@ -62,13 +62,13 @@ const Article = () => {
   // Helper function to safely extract hostname
   const getHostname = (url) => {
     if (!url) return "example.com";
-    
+
     // Simple URL validation
     const urlPattern = /^https?:\/\/.+\..+/;
     if (!urlPattern.test(url)) {
       return "Enter valid URL";
     }
-    
+
     try {
       return new URL(url).hostname;
     } catch (error) {
@@ -103,11 +103,11 @@ const Article = () => {
 
   useEffect(() => {
     validateForm();
-  }, [title, url, imageUrl, datePublished, dateModified]);
+  }, [title, url, imageUrl, datePublished, dateModified, validateForm]);
 
   const generateMetaTags = () => {
     const metaTags = [];
-    
+
     metaTags.push('<meta property="og:type" content="article" />');
     if (title) metaTags.push(`<meta property="og:title" content="${title}" />`);
     if (url) metaTags.push(`<meta property="og:url" content="${url}" />`);
@@ -143,11 +143,11 @@ const Article = () => {
   return (
     <Box sx={{ p: 3, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
       {/* Header Section */}
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 3, 
-          mb: 3, 
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          mb: 3,
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           color: "white",
           borderRadius: 2
@@ -176,14 +176,14 @@ const Article = () => {
                 ARTICLE CONFIGURATION
               </Typography>
               {isFormValid && (
-                <Chip 
-                  icon={<CheckIcon />} 
-                  label="Valid" 
+                <Chip
+                  icon={<CheckIcon />}
+                  label="Valid"
                   sx={{ bgcolor: "rgba(76, 175, 80, 0.8)", color: "white", ml: "auto" }}
                 />
               )}
             </Box>
-            
+
             <Box sx={{ p: 3 }}>
               <Grid container spacing={3}>
                 {/* Article Details Section */}
@@ -225,7 +225,7 @@ const Article = () => {
                     }}
                   />
                 </Grid>
-                
+
                 {/* Image URL */}
                 <Grid item xs={12}>
                   <TextField
@@ -374,11 +374,11 @@ const Article = () => {
                       </Typography>
                       <Stack direction="row" spacing={1} flexWrap="wrap">
                         {getTagsArray().map((tag, index) => (
-                          <Chip 
-                            key={index} 
-                            label={tag} 
-                            size="small" 
-                            color="primary" 
+                          <Chip
+                            key={index}
+                            label={tag}
+                            size="small"
+                            color="primary"
                             variant="outlined"
                           />
                         ))}
@@ -404,21 +404,21 @@ const Article = () => {
                 </Tooltip>
               </CopyToClipboard>
             </Box>
-            
+
             {!isFormValid && (
               <Alert severity="warning" sx={{ m: 0, borderRadius: 0 }}>
                 Please fix the errors above to generate valid meta tags.
               </Alert>
             )}
-            
+
             <Alert severity="info" sx={{ m: 0, borderRadius: 0 }}>
               Add these meta tags to the &lt;head&gt; section of your HTML page.
             </Alert>
 
             <Box sx={{ p: 3, bgcolor: "#1e1e1e", color: "#f8f8f2", maxHeight: 500, overflow: "auto" }}>
-              <pre style={{ 
-                fontFamily: "'Fira Code', monospace", 
-                fontSize: "0.875rem", 
+              <pre style={{
+                fontFamily: "'Fira Code', monospace",
+                fontSize: "0.875rem",
                 lineHeight: "1.5",
                 margin: 0,
                 whiteSpace: "pre-wrap"
@@ -452,12 +452,12 @@ const Article = () => {
                     }}
                   />
                 ) : (
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      bgcolor: "#f5f5f5", 
-                      display: "flex", 
-                      alignItems: "center", 
+                  <Box
+                    sx={{
+                      height: 200,
+                      bgcolor: "#f5f5f5",
+                      display: "flex",
+                      alignItems: "center",
                       justifyContent: "center",
                       flexDirection: "column",
                       gap: 1
@@ -473,10 +473,10 @@ const Article = () => {
                   <Typography variant="h6" gutterBottom>
                     {title || "Article Title"}
                   </Typography>
-                  
+
                   <Typography variant="body2" color="text.secondary" paragraph>
-                    {description ? 
-                      `${description.substring(0, 160)}${description.length > 160 ? "..." : ""}` : 
+                    {description ?
+                      `${description.substring(0, 160)}${description.length > 160 ? "..." : ""}` :
                       "Article description will appear here..."
                     }
                   </Typography>
@@ -496,10 +496,10 @@ const Article = () => {
                   )}
 
                   {section && (
-                    <Chip 
-                      label={section} 
-                      size="small" 
-                      color="secondary" 
+                    <Chip
+                      label={section}
+                      size="small"
+                      color="secondary"
                       sx={{ mt: 1 }}
                     />
                   )}
@@ -521,13 +521,13 @@ const Article = () => {
                       Title: {title.trim() ? "✓ Added" : "✗ Required"}
                     </Typography>
                   </Alert>
-                  
+
                   <Alert severity={url.trim() ? "success" : "error"} variant="outlined">
                     <Typography variant="caption">
                       URL: {url.trim() ? "✓ Added" : "✗ Required"}
                     </Typography>
                   </Alert>
-                  
+
                   <Alert severity={imageUrl.trim() ? "success" : "info"} variant="outlined">
                     <Typography variant="caption">
                       Featured Image: {imageUrl.trim() ? "✓ Added" : "ℹ Optional but recommended"}
@@ -587,7 +587,7 @@ const Article = () => {
                       • Consistent branding across platforms
                     </Typography>
                   </Box>
-                  
+
                   <Box>
                     <Typography variant="body2" fontWeight="bold" gutterBottom>
                       Best Practices:

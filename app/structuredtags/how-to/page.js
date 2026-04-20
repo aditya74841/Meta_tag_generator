@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { 
   Compass, 
@@ -339,7 +340,7 @@ export default function HowToGenerator() {
                   <div className="relative h-48 bg-slate-100 overflow-hidden">
                     {imageMode === "url" ? (
                       imageUrl ? (
-                        <img src={imageUrl} alt="Cover" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <Image width={800} height={400} unoptimized src={imageUrl} alt="Cover" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
                            <BookOpen className="h-20 w-20" />
@@ -347,7 +348,7 @@ export default function HowToGenerator() {
                       )
                     ) : (
                       uploadedImage ? (
-                        <img src={uploadedImage} alt="Cover" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <Image width={800} height={400} unoptimized src={uploadedImage} alt="Cover" className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
                            <Upload className="h-20 w-20" />
@@ -394,7 +395,7 @@ export default function HowToGenerator() {
                                 </div>
                                 {s.image && (
                                    <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-sm border border-slate-100">
-                                      <img src={s.image} alt="Step" className="w-full h-full object-cover" />
+                                      <Image width={800} height={400} unoptimized src={s.image} alt="Step" className="w-full h-full object-cover" />
                                    </div>
                                 )}
                              </div>
@@ -412,7 +413,7 @@ export default function HowToGenerator() {
                <div className="mt-8 flex items-start gap-3 bg-indigo-50 p-4 rounded-xl border border-indigo-100">
                   <Info className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
                   <p className="text-[11px] text-indigo-800 font-medium leading-relaxed italic">
-                    How-to guides with schema are often rewarded with "how-to" rich cards in Google Search, leading to significantly higher CTR.
+                    How-to guides with schema are often rewarded with &quot;how-to&quot; rich cards in Google Search, leading to significantly higher CTR.
                   </p>
                </div>
             </div>
@@ -437,7 +438,7 @@ export default function HowToGenerator() {
             </div>
             
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-xs font-black uppercase tracking-tight italic">
-               <p>Place this code block inside your site's &lt;head&gt; tag.</p>
+               <p>Place this code block inside your site&apos;s &lt;head&gt; tag.</p>
                {imageMode === "upload" && (
                  <p className="mt-1 text-blue-600">
                     ⚠️ Note: Replace the placeholder image URL in the code with your actual public guide image link.
@@ -450,7 +451,7 @@ export default function HowToGenerator() {
                   howto-schema.json
                </div>
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/40 pt-4">
-                <span className="text-indigo-400 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-indigo-400 font-bold">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1 font-medium">
                   {jsonText}
                 </div>

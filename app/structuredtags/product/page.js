@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { 
   ShoppingBag, 
@@ -295,7 +296,7 @@ export default function ProductGenerator() {
                   <div className="relative h-64 bg-slate-50 border-b border-slate-100 overflow-hidden">
                     {imageMode === "url" ? (
                       imageUrl ? (
-                        <img src={imageUrl} alt="Product" className="h-full w-full object-contain p-8 group-hover:scale-110 transition-transform duration-700" />
+                        <Image width={800} height={400} unoptimized src={imageUrl} alt="Product" className="h-full w-full object-contain p-8 group-hover:scale-110 transition-transform duration-700" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
                            <Package className="h-24 w-24" />
@@ -303,7 +304,7 @@ export default function ProductGenerator() {
                       )
                     ) : (
                       uploadedImage ? (
-                        <img src={uploadedImage} alt="Product" className="h-full w-full object-contain p-8 group-hover:scale-110 transition-transform duration-700" />
+                        <Image width={800} height={400} unoptimized src={uploadedImage} alt="Product" className="h-full w-full object-contain p-8 group-hover:scale-110 transition-transform duration-700" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center grayscale opacity-10">
                            <Upload className="h-24 w-24" />
@@ -372,7 +373,7 @@ export default function ProductGenerator() {
             </div>
             
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-[11px] font-black uppercase tracking-tight italic">
-               <p>Place this code block inside your site's &lt;head&gt; tag.</p>
+               <p>Place this code block inside your site&apos;s &lt;head&gt; tag.</p>
                {imageMode === "upload" && (
                  <p className="mt-1 text-blue-600">
                     ⚠️ Note: Replace the placeholder image URL in the code with your actual public product image link.
@@ -385,7 +386,7 @@ export default function ProductGenerator() {
                   product-schema.json
                </div>
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/40 pt-4">
-                <span className="text-indigo-400 font-bold tracking-tight">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-indigo-400 font-bold tracking-tight">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1 font-medium">
                   {jsonText}
                 </div>
