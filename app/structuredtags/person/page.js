@@ -1,16 +1,17 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { 
-  User, 
-  Globe, 
-  Briefcase, 
-  Building2, 
-  MapPin, 
-  Share2, 
-  Image as ImageIcon, 
-  Upload, 
+import {
+  User,
+  Globe,
+  Briefcase,
+  Building2,
+  MapPin,
+  Share2,
+  Image as ImageIcon,
+  Upload,
   Link2,
   Trash2,
   Plus,
@@ -124,7 +125,7 @@ export default function PersonGenerator() {
               <Layout className="h-5 w-5" />
               <h2 className="font-semibold text-lg tracking-wide uppercase">Core Identity</h2>
             </div>
-            
+
             <div className="p-6 space-y-6">
               {/* Identity */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -202,7 +203,7 @@ export default function PersonGenerator() {
                     </button>
                   </div>
                 </div>
-                
+
                 {photoMode === "url" ? (
                   <div className="relative">
                     <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -215,15 +216,15 @@ export default function PersonGenerator() {
                     />
                   </div>
                 ) : (
-                  <div 
+                  <div
                     onClick={() => fileInputRef.current.click()}
                     className="group border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all rounded-xl p-8 text-center cursor-pointer"
                   >
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      onChange={handleFileUpload} 
-                      className="hidden" 
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      className="hidden"
                       accept="image/*"
                     />
                     <div className="flex flex-col items-center">
@@ -285,8 +286,8 @@ export default function PersonGenerator() {
                 </div>
               </div>
 
-               {/* Socials */}
-               <div className="space-y-4 pt-4 border-t border-slate-100">
+              {/* Socials */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                     <Share2 className="h-3 w-3" />
@@ -300,7 +301,7 @@ export default function PersonGenerator() {
                     Add Link
                   </button>
                 </div>
-                
+
                 <div className="space-y-3">
                   {socials.map((social, index) => (
                     <div key={index} className="flex gap-2">
@@ -338,22 +339,22 @@ export default function PersonGenerator() {
               <Eye className="h-5 w-5" />
               <h2 className="font-semibold text-lg uppercase tracking-wide">Identity Card Preview</h2>
             </div>
-            
+
             <div className="p-8">
               <div className="max-w-md mx-auto bg-white rounded-3xl border border-slate-100 shadow-2xl overflow-hidden relative">
                 <div className="h-32 bg-indigo-600 relative overflow-hidden">
-                   <div className="absolute inset-0 opacity-20 flex flex-wrap gap-4 p-4 grayscale">
-                     <Share2 className="h-12 w-12 text-white" />
-                     <Globe className="h-8 w-8 text-white" />
-                     <User className="h-16 w-16 text-white" />
-                   </div>
+                  <div className="absolute inset-0 opacity-20 flex flex-wrap gap-4 p-4 grayscale">
+                    <Share2 className="h-12 w-12 text-white" />
+                    <Globe className="h-8 w-8 text-white" />
+                    <User className="h-16 w-16 text-white" />
+                  </div>
                 </div>
-                
+
                 <div className="px-6 pb-8 pt-16 flex flex-col items-center">
                   <div className="absolute top-12 left-1/2 -translate-x-1/2 h-40 w-40 rounded-full border-[6px] border-white shadow-xl bg-slate-50 overflow-hidden text-slate-800">
                     {photoMode === "url" ? (
                       photoUrl ? (
-                        <img src={photoUrl} alt="Person" className="h-full w-full object-cover" />
+                        <Image width={400} height={400} unoptimized src={photoUrl} alt="Person" className="h-full w-full object-cover" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center">
                           <User className="h-16 w-16 text-slate-200" />
@@ -361,7 +362,7 @@ export default function PersonGenerator() {
                       )
                     ) : (
                       uploadedPhoto ? (
-                        <img src={uploadedPhoto} alt="Person" className="h-full w-full object-cover" />
+                        <Image width={400} height={400} unoptimized src={uploadedPhoto} alt="Person" className="h-full w-full object-cover" />
                       ) : (
                         <div className="h-full w-full flex items-center justify-center">
                           <Upload className="h-16 w-16 text-slate-200" />
@@ -372,7 +373,7 @@ export default function PersonGenerator() {
 
                   <h3 className="text-2xl font-black text-slate-900 mt-2">{name || "Your Name"}</h3>
                   <div className="text-indigo-600 font-bold text-sm tracking-wide mt-1 uppercase">{jobTitle || "Your Current Role"}</div>
-                  
+
                   {company && (
                     <div className="flex items-center gap-2 text-slate-400 text-xs mt-3 uppercase tracking-widest font-black">
                       <Building2 className="h-3 w-3" />
@@ -388,16 +389,16 @@ export default function PersonGenerator() {
                       <div className="space-y-3">
                         {url && (
                           <div className="flex items-center gap-3 text-slate-600">
-                             <Globe className="h-4 w-4 text-indigo-500" />
-                             <span className="text-xs font-bold truncate max-w-[200px]">{new URL(url).hostname}</span>
+                            <Globe className="h-4 w-4 text-indigo-500" />
+                            <span className="text-xs font-bold truncate max-w-[200px]">{new URL(url).hostname}</span>
                           </div>
                         )}
                         {(city || country) && (
                           <div className="flex items-center gap-3 text-slate-600">
-                             <MapPin className="h-4 w-4 text-rose-500" />
-                             <span className="text-xs font-bold uppercase tracking-tighter">
-                               {city}{city && country && ", "} {country}
-                             </span>
+                            <MapPin className="h-4 w-4 text-rose-500" />
+                            <span className="text-xs font-bold uppercase tracking-tighter">
+                              {city}{city && country && ", "} {country}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -405,18 +406,18 @@ export default function PersonGenerator() {
 
                     {/* Socials Link Mockup */}
                     {socials.some(s => s.trim() !== "") && (
-                       <div className="flex flex-wrap justify-center gap-2 pt-2">
-                         {socials.filter(s => s.trim() !== "").map((s, idx) => (
-                           <div key={idx} className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 text-indigo-500">
-                             <LinkIcon className="h-4 w-4" />
-                           </div>
-                         ))}
-                       </div>
+                      <div className="flex flex-wrap justify-center gap-2 pt-2">
+                        {socials.filter(s => s.trim() !== "").map((s, idx) => (
+                          <div key={idx} className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 text-indigo-500">
+                            <LinkIcon className="h-4 w-4" />
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
-              
+
               <p className="text-center text-[11px] text-slate-400 mt-8 leading-relaxed px-12">
                 Structured data helps Google generate rich snippets for personal brands, resumes, and authoritative bios in search results.
               </p>
@@ -431,7 +432,7 @@ export default function PersonGenerator() {
                 <h2 className="font-semibold text-lg uppercase tracking-wide">Generated JSON-LD</h2>
               </div>
               <CopyToClipboard text={snippet} onCopy={handleCopy}>
-                <button 
+                <button
                   type="button"
                   className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
                   title={copied ? "Copied!" : "Copy to clipboard"}
@@ -440,22 +441,22 @@ export default function PersonGenerator() {
                 </button>
               </CopyToClipboard>
             </div>
-            
+
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-xs font-bold italic">
-               <p>TIP: Add this schema to your "About Me" or Biography page.</p>
-               {photoMode === "upload" && (
-                 <p className="mt-1 text-blue-600">
-                    ⚠️ Note: Replace the placeholder image URL in the code with your actual public profile picture link.
-                 </p>
-               )}
+              <p>TIP: Add this schema to your &quot;About Me&quot; or Biography page.</p>
+              {photoMode === "upload" && (
+                <p className="mt-1 text-blue-600">
+                  ⚠️ Note: Replace the placeholder image URL in the code with your actual public profile picture link.
+                </p>
+              )}
             </div>
-            
+
             <div className="bg-[#1e1e1e] p-6 relative group overflow-hidden">
               <div className="absolute top-0 right-0 p-4 border-b border-l border-white/5 bg-white/5 uppercase text-[10px] font-bold tracking-widest text-[#f8f8f2]/30">
                 APPLICATION/LD+JSON
               </div>
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto selection:bg-indigo-500/30 pt-4">
-                <span className="text-indigo-400/60 font-bold">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-indigo-400/60 font-bold">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
                   {jsonText}
                 </div>

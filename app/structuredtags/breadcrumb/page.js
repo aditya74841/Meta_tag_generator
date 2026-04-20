@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { 
-  Navigation, 
-  Home, 
-  ChevronRight, 
-  Plus, 
-  Trash2, 
-  Copy, 
-  CheckCircle2, 
-  Eye, 
+import {
+  Navigation,
+  Home,
+  ChevronRight,
+  Plus,
+  Trash2,
+  Copy,
+  CheckCircle2,
+  Eye,
   Code,
   Link as LinkIcon,
   Layout,
@@ -78,7 +78,7 @@ export default function BreadcrumbGenerator() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">Breadcrumb Structured Data</h1>
             <p className="text-indigo-100 mt-1 max-w-2xl">
-              Enhance your website's search appearance with breadcrumb navigation schema.
+              Enhance your website&apos;s search appearance with breadcrumb navigation schema.
             </p>
           </div>
         </div>
@@ -97,26 +97,25 @@ export default function BreadcrumbGenerator() {
                 {validItemsCount} Valid Items
               </span>
             </div>
-            
+
             <div className="p-6">
               <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6">
                 <div className="flex items-center gap-3">
                   <AlertCircle className="h-5 w-5 text-amber-500" />
                   <p className="text-sm text-amber-800">
-                    Add breadcrumb items in order from the homepage to the current page. The first item is typically "Home".
+                    Add breadcrumb items in order from the homepage to the current page. The first item is typically &quot;Home&quot;.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 {items.map((item, index) => (
-                  <div 
+                  <div
                     key={index}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      item.name.trim() && item.url.trim() 
-                      ? "border-emerald-100 bg-emerald-50/30" 
-                      : "border-slate-100 bg-white"
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${item.name.trim() && item.url.trim()
+                        ? "border-emerald-100 bg-emerald-50/30"
+                        : "border-slate-100 bg-white"
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
@@ -127,7 +126,7 @@ export default function BreadcrumbGenerator() {
                           {index === 0 ? "Homepage" : `Level ${index + 1}`}
                         </h3>
                       </div>
-                      
+
                       {items.length > 1 && (
                         <button
                           onClick={() => handleRemoveItem(index)}
@@ -205,13 +204,12 @@ export default function BreadcrumbGenerator() {
                         {items.filter(item => item.name.trim()).map((item, index, filteredArr) => (
                           <li key={index} className="flex items-center">
                             {index !== 0 && <ChevronRight className="h-4 w-4 text-slate-300 mx-1 flex-shrink-0" />}
-                            <a 
-                              href={item.url || "#"} 
-                              className={`flex items-center text-sm font-medium transition-colors ${
-                                index === filteredArr.length - 1 
-                                ? "text-indigo-600 font-bold" 
-                                : "text-slate-500 hover:text-indigo-500"
-                              }`}
+                            <a
+                              href={item.url || "#"}
+                              className={`flex items-center text-sm font-medium transition-colors ${index === filteredArr.length - 1
+                                  ? "text-indigo-600 font-bold"
+                                  : "text-slate-500 hover:text-indigo-500"
+                                }`}
                             >
                               {index === 0 && <Home className="h-4 w-4 mr-1.5" />}
                               {item.name || `Item ${index + 1}`}
@@ -249,7 +247,7 @@ export default function BreadcrumbGenerator() {
                 <h2 className="font-semibold text-lg uppercase">Generated JSON-LD</h2>
               </div>
               <CopyToClipboard text={snippet} onCopy={handleCopy}>
-                <button 
+                <button
                   className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition-all text-white shadow-sm"
                   title={copied ? "Copied!" : "Copy to clipboard"}
                 >
@@ -257,14 +255,14 @@ export default function BreadcrumbGenerator() {
                 </button>
               </CopyToClipboard>
             </div>
-            
+
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-sm italic font-medium">
               Copy and paste this into the &lt;head&gt; section of your HTML.
             </div>
 
             <div className="bg-[#1e1e1e] p-6 relative">
               <div className="font-mono text-[13px] leading-relaxed text-[#f8f8f2] whitespace-pre-wrap break-all overflow-x-auto">
-                <span className="text-slate-500">&lt;script type="application/ld+json"&gt;</span>
+                <span className="text-slate-500">&lt;script type=&quot;application/ld+json&quot;&gt;</span>
                 <div className="pl-4 py-2 border-l border-emerald-500/30 mt-1 mb-1">
                   {jsonText}
                 </div>
