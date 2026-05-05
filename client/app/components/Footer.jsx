@@ -56,13 +56,6 @@ const Footer = () => {
     { name: "Contact", href: "/contact" },
   ];
 
-  const features = [
-    { icon: SpeedIcon, text: "Lightning Fast Generation" },
-    { icon: SecurityIcon, text: "Error-Free Validation" },
-    { icon: CodeIcon, text: "Professional Code Output" },
-    { icon: SupportIcon, text: "24/7 Support Available" },
-  ];
-
   const socialLinks = [
     {
       name: "Facebook",
@@ -94,54 +87,31 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        bgcolor: "#0f172a", // Solid slate-900 color instead of gradient
         color: "white",
         mt: "auto",
       }}
     >
       {/* Main Footer Content */}
       <Container maxWidth="xl" sx={{ py: 6 }}>
-        <Grid container spacing={4}>
+        <Grid container spacing={4} justifyContent="space-between">
           {/* Company Info & Branding */}
           <Grid item xs={12} md={4}>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h4" fontWeight="bold" gutterBottom>
+              <Typography variant="h5" fontWeight="bold" gutterBottom>
                 Open Graph Suite
               </Typography>
               <Typography
-                variant="body1"
-                sx={{ opacity: 0.9, mb: 3, lineHeight: 1.6 }}
+                variant="body2"
+                sx={{ opacity: 0.7, mb: 3, lineHeight: 1.6 }}
               >
                 The most comprehensive toolkit for creating professional Open
                 Graph and Twitter Card meta tags. Trusted by thousands of
                 developers and marketers worldwide.
               </Typography>
 
-              {/* Key Features */}
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  Why Choose Us?
-                </Typography>
-                <Stack spacing={1}>
-                  {features.map((feature, index) => (
-                    <Box
-                      key={index}
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                    >
-                      <feature.icon sx={{ fontSize: 18, opacity: 0.8 }} />
-                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                        {feature.text}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Stack>
-              </Box>
-
               {/* Social Links */}
               <Box>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  Follow Us
-                </Typography>
                 <Stack direction="row" spacing={1}>
                   {socialLinks.map((social, index) => (
                     <IconButton
@@ -150,16 +120,15 @@ const Footer = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       sx={{
-                        bgcolor: "rgba(255, 255, 255, 0.1)",
+                        bgcolor: "rgba(255, 255, 255, 0.05)",
                         color: "white",
                         "&:hover": {
                           bgcolor: social.color,
-                          transform: "translateY(-2px)",
                         },
-                        transition: "all 0.3s ease",
+                        transition: "all 0.2s ease",
                       }}
                     >
-                      <social.icon />
+                      <social.icon fontSize="small" />
                     </IconButton>
                   ))}
                 </Stack>
@@ -168,9 +137,9 @@ const Footer = () => {
           </Grid>
 
           {/* Quick Access Generators */}
-          <Grid item xs={12} sm={6} md={2}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Popular Generators
+          <Grid item xs={12} sm={4} md={2}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+              Generators
             </Typography>
             <Stack spacing={1.5}>
               {quickLinks.map((link, index) => (
@@ -178,19 +147,17 @@ const Footer = () => {
                   key={index}
                   href={link.href}
                   sx={{
-                    color: "rgba(255, 255, 255, 0.8)",
+                    color: "rgba(255, 255, 255, 0.7)",
                     textDecoration: "none",
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
                     "&:hover": {
                       color: "white",
-                      transform: "translateX(4px)",
                     },
-                    transition: "all 0.3s ease",
+                    transition: "all 0.2s ease",
                   }}
                 >
-                  <link.icon sx={{ fontSize: 16 }} />
                   <Typography variant="body2">{link.name}</Typography>
                 </Link>
               ))}
@@ -198,8 +165,8 @@ const Footer = () => {
           </Grid>
 
           {/* Resources */}
-          <Grid item xs={12} sm={6} md={2}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
+          <Grid item xs={12} sm={4} md={2}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               Resources
             </Typography>
             <Stack spacing={1.5}>
@@ -208,13 +175,12 @@ const Footer = () => {
                   key={index}
                   href={link.href}
                   sx={{
-                    color: "rgba(255, 255, 255, 0.8)",
+                    color: "rgba(255, 255, 255, 0.7)",
                     textDecoration: "none",
                     "&:hover": {
                       color: "white",
-                      transform: "translateX(4px)",
                     },
-                    transition: "all 0.3s ease",
+                    transition: "all 0.2s ease",
                   }}
                 >
                   <Typography variant="body2">{link.name}</Typography>
@@ -224,8 +190,8 @@ const Footer = () => {
           </Grid>
 
           {/* Company Links */}
-          <Grid item xs={12} sm={6} md={2}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
+          <Grid item xs={12} sm={4} md={2}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               Company
             </Typography>
             <Stack spacing={1.5}>
@@ -234,13 +200,12 @@ const Footer = () => {
                   key={index}
                   href={link.href}
                   sx={{
-                    color: "rgba(255, 255, 255, 0.8)",
+                    color: "rgba(255, 255, 255, 0.7)",
                     textDecoration: "none",
                     "&:hover": {
                       color: "white",
-                      transform: "translateX(4px)",
                     },
-                    transition: "all 0.3s ease",
+                    transition: "all 0.2s ease",
                   }}
                 >
                   <Typography variant="body2">{link.name}</Typography>
@@ -248,87 +213,11 @@ const Footer = () => {
               ))}
             </Stack>
           </Grid>
-
-          {/* Contact Info */}
-          <Grid item xs={12} sm={6} md={2}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Get in Touch
-            </Typography>
-            <Stack spacing={1.5}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <EmailIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-                <Link
-                  href="mailto:aditya@iamadityaranjan.com"
-                  sx={{
-                    color: "rgba(255, 255, 255, 0.8)",
-                    textDecoration: "none",
-                    "&:hover": { color: "white" },
-                  }}
-                >
-                  <Typography variant="body2">hello@allaboutcse.com</Typography>
-                </Link>
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <PhoneIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                  +91 7481092465
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
-                <LocationIcon sx={{ fontSize: 16, opacity: 0.8, mt: 0.2 }} />
-                <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                  Patna, Bihar
-                </Typography>
-              </Box>
-            </Stack>
-          </Grid>
         </Grid>
       </Container>
 
-      {/* Stats Section */}
-      <Box sx={{ bgcolor: "rgba(0, 0, 0, 0.2)", py: 3 }}>
-        <Container maxWidth="xl">
-          <Grid container spacing={3} textAlign="center">
-            <Grid item xs={6} sm={3}>
-              <Typography variant="h4" fontWeight="bold">
-                17+
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                Generators Available
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography variant="h4" fontWeight="bold">
-                50K+
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                Tags Generated
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography variant="h4" fontWeight="bold">
-                95%
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                Time Saved
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography variant="h4" fontWeight="bold">
-                99.9%
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                Uptime
-              </Typography>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
-
       {/* Bottom Bar */}
-      <Box sx={{ bgcolor: "rgba(0, 0, 0, 0.3)", py: 2 }}>
+      <Box sx={{ borderTop: "1px solid rgba(255,255,255,0.1)", py: 2 }}>
         <Container maxWidth="xl">
           <Box
             sx={{
@@ -341,7 +230,7 @@ const Footer = () => {
           >
             <Typography
               variant="body2"
-              sx={{ opacity: 0.8, textAlign: { xs: "center", sm: "left" } }}
+              sx={{ opacity: 0.7, textAlign: { xs: "center", sm: "left" } }}
             >
               © {new Date().getFullYear()}{" "}
               <Link
@@ -368,27 +257,16 @@ const Footer = () => {
                 label="Free to Use"
                 size="small"
                 sx={{
-                  bgcolor: "rgba(76, 175, 80, 0.8)",
+                  bgcolor: "rgba(255, 255, 255, 0.1)",
                   color: "white",
-                  fontWeight: "bold",
                 }}
               />
               <Chip
                 label="No Registration"
                 size="small"
                 sx={{
-                  bgcolor: "rgba(33, 150, 243, 0.8)",
+                  bgcolor: "rgba(255, 255, 255, 0.1)",
                   color: "white",
-                  fontWeight: "bold",
-                }}
-              />
-              <Chip
-                label="Professional Quality"
-                size="small"
-                sx={{
-                  bgcolor: "rgba(156, 39, 176, 0.8)",
-                  color: "white",
-                  fontWeight: "bold",
                 }}
               />
             </Stack>
