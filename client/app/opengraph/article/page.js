@@ -407,7 +407,7 @@ export default function ArticleOpenGraph() {
             </div>
             
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 text-sm">
-              <p className="font-medium italic">Place this code block inside your HTML document's &lt;head&gt; tag.</p>
+              <p className="font-medium italic">Place this code block inside your HTML document&apos;s &lt;head&gt; tag.</p>
               {imageMode === "upload" && (
                 <p className="mt-1 text-xs font-bold text-blue-600">
                   ⚠️ Note: An uploaded image cannot be embedded directly in meta tags. Ensure you upload your image to a public server and provide the URL.
