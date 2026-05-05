@@ -12,7 +12,7 @@ node_modules/
 
 # next.js
 .next/
-**/ .next/
+**/.next/
 /out/
 
 # production
@@ -30,8 +30,8 @@ yarn-error.log*
 # local env files
 .env
 .env*.local
-**/ .env
-**/ .env*.local
+**/.env
+**/.env*.local
 
 # vercel
 .vercel
