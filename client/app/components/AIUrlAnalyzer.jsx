@@ -1,153 +1,41 @@
 "use client";
+
 import React, { useState } from "react";
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Paper,
-  CircularProgress,
-  Fade,
-  Stack,
-  Tooltip,
-  Alert,
-  Card,
-  CardContent,
-  Divider,
-  Grid,
-  ButtonGroup,
-  Chip,
-  Checkbox,
-  FormControlLabel,
-  LinearProgress,
-  Collapse,
-  IconButton,
-} from "@mui/material";
-import {
-  AutoAwesome as AIIcon,
-  ContentCopy as CopyIcon,
-  Language as UrlIcon,
-  CheckCircle as SuccessIcon,
-  ErrorOutline as ErrorIcon,
-  Code as CodeIcon,
-  Label as TagIcon,
-  Search as CrawlIcon,
-  Pages as PagesIcon,
-  ExpandMore as ExpandIcon,
-  ExpandLess as CollapseIcon,
-  CheckBox as SelectAllIcon,
-  CheckBoxOutlineBlank as DeselectIcon,
-  Visibility as ViewIcon,
-} from "@mui/icons-material";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { 
+  Zap, 
+  Copy, 
+  Link as UrlIcon, 
+  CheckCircle, 
+  AlertCircle, 
+  Code, 
+  Tag, 
+  Search, 
+  Layers, 
+  ChevronDown, 
+  ChevronUp, 
+  Eye,
+  RotateCcw,
+  Sparkles,
+  ExternalLink,
+  ArrowRight,
+  Wand2
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import SeoOverviewPanel from "./SeoOverviewPanel";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-// ─── Step Indicator ─────────────────────────────────────────────────────────
-const StepDot = ({ step, current, label }) => {
-  const done = current > step;
-  const active = current === step;
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
-      <Box
-        sx={{
-          width: 36,
-          height: 36,
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontWeight: 800,
-          fontSize: "0.9rem",
-          transition: "all 0.3s",
-          bgcolor: done ? "#22c55e" : active ? "#2563eb" : "rgba(255,255,255,0.1)",
-          color: "white",
-          boxShadow: active ? "0 0 0 4px rgba(37,99,235,0.3)" : "none",
-        }}
-      >
-        {done ? <SuccessIcon fontSize="small" /> : step}
-      </Box>
-      <Typography variant="caption" sx={{ color: active ? "white" : "rgba(255,255,255,0.4)", fontWeight: 600 }}>
-        {label}
-      </Typography>
-    </Box>
-  );
-};
-
-// ─── Page Card ───────────────────────────────────────────────────────────────
-const PageCard = ({ page, selected, onToggle, onViewOverview }) => (
-  <Box
-    sx={{
-      p: 2,
-      borderRadius: 2,
-      border: "1px solid",
-      borderColor: selected ? "rgba(37,99,235,0.6)" : "rgba(255,255,255,0.08)",
-      bgcolor: selected ? "rgba(37,99,235,0.12)" : "rgba(255,255,255,0.03)",
-      transition: "all 0.2s",
-      display: "flex",
-      alignItems: "center",
-      gap: 1.5,
-      "&:hover": {
-        borderColor: "rgba(37,99,235,0.4)",
-        bgcolor: "rgba(37,99,235,0.07)",
-      },
-      "&:hover .overview-btn": { opacity: 1 },
-    }}
-  >
-    <Checkbox
-      checked={selected}
-      onChange={onToggle}
-      onClick={(e) => e.stopPropagation()}
-      size="small"
-      sx={{ color: "rgba(255,255,255,0.3)", "&.Mui-checked": { color: "#3b82f6" }, p: 0 }}
-    />
-    <Box sx={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={onViewOverview}>
-      <Typography variant="body2"
-        sx={{ color: "white", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-        {page.title || page.label}
-      </Typography>
-      <Typography variant="caption"
-        sx={{ color: "rgba(255,255,255,0.4)", fontFamily: "monospace", display: "block",
-          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-        {page.path}
-      </Typography>
-    </Box>
-    {page.path === "/" && (
-      <Chip label="Home" size="small" sx={{ bgcolor: "rgba(34,197,94,0.15)", color: "#4ade80", fontWeight: 700, fontSize: "0.65rem" }} />
-    )}
-    {page.error && (
-      <Chip label={page.error} size="small" sx={{ bgcolor: "rgba(239,68,68,0.15)", color: "#fca5a5", fontWeight: 700, fontSize: "0.65rem" }} />
-    )}
-    <Tooltip title="SEO Overview">
-      <IconButton size="small" className="overview-btn" onClick={onViewOverview}
-        sx={{ opacity: 0, transition: "opacity 0.2s", color: "#60a5fa",
-          bgcolor: "rgba(96,165,250,0.1)", "&:hover": { bgcolor: "rgba(96,165,250,0.2)" } }}>
-        <ViewIcon sx={{ fontSize: 16 }} />
-      </IconButton>
-    </Tooltip>
-  </Box>
-);
-
 // ─── Result Block ────────────────────────────────────────────────────────────
-const ResultBlock = ({ pageResult }) => {
+const ResultBlock = ({ result, onBack }) => {
   const [viewType, setViewType] = useState("meta");
   const [copied, setCopied] = useState(false);
-  const [expanded, setExpanded] = useState(true);
 
-  if (!pageResult.success) {
-    return (
-      <Alert severity="error" sx={{ borderRadius: 2, bgcolor: "rgba(239,68,68,0.1)", color: "#fca5a5" }}>
-        <strong>{pageResult.url}</strong> — {pageResult.error}
-      </Alert>
-    );
-  }
-
-  const tags = pageResult.data.generated.metaTags;
-
-  const metaCode = `<!-- SEO Meta Tags for ${pageResult.url} -->
+  const tags = result.generated.metaTags;
+  const metaCode = `<!-- SEO Meta Tags for ${result.url} -->
 <title>${tags.title}</title>
 <meta name="description" content="${tags.description}">
 <meta name="keywords" content="${tags.keywords}">
@@ -157,166 +45,171 @@ const ResultBlock = ({ pageResult }) => {
 <meta name="twitter:title" content="${tags["twitter:title"]}">
 <meta name="twitter:description" content="${tags["twitter:description"]}">`.trim();
 
-  const jsonCode = JSON.stringify(pageResult.data.generated.structuredData, null, 2);
+  const jsonCode = JSON.stringify(result.generated.structuredData, null, 2);
 
   return (
-    <Card
-      sx={{
-        borderRadius: 3,
-        bgcolor: "#1e293b",
-        border: "1px solid rgba(255,255,255,0.06)",
-        overflow: "hidden",
-        mb: 2,
-      }}
-    >
-      {/* Header */}
-      <Box
-        sx={{
-          px: 3,
-          py: 2,
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          borderBottom: expanded ? "1px solid rgba(255,255,255,0.06)" : "none",
-          cursor: "pointer",
-          bgcolor: "rgba(255,255,255,0.02)",
-          "&:hover": { bgcolor: "rgba(255,255,255,0.04)" },
-        }}
-        onClick={() => setExpanded((v) => !v)}
-      >
-        <SuccessIcon sx={{ color: "#22c55e", flexShrink: 0 }} />
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="body2" sx={{ color: "white", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {tags.title}
-          </Typography>
-          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}>
-            {pageResult.url}
-          </Typography>
-        </Box>
-        <IconButton size="small" sx={{ color: "rgba(255,255,255,0.4)" }}>
-          {expanded ? <CollapseIcon /> : <ExpandIcon />}
-        </IconButton>
-      </Box>
+    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+           <CheckCircle className="w-5 h-5 text-green-500" />
+           <h4 className="text-lg font-bold text-white">AI Optimization Complete</h4>
+        </div>
+        <Button variant="ghost" size="sm" onClick={onBack} className="text-slate-400">
+          <RotateCcw className="w-4 h-4 mr-2" />
+          Reset
+        </Button>
+      </div>
 
-      {/* Content */}
-      <Collapse in={expanded}>
-        <CardContent sx={{ p: 0 }}>
-          {/* Controls */}
-          <Box sx={{ px: 3, py: 2, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
-            <ButtonGroup size="small" sx={{ borderRadius: 2, overflow: "hidden" }}>
-              <Button
+      <Card className="bg-slate-900 border-white/10 overflow-hidden">
+        <CardHeader className="pb-2">
+           <CardTitle className="text-sm font-bold text-blue-400 truncate">{result.url}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex gap-1 bg-slate-950 p-1 rounded-lg">
+              <Button 
+                variant={viewType === "meta" ? "secondary" : "ghost"} 
+                size="sm" 
                 onClick={() => setViewType("meta")}
-                startIcon={<TagIcon />}
-                sx={{
-                  bgcolor: viewType === "meta" ? "#2563eb" : "rgba(255,255,255,0.05)",
-                  color: "white",
-                  fontSize: "0.75rem",
-                  "&:hover": { bgcolor: viewType === "meta" ? "#1d4ed8" : "rgba(255,255,255,0.1)" },
-                }}
+                className="h-8 text-xs gap-2"
               >
+                <Tag className="w-3.5 h-3.5" />
                 Meta Tags
               </Button>
-              <Button
+              <Button 
+                variant={viewType === "jsonld" ? "secondary" : "ghost"} 
+                size="sm" 
                 onClick={() => setViewType("jsonld")}
-                startIcon={<CodeIcon />}
-                sx={{
-                  bgcolor: viewType === "jsonld" ? "#7c3aed" : "rgba(255,255,255,0.05)",
-                  color: "white",
-                  fontSize: "0.75rem",
-                  "&:hover": { bgcolor: viewType === "jsonld" ? "#6d28d9" : "rgba(255,255,255,0.1)" },
-                }}
+                className="h-8 text-xs gap-2"
               >
+                <Code className="w-3.5 h-3.5" />
                 JSON-LD
               </Button>
-            </ButtonGroup>
+            </div>
 
-            <CopyToClipboard text={viewType === "meta" ? metaCode : jsonCode} onCopy={() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }}>
-              <Button
-                size="small"
-                variant="outlined"
-                startIcon={copied ? <SuccessIcon fontSize="small" /> : <CopyIcon fontSize="small" />}
-                sx={{
-                  borderRadius: 2,
-                  color: copied ? "#4ade80" : "white",
-                  borderColor: copied ? "#4ade80" : "rgba(255,255,255,0.3)",
-                  fontSize: "0.75rem",
-                  "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.05)" },
-                }}
-              >
-                {copied ? "Copied!" : "Copy"}
-              </Button>
-            </CopyToClipboard>
-          </Box>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={cn("h-8 text-xs gap-2", copied && "text-green-400 border-green-500/50")}
+              onClick={() => {
+                navigator.clipboard.writeText(viewType === "meta" ? metaCode : jsonCode);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+            >
+              {copied ? <CheckCircle className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? "Copied!" : "Copy Code"}
+            </Button>
+          </div>
 
-          {/* Code view */}
-          {viewType === "meta" ? (
-            <Box sx={{ px: 3, pb: 3 }}>
-              <Grid container spacing={2} sx={{ mb: 2 }}>
-                {[
-                  { label: "SEO Title", value: tags.title, color: "white" },
-                  { label: "Description", value: tags.description, color: "#94a3b8" },
-                  { label: "Keywords", value: tags.keywords, color: "#60a5fa" },
-                  { label: "OG Title", value: tags["og:title"], color: "#c4b5fd" },
-                ].map((item) => (
-                  <Grid item xs={12} sm={6} key={item.label}>
-                    <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
-                      {item.label}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: item.color, mt: 0.5, lineHeight: 1.5, fontWeight: item.label === "SEO Title" ? 700 : 400 }}>
-                      {item.value}
-                    </Typography>
-                  </Grid>
-                ))}
-              </Grid>
-              <Box sx={{ borderRadius: 2, overflow: "hidden" }}>
-                <SyntaxHighlighter language="html" style={vscDarkPlus} customStyle={{ margin: 0, padding: "16px", background: "rgba(15,23,42,0.6)", fontSize: "0.8rem" }}>
-                  {metaCode}
-                </SyntaxHighlighter>
-              </Box>
-            </Box>
-          ) : (
-            <SyntaxHighlighter language="json" style={vscDarkPlus} customStyle={{ margin: 0, padding: "24px", background: "rgba(15,23,42,0.6)", fontSize: "0.82rem" }}>
-              {jsonCode}
-            </SyntaxHighlighter>
-          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {[
+              { label: "SEO Title", value: tags.title, color: "text-white" },
+              { label: "Description", value: tags.description, color: "text-slate-400" },
+              { label: "Keywords", value: tags.keywords, color: "text-blue-400" },
+              { label: "OG Title", value: tags["og:title"], color: "text-purple-400" },
+            ].map((item) => (
+              <div key={item.label} className="space-y-1">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-600">{item.label}</span>
+                <p className={cn("text-xs leading-relaxed line-clamp-2", item.color)}>{item.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-xl bg-black/40 p-4 font-mono text-[11px] text-blue-300 overflow-auto max-h-[300px] border border-white/5">
+            <pre>{viewType === "meta" ? metaCode : jsonCode}</pre>
+          </div>
         </CardContent>
-      </Collapse>
-    </Card>
+      </Card>
+    </div>
   );
 };
+
+// ─── Page Card ───────────────────────────────────────────────────────────────
+const PageCard = ({ page, onFix, onViewOverview, fixing, result }) => (
+  <Card className="bg-slate-900 border-white/5 hover:border-white/10 transition-all duration-300 group overflow-hidden">
+    <CardHeader className="pb-3">
+      <div className="flex items-center justify-between mb-2">
+         {page.path === "/" && <Badge className="bg-green-500/10 text-green-400 border-green-500/20">Home</Badge>}
+         {page.error && <Badge variant="destructive">{page.error}</Badge>}
+      </div>
+      <CardTitle className="text-sm font-bold text-slate-100 truncate group-hover:text-blue-400 transition-colors">
+        {page.title || "Untitled Page"}
+      </CardTitle>
+      <CardDescription className="text-xs text-slate-500 font-mono truncate">
+        {page.path}
+      </CardDescription>
+    </CardHeader>
+    
+    <CardContent className="pb-4">
+       {result ? (
+         <div className="flex items-center gap-2 text-green-400 text-xs font-bold bg-green-500/10 p-2 rounded-lg">
+            <CheckCircle className="w-4 h-4" />
+            Optimized with AI
+         </div>
+       ) : (
+         <div className="text-[11px] text-slate-400 leading-relaxed line-clamp-2 italic">
+           Pending analysis. Click "Fix Page" to generate AI-powered meta tags.
+         </div>
+       )}
+    </CardContent>
+
+    <CardFooter className="pt-0 flex gap-2">
+      <Button 
+        variant="secondary" 
+        size="sm" 
+        className="flex-1 text-xs gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200"
+        onClick={onViewOverview}
+      >
+        <Eye className="w-3.5 h-3.5" />
+        Overview
+      </Button>
+      <Button 
+        variant="default" 
+        size="sm" 
+        disabled={fixing}
+        className={cn(
+          "flex-1 text-xs gap-2 font-bold",
+          result ? "bg-green-600 hover:bg-green-500" : "bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20"
+        )}
+        onClick={onFix}
+      >
+        {fixing ? (
+          <RotateCcw className="w-3.5 h-3.5 animate-spin" />
+        ) : result ? (
+          <CheckCircle className="w-3.5 h-3.5" />
+        ) : (
+          <Wand2 className="w-3.5 h-3.5" />
+        )}
+        {fixing ? "Fixing..." : result ? "View Fix" : "Fix Page"}
+      </Button>
+    </CardFooter>
+  </Card>
+);
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 const AIUrlAnalyzer = () => {
   const [url, setUrl] = useState("");
-
-  // Step 1 — Crawl
   const [crawling, setCrawling] = useState(false);
   const [crawlError, setCrawlError] = useState(null);
   const [pages, setPages] = useState(null);
-
-  // Step 2 — Select
-  const [selectedPages, setSelectedPages] = useState(new Set());
-
-  // Step 3 — Generate
-  const [generating, setGenerating] = useState(false);
-  const [generateProgress, setGenerateProgress] = useState(0);
-  const [results, setResults] = useState(null);
-  const [generateError, setGenerateError] = useState(null);
-
-  // SEO Overview panel
+  
+  // Per-page results and fixing states
+  const [pageResults, setPageResults] = useState({});
+  const [fixingPages, setFixingPages] = useState({});
+  
+  // Focused result (full screen view of a fix)
+  const [focusedResult, setFocusedResult] = useState(null);
   const [overviewPage, setOverviewPage] = useState(null);
 
-  // Derived step
-  const step = results ? 3 : pages ? 2 : 1;
-
-  // ── Step 1: Crawl ──────────────────────────────────────────────────────────
   const handleCrawl = async () => {
     if (!url.trim()) { setCrawlError("Please enter a valid URL"); return; }
     setCrawling(true);
     setCrawlError(null);
     setPages(null);
-    setSelectedPages(new Set());
-    setResults(null);
+    setPageResults({});
+    setFixingPages({});
+    setFocusedResult(null);
 
     try {
       const res = await fetch(`${API_BASE}/crawl`, {
@@ -327,268 +220,142 @@ const AIUrlAnalyzer = () => {
       const data = await res.json();
       if (data.success) {
         setPages(data.data.pages);
-        // Auto-select home page
-        const homePages = new Set(data.data.pages.filter((p) => p.path === "/" || p.path === "").map((p) => p.url));
-        setSelectedPages(homePages.size > 0 ? homePages : new Set([data.data.pages[0]?.url].filter(Boolean)));
       } else {
         setCrawlError(data.error || "Failed to crawl the website.");
       }
     } catch {
-      setCrawlError("Could not reach the server. Please ensure the backend is running.");
+      setCrawlError("Could not reach the server.");
     } finally {
       setCrawling(false);
     }
   };
 
-  // ── Step 2: Selection helpers ──────────────────────────────────────────────
-  const togglePage = (pageUrl) => {
-    setSelectedPages((prev) => {
-      const next = new Set(prev);
-      next.has(pageUrl) ? next.delete(pageUrl) : next.add(pageUrl);
-      return next;
-    });
-  };
-
-  const toggleAll = () => {
-    if (selectedPages.size === pages.length) {
-      setSelectedPages(new Set());
-    } else {
-      setSelectedPages(new Set(pages.map((p) => p.url)));
+  const handleFixPage = async (page) => {
+    // If we already have a result, just focus it
+    if (pageResults[page.url]) {
+      setFocusedResult({ url: page.url, ...pageResults[page.url] });
+      return;
     }
-  };
 
-  // ── Step 3: Generate AI tags ───────────────────────────────────────────────
-  const handleGenerate = async () => {
-    if (selectedPages.size === 0) { setGenerateError("Please select at least one page."); return; }
-    setGenerating(true);
-    setGenerateError(null);
-    setResults(null);
-    setGenerateProgress(0);
-
-    const selected = pages.filter((p) => selectedPages.has(p.url));
-    const resultList = [];
-
-    for (let i = 0; i < selected.length; i++) {
-      const page = selected[i];
-      try {
-        const res = await fetch(`${API_BASE}/url`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: page.url }),
-        });
-        const data = await res.json();
-        resultList.push({ url: page.url, title: page.title, success: data.success, data: data.data, error: data.error });
-      } catch {
-        resultList.push({ url: page.url, title: page.title, success: false, error: "Network error" });
+    setFixingPages(prev => ({ ...prev, [page.url]: true }));
+    
+    try {
+      const res = await fetch(`${API_BASE}/url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: page.url }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPageResults(prev => ({ ...prev, [page.url]: data.data }));
+        setFocusedResult({ url: page.url, ...data.data });
+      } else {
+        alert(data.error || "Failed to optimize page.");
       }
-      setGenerateProgress(Math.round(((i + 1) / selected.length) * 100));
+    } catch {
+      alert("Network error. Please try again.");
+    } finally {
+      setFixingPages(prev => ({ ...prev, [page.url]: false }));
     }
-
-    setResults(resultList);
-    setGenerating(false);
   };
 
-  // ── Reset ──────────────────────────────────────────────────────────────────
   const handleReset = () => {
     setUrl("");
     setPages(null);
-    setSelectedPages(new Set());
-    setResults(null);
+    setPageResults({});
+    setFixingPages({});
+    setFocusedResult(null);
     setCrawlError(null);
-    setGenerateError(null);
   };
 
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto", width: "100%", mt: 4 }}>
-
-      {/* ── URL Input ─────────────────────────────────────────────────── */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 1,
-          borderRadius: 4,
-          display: "flex",
-          alignItems: "center",
-          bgcolor: "rgba(255,255,255,0.05)",
-          backdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-          mb: 3,
-        }}
-      >
-        <UrlIcon sx={{ ml: 2, mr: 1, color: "rgba(255,255,255,0.5)" }} />
-        <TextField
-          fullWidth
-          placeholder="Paste website URL (e.g. https://example.com)"
-          variant="standard"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          sx={{
-            input: { color: "white", py: 2 },
-            "& .MuiInput-underline:before, & .MuiInput-underline:after": { display: "none" },
-          }}
-          onKeyDown={(e) => e.key === "Enter" && !pages && handleCrawl()}
-        />
-        {pages ? (
-          <Button
-            variant="outlined"
-            onClick={handleReset}
-            sx={{ borderRadius: 3, px: 3, py: 1.5, color: "rgba(255,255,255,0.6)", borderColor: "rgba(255,255,255,0.2)", fontWeight: "bold", textTransform: "none", mr: 1, "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.05)" } }}
-          >
-            Reset
-          </Button>
-        ) : null}
-        <Button
-          variant="contained"
-          disabled={crawling}
-          onClick={pages ? handleGenerate : handleCrawl}
-          startIcon={crawling ? <CircularProgress size={20} color="inherit" /> : pages ? <AIIcon /> : <CrawlIcon />}
-          sx={{
-            borderRadius: 3,
-            px: 4,
-            py: 1.5,
-            background: "linear-gradient(45deg, #2563eb, #7c3aed)",
-            fontWeight: "bold",
-            textTransform: "none",
-            fontSize: "1rem",
-            boxShadow: "0 4px 15px rgba(37,99,235,0.3)",
-            "&:hover": { background: "linear-gradient(45deg, #1d4ed8, #6d28d9)" },
-          }}
-        >
-          {crawling ? "Discovering..." : pages && !results ? "Generate AI Tags" : results ? "Regenerate" : "Discover Pages"}
-        </Button>
-      </Paper>
-
-      {/* ── Step Tracker ─────────────────────────────────────────────── */}
-      {(pages || crawling) && (
-        <Fade in>
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, mb: 4 }}>
-            <StepDot step={1} current={step} label="Crawl" />
-            <Box sx={{ flex: 1, maxWidth: 80, height: 2, bgcolor: step > 1 ? "#22c55e" : "rgba(255,255,255,0.15)", borderRadius: 1, transition: "all 0.4s" }} />
-            <StepDot step={2} current={step} label="Select" />
-            <Box sx={{ flex: 1, maxWidth: 80, height: 2, bgcolor: step > 2 ? "#22c55e" : "rgba(255,255,255,0.15)", borderRadius: 1, transition: "all 0.4s" }} />
-            <StepDot step={3} current={step} label="Generate" />
-          </Box>
-        </Fade>
+    <div className="w-full space-y-8">
+      {/* Search Input */}
+      {!focusedResult && (
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+            <UrlIcon className="w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+          </div>
+          <input 
+            type="text"
+            placeholder="Paste website URL (e.g. https://google.com)"
+            className="w-full h-16 pl-12 pr-40 bg-slate-900 border border-white/10 rounded-2xl text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && !pages && handleCrawl()}
+          />
+          <div className="absolute inset-y-2 right-2 flex gap-2">
+            {pages && (
+              <Button variant="ghost" className="h-full px-4 rounded-xl text-slate-500" onClick={handleReset}>
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset
+              </Button>
+            )}
+            <Button 
+              className="h-full px-6 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold gap-2 shadow-lg shadow-blue-600/20"
+              disabled={crawling || !url}
+              onClick={handleCrawl}
+            >
+              {crawling ? (
+                <RotateCcw className="w-4 h-4 animate-spin" />
+              ) : (
+                <Search className="w-4 h-4" />
+              )}
+              {crawling ? "Scanning..." : "Scan Site"}
+            </Button>
+          </div>
+        </div>
       )}
 
-      {/* ── Errors ───────────────────────────────────────────────────── */}
+      {/* Errors */}
       {crawlError && (
-        <Fade in>
-          <Alert severity="error" icon={<ErrorIcon />} sx={{ borderRadius: 3, mb: 3, bgcolor: "rgba(239,68,68,0.1)", color: "#fca5a5" }}>
-            {crawlError}
-          </Alert>
-        </Fade>
+        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-3 animate-in zoom-in duration-300">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          {crawlError}
+        </div>
       )}
 
-      {/* ── Page List (Step 2) ────────────────────────────────────────── */}
-      {pages && !results && (
-        <Fade in>
-          <Box>
-            {/* Header */}
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <PagesIcon sx={{ color: "#60a5fa" }} />
-                <Typography variant="h6" fontWeight="800" sx={{ color: "white" }}>
-                  {pages.length} Page{pages.length !== 1 ? "s" : ""} Discovered
-                </Typography>
-                <Chip
-                  label={`${selectedPages.size} selected`}
-                  size="small"
-                  sx={{ bgcolor: selectedPages.size > 0 ? "rgba(37,99,235,0.25)" : "rgba(255,255,255,0.08)", color: selectedPages.size > 0 ? "#93c5fd" : "rgba(255,255,255,0.4)", fontWeight: 700 }}
-                />
-              </Box>
-              <Button
-                size="small"
-                startIcon={selectedPages.size === pages.length ? <DeselectIcon /> : <SelectAllIcon />}
-                onClick={toggleAll}
-                sx={{ color: "rgba(255,255,255,0.6)", textTransform: "none", fontWeight: 600, "&:hover": { color: "white" } }}
-              >
-                {selectedPages.size === pages.length ? "Deselect All" : "Select All"}
-              </Button>
-            </Box>
+      {/* Discovery View (Step 1) */}
+      {pages && !focusedResult && (
+        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold text-white flex items-center gap-3">
+              <Layers className="w-6 h-6 text-blue-500" />
+              Site Pages ({pages.length})
+            </h3>
+            <p className="text-xs text-slate-500 italic">Review each page below or fix them with AI.</p>
+          </div>
 
-            {/* Page Grid */}
-            <Paper elevation={0} sx={{ p: 2, borderRadius: 3, bgcolor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", mb: 3 }}>
-              <Stack spacing={1}>
-                {pages.map((page) => (
-                  <PageCard
-                    key={page.url}
-                    page={page}
-                    selected={selectedPages.has(page.url)}
-                    onToggle={() => togglePage(page.url)}
-                    onViewOverview={() => setOverviewPage(page)}
-                  />
-                ))}
-              </Stack>
-            </Paper>
-
-            {/* Generate button (bottom shortcut) */}
-            {generating ? (
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
-                    Generating AI tags… ({generateProgress}%)
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "#60a5fa", fontWeight: 700 }}>
-                    {Math.round((generateProgress / 100) * selectedPages.size)}/{selectedPages.size} pages
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={generateProgress}
-                  sx={{
-                    borderRadius: 2,
-                    height: 6,
-                    bgcolor: "rgba(255,255,255,0.08)",
-                    "& .MuiLinearProgress-bar": { background: "linear-gradient(45deg, #2563eb, #7c3aed)", borderRadius: 2 },
-                  }}
-                />
-              </Box>
-            ) : generateError ? (
-              <Alert severity="warning" sx={{ borderRadius: 2, mb: 2, bgcolor: "rgba(234,179,8,0.1)", color: "#fde68a" }}>
-                {generateError}
-              </Alert>
-            ) : null}
-          </Box>
-        </Fade>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {pages.map((page) => (
+              <PageCard
+                key={page.url}
+                page={page}
+                fixing={fixingPages[page.url]}
+                result={pageResults[page.url]}
+                onFix={() => handleFixPage(page)}
+                onViewOverview={() => setOverviewPage(page)}
+              />
+            ))}
+          </div>
+        </div>
       )}
 
-      {/* ── Results (Step 3) ──────────────────────────────────────────── */}
-      {results && (
-        <Fade in>
-          <Box>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
-              <Typography variant="h5" fontWeight="800" sx={{ color: "white", display: "flex", alignItems: "center", gap: 1 }}>
-                <SuccessIcon color="success" />
-                AI Results — {results.filter((r) => r.success).length}/{results.length} pages
-              </Typography>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => { setResults(null); }}
-                sx={{ borderRadius: 2, color: "rgba(255,255,255,0.6)", borderColor: "rgba(255,255,255,0.2)", textTransform: "none", "&:hover": { borderColor: "white" } }}
-              >
-                ← Back to selection
-              </Button>
-            </Box>
-
-            <Stack spacing={0}>
-              {results.map((r) => (
-                <ResultBlock key={r.url} pageResult={r} />
-              ))}
-            </Stack>
-          </Box>
-        </Fade>
+      {/* Result View (Individual Page Fix) */}
+      {focusedResult && (
+        <ResultBlock 
+          result={focusedResult} 
+          onBack={() => setFocusedResult(null)} 
+        />
       )}
 
-      {/* ── SEO Overview Drawer ───────────────────────────────────────── */}
+      {/* SEO Overview Panel */}
       <SeoOverviewPanel
         page={overviewPage}
         open={!!overviewPage}
         onClose={() => setOverviewPage(null)}
       />
-    </Box>
+    </div>
   );
 };
 

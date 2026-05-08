@@ -102,17 +102,17 @@ export default function Sidebar({ children }) {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-slate-50">
+    <div className="flex min-h-screen w-full bg-background">
       
       {/* Mobile Top Navbar */}
-      <div className="lg:hidden fixed top-0 w-full h-16 bg-white border-b border-slate-200 z-50 flex items-center px-4 justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg text-slate-800">
+      <div className="lg:hidden fixed top-0 w-full h-16 bg-slate-950 border-b border-slate-800 z-50 flex items-center px-4 justify-between">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg text-white">
           <div className="bg-blue-600 p-1.5 rounded-md">
             <Code className="h-5 w-5 text-white" />
           </div>
           MetaForge
         </Link>
-        <button type="button" onClick={toggleSidebar} className="p-2 text-slate-600 hover:bg-slate-100 rounded-md">
+        <button type="button" onClick={toggleSidebar} className="p-2 text-slate-400 hover:bg-slate-800 rounded-md">
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
@@ -120,12 +120,12 @@ export default function Sidebar({ children }) {
       {/* Sidebar Drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 w-64 bg-slate-950 border-r border-slate-800 transition-transform duration-300 ease-in-out lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="h-16 hidden lg:flex items-center px-6 border-b border-slate-200">
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-800 hover:opacity-80 transition-opacity">
+        <div className="h-16 hidden lg:flex items-center px-6 border-b border-slate-800">
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-white hover:opacity-80 transition-opacity">
             <div className="bg-blue-600 p-1.5 rounded-md">
               <Code className="h-5 w-5 text-white" />
             </div>
@@ -149,7 +149,7 @@ export default function Sidebar({ children }) {
                       onClick={() => toggleSection(item.id)}
                       className={cn(
                         "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                        isSectionExpanded ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        isSectionExpanded ? "bg-slate-900 text-white" : "text-slate-400 hover:bg-slate-900 hover:text-white"
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -165,7 +165,7 @@ export default function Sidebar({ children }) {
                       href={item.href}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                        isActive ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        isActive ? "bg-blue-600/10 text-blue-400" : "text-slate-400 hover:bg-slate-900 hover:text-white"
                       )}
                     >
                       <Icon className="h-5 w-5" />
@@ -174,7 +174,7 @@ export default function Sidebar({ children }) {
                   )}
 
                   {hasChildren && isSectionExpanded && (
-                    <div className="mt-1 ml-4 pl-4 border-l border-slate-200 space-y-1">
+                    <div className="mt-1 ml-4 pl-4 border-l border-slate-800 space-y-1">
                       {item.children.map((child) => {
                         const ChildIcon = child.icon;
                         const isChildActive = pathname === child.href;
@@ -185,8 +185,8 @@ export default function Sidebar({ children }) {
                             className={cn(
                               "flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors font-medium",
                               isChildActive
-                                ? "text-blue-700 bg-blue-50"
-                                : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                                ? "text-blue-400 bg-blue-600/10"
+                                : "text-slate-500 hover:text-white hover:bg-slate-900"
                             )}
                           >
                             <ChildIcon className="h-4 w-4" />
@@ -200,10 +200,6 @@ export default function Sidebar({ children }) {
               );
             })}
           </nav>
-          
-          {/* <div className="mt-8 pt-6 border-t border-slate-100">
-            <AdBanner slot="sidebar-bottom" className="scale-90 origin-top" />
-          </div> */}
         </div>
       </aside>
 
@@ -212,11 +208,11 @@ export default function Sidebar({ children }) {
         {/* Mobile Overlay */}
         {isOpen && (
           <div 
-            className="fixed inset-0 bg-slate-900/50 z-30 lg:hidden" 
+            className="fixed inset-0 bg-slate-950/80 z-30 lg:hidden" 
             onClick={() => setIsOpen(false)}
           />
         )}
-        <div className="p-4 sm:p-6 lg:p-8">
+        <div className="p-0 sm:p-0 lg:p-0">
           {children}
         </div>
       </main>
