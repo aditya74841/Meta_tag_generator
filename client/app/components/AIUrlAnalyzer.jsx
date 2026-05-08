@@ -149,7 +149,7 @@ const PageCard = ({ page, onFix, onViewOverview, fixing, result }) => (
          </div>
        ) : (
          <div className="text-[11px] text-slate-400 leading-relaxed line-clamp-2 italic">
-           Pending analysis. Click "Fix Page" to generate AI-powered meta tags.
+           Pending analysis. Click &quot;Fix Page&quot; to generate AI-powered meta tags.
          </div>
        )}
     </CardContent>
